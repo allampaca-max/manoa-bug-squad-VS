@@ -1,0 +1,15 @@
+Make one pixel-art sprite sheet with your image generation tool and save it to a file. Do not write code for the art itself and do not touch anything outside this folder.
+
+Character: the green gecko in the first attached image (gecko_design.png). Keep its design exactly: lime green body, gold-yellow speckles on the back, big round eye with a sky-blue ring, two red bars on the snout, round toe pads, black outline. The second attached image shows other sprites from the same game for style and scale.
+
+Size: redraw the gecko SMALLER than in the first image. In every frame the whole gecko is about 44 art pixels long from nose to tail tip and about 26 art pixels tall, like the cockroach in the second image. Simplify details to fit, keep a clean 1-art-pixel near-black outline, 3-4 shades per colour, no anti-aliasing, no blur, no gradients.
+
+Layout: four rows of frames, read left to right. Every frame faces RIGHT, shows the full body, and is the same size. Leave clear empty space (at least 8 art pixels) between frames and between rows so no two frames touch. Feet of all frames in a row sit on the same line.
+- Row 1, idle, 4 frames: gentle breathing, eyes closed in frame 3 (a blink), tail tip curling a little.
+- Row 2, attack, 4 frames: crouch, lunge forward with the mouth wide open, mouth open with a short pink tongue just coming out, back to standing. Keep the tongue short; the game draws the long tongue itself.
+- Row 3, hurt, 3 frames: flinch back with eyes squeezed shut, recoil, recover.
+- Row 4, walk, 6 frames: one full walk cycle, diagonal leg pairs stepping, body low to the ground, tail swaying.
+
+Render: every art pixel is an exact square block of 4x4 image pixels. Landscape image. Fully transparent background (if impossible, one flat pure magenta #FF00FF). No text, no labels, no grid lines, no shadows, no border.
+
+Save as ./out/gecko_sheet.png. When done, reply with only the file path.

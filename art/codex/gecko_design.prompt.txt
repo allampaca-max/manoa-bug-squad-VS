@@ -1,0 +1,9 @@
+Make one pixel-art game sprite with your image generation tool, then save it to a file. Do not write code for the art itself and do not touch anything outside this folder.
+
+Subject: the hero of a small phone game, a cute chibi green gecko. It is a gold dust day gecko: bright lime green body with tiny gold-yellow speckles on its back, a sky-blue ring around its big round cartoon eye, two small red bars across the top of the snout, wide round sticky toe pads, a long tail curling up at the tip. Pose: standing on all four legs, side view, facing RIGHT, head slightly raised, friendly little smile. Whole body visible with empty margin all around.
+
+Style: match the attached reference image exactly. It shows three sprites from the same game (a girl, an alpaca, a cockroach), each a 64x64-pixel sprite enlarged 8x. Same look: 16-bit retro game sprite, chibi proportions, clean 1-pixel near-black outline, medium detail, cel shading with 3-4 tones per colour, no anti-aliasing, no blur, no gradients. Draw on the same pixel scale, as if the canvas were 64x64 pixels, so every art pixel is a uniform square block. The gecko should be about as wide as the cockroach and lower to the ground.
+
+Background: fully transparent. If you cannot make it transparent, use one flat pure magenta #FF00FF with no shadow, gradient or texture. No ground shadow, no text, no border, no second view.
+
+Output: a square PNG saved as ./out/gecko_idle.png (create ./out if needed). When done, reply with only the file path.

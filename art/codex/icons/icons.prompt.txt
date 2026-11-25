@@ -1,0 +1,13 @@
+Make five pixel-art pictures with your image generation tool, one generated image per file, and save them. Do not write code for the art itself and do not touch anything outside this folder.
+
+Style: match the attached card pictures (cards.png) from the same game exactly: 16-bit retro pixel art, chunky readable shapes, clean near-black outlines, 3-4 shades per colour, no anti-aliasing, no blur, no text, no border or card frame drawn inside the picture.
+
+Card pictures 1-4: each is a full-frame scene exactly 64 art pixels wide and 48 art pixels tall (landscape 4:3), the subject filling most of the frame, background painted edge to edge. Every art pixel is an exact square block of 16x16 image pixels (a 1024x768 image; if that size is impossible, make a 1536x1024 image with art pixels of 24x24 and the same 64x48 grid).
+1. ./out/icons/tongue.png - a cute bright green gold dust day gecko (lime green, gold speckles on the back, sky-blue ring around its big eye, two red bars on the snout) shooting its long pink sticky tongue to the right and catching a small brown cockroach, warm orange background
+2. ./out/icons/egg.png - two small white gecko eggs in a cozy nest of fluffy laundry lint beside a washing machine, one egg cracked open with a tiny green gecko peeking out, soft blue background
+3. ./out/icons/musubi.png - a Hawaiian spam musubi (a block of white rice topped with a slice of grilled spam, wrapped in a band of dark seaweed) on a small plate with a wisp of steam, cozy warm golden background
+4. ./out/icons/sneakers.png - a pair of white sneakers running fast to the right with motion lines and little dust puffs, soft blue sky background
+
+Picture 5: ./out/icons/props.png - three separate small game pickups in one row with lots of empty space between them: a pineapple, a red horseshoe magnet with silver tips, a small wooden treasure chest with gold trim. Each item is about 15 art pixels tall, with a clean 1-art-pixel near-black outline. Every art pixel is an exact square block of 12x12 image pixels. Fully transparent background (if impossible, one flat pure magenta #FF00FF), no shadows.
+
+When done, reply with only the five file paths.

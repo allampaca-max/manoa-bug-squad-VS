@@ -55,9 +55,10 @@ button{font:inherit;color:inherit}
 .xp b{position:absolute;right:6px;top:50%;transform:translateY(-54%);font:700 11px/1 var(--f-pixel);color:var(--white);text-shadow:0 1px 0 var(--ink),1px 0 0 var(--ink),-1px 0 0 var(--ink),0 -1px 0 var(--ink)}
 .hrow{display:grid;grid-template-columns:1fr auto 1fr;align-items:start;gap:8px}
 #slots{display:grid;grid-template-columns:repeat(4,24px);gap:3px}
-.slot{position:relative;width:24px;height:24px;border-radius:4px;border:1px solid var(--line);background:var(--ink) center/cover no-repeat;image-rendering:pixelated;display:grid;place-items:center;font-size:14px;line-height:1}
+.slot{position:relative;width:24px;height:24px;border-radius:4px;border:1px solid var(--line);background:var(--ink);display:grid;place-items:center;font-size:14px;line-height:1}
+.slot img,.ic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;image-rendering:pixelated}
 .slot.evo{border-color:var(--plumeria);box-shadow:0 0 0 1px var(--plumeria)}
-.slot b{position:absolute;right:-3px;bottom:-5px;font:700 12px/1 var(--f-pixel);color:var(--white);text-shadow:0 1px 0 var(--ink),1px 0 0 var(--ink),-1px 0 0 var(--ink),0 -1px 0 var(--ink)}
+.slot b{position:absolute;z-index:1;right:-3px;bottom:-5px;font:700 12px/1 var(--f-pixel);color:var(--white);text-shadow:0 1px 0 var(--ink),1px 0 0 var(--ink),-1px 0 0 var(--ink),0 -1px 0 var(--ink)}
 #timer{font:700 26px/1 var(--f-pixel);letter-spacing:1px;color:var(--white);text-shadow:var(--outline);font-variant-numeric:tabular-nums}
 #timer.late{color:var(--plumeria)}
 .hright{justify-self:end;display:flex;align-items:center;gap:8px}
@@ -89,7 +90,7 @@ button{font:inherit;color:inherit}
 .choice{display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:center;width:100%;padding:8px;border-radius:10px;border:2px solid var(--line);background:var(--night);text-align:left;cursor:pointer}
 .choice:hover,.choice:focus-visible{border-color:var(--plumeria);outline:none}
 .choice.evo{border-color:var(--plumeria)}
-.ic{width:72px;height:54px;border-radius:6px;background:var(--ink) center/cover no-repeat;image-rendering:pixelated;display:grid;place-items:center;font-size:30px;line-height:1;box-shadow:0 0 0 2px var(--ink)}
+.ic{position:relative;flex:none;width:72px;height:54px;border-radius:6px;background:var(--ink);display:grid;place-items:center;font-size:30px;line-height:1;box-shadow:0 0 0 2px var(--ink)}
 .choice b{font:19px/1.2 var(--f-display)}
 .tag{display:inline-block;margin-left:6px;padding:3px 5px 2px;border-radius:4px;background:var(--line);color:var(--sand);font:700 11px/1 var(--f-pixel);vertical-align:3px}
 .tag.new{background:var(--hibiscus);color:var(--white)}
@@ -101,18 +102,22 @@ button{font:inherit;color:inherit}
 .btn.warn{background:var(--hibiscus);color:var(--white)}
 .btn:focus-visible{outline:2px solid var(--white);outline-offset:2px}
 .btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.toggles{margin-top:10px}
+.tog{min-height:40px;font-size:16px}
+.tog[aria-pressed="false"]{color:var(--sand-dim);border-style:dashed}
 
 /* title */
 .title h1{margin:2px 0 6px;font:40px/1.02 var(--f-display);color:var(--plumeria);text-shadow:0 3px 0 var(--ink);text-wrap:balance}
 .title h1 span{display:block;font-size:.62em;color:var(--sand)}
-.heroes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 4px}
+.heroes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0 8px}
 .hero{display:grid;justify-items:center;align-content:start;gap:3px;padding:10px 8px 12px;border-radius:12px;border:2px solid var(--line);background:var(--night);text-align:center;cursor:pointer}
 .hero[aria-pressed="true"]{border-color:var(--plumeria);box-shadow:inset 0 0 0 2px var(--plumeria)}
 .hero:focus-visible{outline:2px solid var(--white);outline-offset:2px}
-.hero canvas{width:96px;height:96px;image-rendering:crisp-edges;image-rendering:pixelated}
-.hero b{font:19px/1.15 var(--f-display)}
-.hero small{color:var(--sand-dim);font-size:12.5px;line-height:1.35}
-.hero .st{font:600 11px/1 var(--f-pixel);color:var(--surf);margin-top:3px}
+.hero canvas{width:76px;height:76px;image-rendering:crisp-edges;image-rendering:pixelated}
+.hero b{font:17px/1.15 var(--f-display)}
+.hero .st{font:600 11px/1.2 var(--f-pixel);color:var(--surf)}
+.hero-info{margin:0;min-height:4.3em;padding:10px 12px;border-radius:10px;background:var(--night);color:var(--sand-dim);font-size:13.5px;line-height:1.45}
+.hero-info b{color:var(--sand);font-weight:normal;font-family:var(--f-display)}
 .how{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:4px;color:var(--sand-dim);font-size:13.5px}
 .best{margin:10px 0 0;font:600 12px/1.3 var(--f-pixel);color:var(--sand-dim)}
 
@@ -161,9 +166,12 @@ const MAX_ENEMIES = 320;
 const VIEW_TARGET = 460;            // canvas pixels on the short side of the screen (1 canvas px = 1 sprite px)
 const PLAYER_R = 10;
 
+// emoji: shown until the hero has a sheet in SPRITES. tail: survives one knockout by dropping its tail.
 const HEROES = {
-  girl:   { name: '선크림 소녀', hp: 100, speed: 74, armor: 0, weapon: 'spray', blurb: '스프레이로 앞쪽 벌레를 쓸어 버린다.' },
-  alpaca: { name: '알파카',     hp: 130, speed: 66, armor: 1, weapon: 'spit',  blurb: '제일 가까운 벌레에게 침을 뱉는다. 털이 푹신해서 튼튼하다.' },
+  girl:   { name: '선크림 소녀', hp: 100, speed: 74, armor: 0, weapon: 'spray',  emoji: '👧', blurb: '스프레이로 가까운 벌레를 쓸어 버린다.' },
+  alpaca: { name: '알파카',     hp: 130, speed: 66, armor: 1, weapon: 'spit',   emoji: '🦙', blurb: '제일 가까운 벌레에게 침을 뱉는다. 털이 푹신해서 튼튼하다.' },
+  gecko:  { name: '게코',       hp: 80,  speed: 86, armor: 0, weapon: 'tongue', emoji: '🦎', tail: true,
+    blurb: '세탁실에 사는 초록 게코. 이 녀석이 이사 온 뒤로 벌레가 줄었다.', trait: '꼬리 자르기: 한 번 쓰러져도 꼬리를 떼어 주고 다시 일어난다.' },
 };
 
 // base = level 1 stats; lv[i] = what level i+2 adds; evo = evolution (max level + the passive + a chest)
@@ -196,21 +204,26 @@ const WEAPONS = {
     base: { dmg: 22, cd: 5.5, count: 1, speed: 240, band: 22, knock: 120 },
     lv: [{ dmg: 10 }, { count: 1 }, { cd: -1.0 }, { count: 1, dmg: 12 }],
     evo: { with: 'musubi', name: '알파카 대이동', blurb: '알파카 떼가 한꺼번에 몰려온다.', add: { count: 3, band: 10, dmg: 15 } } },
+  tongue: { name: '끈끈이 혀', icon: 'tongue', emoji: '👅', blurb: '제일 가까운 벌레에게 혀를 쭉 뻗는다. 잡아먹으면 체력이 조금 찬다.',
+    base: { dmg: 12, cd: 0.85, range: 96, pierce: 2, count: 1, heal: 1, knock: 25 },
+    lv: [{ dmg: 5 }, { range: 20, pierce: 1 }, { count: 1 }, { cd: -0.15, dmg: 5 }],
+    evo: { with: 'egg', name: '게코 일가족', blurb: '새끼 게코들까지 혀를 날린다. 한 번에 여러 마리를 낚는다.', add: { count: 3, pierce: 2, heal: 1 } } },
 };
 const STAT_TEXT = {
   dmg: v => `피해 +${v}`, cd: v => `쿨타임 ${v}초`, range: v => `사거리 +${v}`, arc: () => '더 넓게', dirs: v => `방향 +${v}`,
   count: v => `개수 +${v}`, pierce: v => `관통 +${v}`, size: v => `크기 +${v}`, speed: v => `속도 +${v}`,
-  radius: v => `범위 +${v}`, dur: v => `지속 +${v}초`, spin: () => '더 빨리 돈다', band: v => `폭 +${v}`,
+  radius: v => `범위 +${v}`, dur: v => `지속 +${v}초`, spin: () => '더 빨리 돈다', band: v => `폭 +${v}`, heal: v => `잡아먹으면 체력 +${v}`,
 };
 
-// per = what one level adds. Passives without card art show their emoji.
+// per = what one level adds; max overrides PASSIVE_MAX. The emoji shows until sprites/icons/<icon>.png exists.
 const PASSIVES = {
   fluff:    { name: '털 뭉치',     icon: 'fluff',   per: { maxHp: 20 },   text: '최대 체력 +20' },
   hug:      { name: '포옹',        icon: 'hug',     per: { regen: 0.3 },  text: '초당 체력 회복 +0.3' },
   tea:      { name: '하와이 차',   icon: 'tea',     per: { cdr: 0.08 },   text: '쿨타임 -8%' },
   rainbow:  { name: '무지개',      icon: 'rainbow', per: { magnet: 0.4 }, text: '줍는 범위 +40%' },
-  musubi:   { name: '스팸 무스비', emoji: '🍙',     per: { might: 0.1 },  text: '모든 피해 +10%' },
-  sneakers: { name: '하얀 운동화', emoji: '👟',     per: { speed: 0.1 },  text: '이동 속도 +10%' },
+  musubi:   { name: '스팸 무스비', emoji: '🍙', icon: 'musubi',   per: { might: 0.1 },  text: '모든 피해 +10%' },
+  sneakers: { name: '하얀 운동화', emoji: '👟', icon: 'sneakers', per: { speed: 0.1 },  text: '이동 속도 +10%' },
+  egg:      { name: '게코 알',     emoji: '🥚', icon: 'egg', per: { amount: 1 }, text: '무기 개수 +1', max: 2 },
 };
 
 // sprite: key in SPRITES (falls back to `fallback`, then to the emoji). r = hit radius. hp scales with the minute.
@@ -263,7 +276,7 @@ const ITEMS = { heal: { emoji: '🍍', hp: 30 }, magnet: { emoji: '🧲' }, ches
 
 // 픽셀 스프라이트 (PixelLab 64px). 시트 한 줄 = idle / attack / hit / walk, 숫자는 그 줄에서 재생할 칸 순서.
 // cy: 몸 중심에서 발까지 (시트 픽셀). faces: 그림이 보는 쪽 (1 오른쪽, -1 왼쪽). lift: 나는 벌레가 그림자에서 뜬 높이.
-// 칸 크기는 기본 64px, 발끝 줄(base)은 61. 작은 벌레는 cell / base를 따로 적는다.
+// 칸 크기는 기본 64px, 발끝 줄(base)은 61. 작은 벌레는 cell / base를 따로 적는다. auto: 목록이 없는 줄은 시트에서 칸을 세서 쓴다.
 const SPRITE_ROWS = ['idle', 'attack', 'hit', 'walk'];
 const SPRITES = {
   girl:      { sheet: 'sprites/girl.png',      cy: 24, faces: 1,  idle: [0, 1, 2, 3, 2, 1], attack: [0, 1, 2, 3, 4, 5], hit: [0, 1, 2, 3, 4], walk: [0, 1, 2, 3, 4, 5, 6, 7] },
@@ -274,8 +287,13 @@ const SPRITES = {
   mosquito:  { sheet: 'sprites/mosquito.png',  cell: 48, base: 45, cy: 14, faces: -1, lift: 12, idle: [0, 1, 2, 1] },
   snail:     { sheet: 'sprites/snail.png',     base: 52, cy: 18, faces: -1, idle: [0] },
   ant:       { sheet: 'sprites/ant.png',       cell: 32, base: 32, cy: 11, faces: -1, idle: [0] },
+  // auto: rows without a list are read off the sheet (every non-empty cell, left to right), so new art drops in as-is
+  gecko:     { sheet: 'sprites/gecko.png',     cy: 14, faces: 1, auto: true },
 };
 const SPRITE_FPS = { idle: 6, walk: 12, attack: 14, hit: 14, fly: 14, run: 18 };
+// props that have a picture in sprites/props/<key>.png, replacing the code-drawn one or the emoji.
+// keys: gem1 gem2 gem3 (XP, small to big) spit slipper parasol heal magnet chest
+const PROP_ART = ['heal', 'magnet', 'chest'];
 
 /* =====================================================================
    HELPERS
@@ -333,9 +351,28 @@ function bakeSheet(img, sp, tint) {
   const n = cnv(img.width, img.height), g = n.getContext('2d');
   g.drawImage(img, 0, 0);
   if (tint) { g.globalCompositeOperation = 'source-atop'; g.globalAlpha = tint[1]; g.fillStyle = tint[0]; g.fillRect(0, 0, n.width, n.height); }
-  const seq = {}, row = {};
-  SPRITE_ROWS.forEach((name, i) => { if (sp[name]) { seq[name] = sp[name]; row[name] = i; } });
+  const seq = {}, row = {}, auto = sp.auto ? autoRows(n, sp.cell || 64, sp) : {};
+  SPRITE_ROWS.forEach((name, i) => { const q = sp[name] || auto[name]; if (q) { seq[name] = q; row[name] = i; } });
   return bake(n, sp.cell || 64, { base: sp.base || 61, cy: sp.cy, faces: sp.faces, lift: sp.lift || 0, seq, row });
+}
+// frames for rows the SPRITES entry doesn't list: every cell with a visible pixel, left to right
+function autoRows(canvas, cell, sp) {
+  const W = canvas.width, cols = Math.floor(W / cell), rows = Math.min(SPRITE_ROWS.length, Math.floor(canvas.height / cell));
+  let data = null;
+  try { data = canvas.getContext('2d').getImageData(0, 0, W, canvas.height).data; } catch { /* a file:// page can't read pixels: take every cell */ }
+  const filled = (c, r) => {
+    if (!data) return true;
+    for (let y = r * cell; y < (r + 1) * cell; y++) for (let x = c * cell; x < (c + 1) * cell; x++) if (data[(y * W + x) * 4 + 3] > 0) return true;
+    return false;
+  };
+  const out = {};
+  for (let r = 0; r < rows; r++) {
+    const name = SPRITE_ROWS[r], seq = [];
+    if (sp[name]) continue;
+    for (let c = 0; c < cols; c++) if (filled(c, r)) seq.push(c);
+    if (seq.length) out[name] = seq;
+  }
+  return out;
 }
 function bakeEmoji(ch, size) {
   const s = size + 6, c = cnv(s, s), g = c.getContext('2d');
@@ -360,6 +397,12 @@ function artFor(d) {
   const ek = 'emoji:' + d.emoji + (d.size || 30);
   return ART[ek] || (ART[ek] = bakeEmoji(d.emoji, d.size || 30));
 }
+function heroArt(id) {
+  if (ART[id]) return ART[id];
+  const ek = 'hero:' + id;
+  if (!ART[ek]) { ART[ek] = bakeEmoji(HEROES[id].emoji, 30); ART[ek].faces = 1; }
+  return ART[ek];
+}
 
 async function loadArt() {
   const imgs = {};
@@ -370,6 +413,7 @@ async function loadArt() {
     for (const k of [d.sprite, d.fallback]) if (k && imgs[k]) ART[k + '|' + d.tint[0]] = bakeSheet(imgs[k], SPRITES[k], d.tint);
   }
   MIST = await loadImg('sprites/mist.png');
+  await Promise.all(PROP_ART.map(async k => { const img = await loadImg(`sprites/props/${k}.png`); if (img) PX[k] = img; }));
 }
 
 function makePixelArt() {
@@ -440,6 +484,213 @@ function groundTile() {
 }
 
 /* =====================================================================
+   SOUND — synthesised with WebAudio, no files. sfx(name) plays a short chiptune
+   effect; music(name) runs a step sequencer over SONGS. Nothing plays until the
+   first tap (browsers require it), and iPhones stay silent in silent mode.
+   ===================================================================== */
+const MIX = { master: 0.9, sfx: 1, music: 0.5 };
+const AUDIO = { ctx: null, out: null, sfx: null, mus: null, noise: null, waves: {}, on: { sfx: true, music: true }, quiet: false, last: {}, combo: 0, comboT: 0 };
+
+// 8th-note steps, 8 per bar. mel: a note (C5, F#4) starts, '-' holds it, '.' rests. chords: one per bar.
+// bass: oompah | drive | soft. acc: strum (off-beat chords) | pick (ukulele arpeggio) | stab. drums: one 8-step bar of k(ick) s(nare) h(at); allHats adds a quiet hat on every step.
+const SONGS = {
+  title: { bpm: 96, lead: 'triangle', leadVol: 0.16, bass: 'soft', acc: 'pick', drums: 'k..h..h.',
+    chords: 'G Em C D G Em C D',
+    mel: `D5 - - B4 - - G4 - | E5 - - D5 - - B4 - | C5 - E5 - G5 - E5 - | F#5 - - - A5 - - -
+          G5 - - D5 - - B4 - | B4 - - G4 - - E4 - | E4 - G4 - C5 - E5 - | D5 - - - - - . .` },
+  battle: { bpm: 132, lead: 'p25', leadVol: 0.11, bass: 'oompah', acc: 'strum', drums: 'khshkhsh',
+    chords: 'G G C C D7 D7 G G Em C G D Em C D D7',
+    mel: `B4 . D5 . G5 - E5 D5 | D5 - B4 . G4 . A4 B4 | C5 . E5 . G5 - E5 C5 | E5 - D5 C5 A4 - . .
+          A4 . D5 . F#5 - E5 D5 | C5 - A4 . F#4 . A4 C5 | B4 D5 G5 - F#5 - E5 D5 | G4 - - - . . D5 D5
+          E5 . G5 . B5 - A5 G5 | E5 - C5 . E5 . G5 E5 | D5 . B4 . D5 - G5 F#5 | E5 - D5 - A4 - . .
+          E5 . G5 . B5 - C6 B5 | A5 - G5 . E5 . G5 A5 | F#5 - E5 - D5 - C5 - | D5 . C5 . B4 . A4 .` },
+  boss: { bpm: 152, lead: 'square', leadVol: 0.08, bass: 'drive', acc: 'stab', drums: 'khkskhks', allHats: true,
+    chords: 'Em C D B7 Em C D B7',
+    mel: `E5 E5 . G5 . F#5 E5 D#5 | E5 - . C5 . E5 G5 . | F#5 F#5 . A5 . G5 F#5 E5 | D#5 - . F#5 . B5 - A5
+          G5 . E5 . B4 . E5 G5 | C6 - B5 . G5 . E5 . | F#5 . D5 . A5 . F#5 . | B5 - A5 - F#5 - D#5 -` },
+};
+const NOTE_BASE = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+const midi = n => 12 * (+n.slice(-1) + 1) + NOTE_BASE[n[0]] + (n[1] === '#' ? 1 : n[1] === 'b' ? -1 : 0);
+const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+function chordNotes(name) {          // 'G', 'Em', 'D7', 'B7' -> midi notes from octave 3
+  const m = name.match(/^([A-G][#b]?)(m?)(7?)$/), root = midi(m[1] + '3');
+  return [root, root + (m[2] ? 3 : 4), root + 7, ...(m[3] ? [root + 10] : [])];
+}
+function compileSong(s) {
+  const toks = s.mel.replace(/\|/g, ' ').trim().split(/\s+/), notes = [];
+  toks.forEach((t, i) => {
+    if (t === '-') { for (let j = i - 1; j >= 0; j--) if (notes[j]) { notes[j].len++; break; } else if (toks[j] !== '-') break; }
+    else if (t !== '.') notes[i] = { m: midi(t), len: 1 };
+  });
+  return { ...s, notes, steps: toks.length, bars: s.chords.split(' ').map(chordNotes) };
+}
+
+function audioInit() {
+  if (AUDIO.ctx) { if (AUDIO.ctx.state !== 'running') AUDIO.ctx.resume().catch(() => {}); return; }
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return;
+  const c = AUDIO.ctx = new AC();
+  const comp = c.createDynamicsCompressor();
+  comp.threshold.value = -12; comp.ratio.value = 4; comp.attack.value = 0.003; comp.release.value = 0.2;
+  AUDIO.out = c.createGain(); AUDIO.out.gain.value = MIX.master;
+  AUDIO.out.connect(comp); comp.connect(c.destination);
+  AUDIO.sfx = c.createGain(); AUDIO.sfx.connect(AUDIO.out);
+  AUDIO.mus = c.createGain(); AUDIO.mus.connect(AUDIO.out);
+  const nb = c.createBuffer(1, c.sampleRate, c.sampleRate), d = nb.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  AUDIO.noise = nb;
+  AUDIO.waves.p25 = pulseWave(c, 0.25); AUDIO.waves.p12 = pulseWave(c, 0.125);
+  for (const k in SONGS) SONGS[k] = compileSong(SONGS[k]);
+  applyAudioPrefs();
+  setInterval(musicTick, 25);
+}
+function applyAudioPrefs() {
+  if (!AUDIO.ctx) return;
+  AUDIO.sfx.gain.value = AUDIO.on.sfx ? MIX.sfx : 0;
+  AUDIO.mus.gain.value = AUDIO.on.music ? MIX.music * MUS.duck : 0;
+}
+// NES-style narrow pulse waves
+function pulseWave(c, duty) {
+  const N = 48, re = new Float32Array(N), im = new Float32Array(N);
+  for (let n = 1; n < N; n++) { re[n] = Math.sin(2 * Math.PI * n * duty) / (n * Math.PI); im[n] = (1 - Math.cos(2 * Math.PI * n * duty)) / (n * Math.PI); }
+  return c.createPeriodicWave(re, im);
+}
+// one enveloped oscillator sliding from f0 to f1
+function osc(bus, type, f0, f1, t, dur, vol, vib = 0) {
+  const c = AUDIO.ctx, o = c.createOscillator(), g = c.createGain();
+  if (AUDIO.waves[type]) o.setPeriodicWave(AUDIO.waves[type]); else o.type = type;
+  o.frequency.setValueAtTime(f0, t);
+  if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+  if (vib) {
+    const l = c.createOscillator(), lg = c.createGain();
+    l.frequency.value = 7; lg.gain.value = f0 * vib; l.connect(lg); lg.connect(o.frequency);
+    l.start(t + Math.min(0.12, dur / 3)); l.stop(t + dur + 0.05);
+  }
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(vol, t + 0.004);
+  g.gain.setValueAtTime(vol, t + Math.max(0.005, dur * 0.35));
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(bus);
+  o.start(t); o.stop(t + dur + 0.03);
+}
+// filtered white noise burst; the filter sweeps from f0 to f1
+function hiss(bus, t, dur, vol, type, f0, f1 = f0, q = 1) {
+  const c = AUDIO.ctx, s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+  s.buffer = AUDIO.noise; s.loop = true;
+  f.type = type; f.Q.value = q; f.frequency.setValueAtTime(f0, t);
+  if (f1 !== f0) f.frequency.exponentialRampToValueAtTime(f1, t + dur);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(vol, t + 0.006);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  s.connect(f); f.connect(g); g.connect(bus);
+  s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.03);
+}
+const arp = (bus, type, notes, t, gap, dur, vol) => notes.forEach((n, i) => osc(bus, type, hz(midi(n)), hz(midi(n)), t + i * gap, dur, vol));
+
+// gap: shortest time between two plays of the same effect, so a swarm doesn't turn into a roar. vol: loudness of the whole effect.
+const SFX = {
+  spray:  { gap: 0.1,  vol: 2,  play: (b, t) => { hiss(b, t, 0.26, 0.32, 'bandpass', 6500, 3500, 0.8); hiss(b, t, 0.08, 0.2, 'highpass', 3000); } },
+  spit:   { gap: 0.08, vol: 3, play: (b, t) => { osc(b, 'square', 900, 260, t, 0.09, 0.14); hiss(b, t, 0.05, 0.12, 'bandpass', 1800, 1800, 2); } },
+  tongue: { gap: 0.08, vol: 2, play: (b, t) => { osc(b, 'sine', 320, 1500, t, 0.07, 0.24); osc(b, 'sine', 1500, 420, t + 0.07, 0.09, 0.16); } },
+  throw:  { gap: 0.1,  vol: 2, play: (b, t) => { hiss(b, t, 0.2, 0.5, 'bandpass', 600, 2400, 1.2); osc(b, 'triangle', 300, 520, t, 0.12, 0.06); } },
+  parasol: { gap: 0.3, vol: 2.5, play: (b, t) => { osc(b, 'triangle', 600, 900, t, 0.1, 0.12); osc(b, 'triangle', 900, 1300, t + 0.06, 0.12, 0.1); } },
+  boom:   { gap: 0.08, play: (b, t) => { hiss(b, t, 0.5, 0.5, 'lowpass', 2000, 120); osc(b, 'sine', 130, 38, t, 0.38, 0.45); } },
+  bleat:  { gap: 0.3,  vol: 2,  play: (b, t) => { osc(b, 'p25', 560, 470, t, 0.36, 0.11, 0.07); osc(b, 'triangle', 280, 240, t, 0.36, 0.06); } },
+  hit:    { gap: 0.03, vol: 4, play: (b, t) => osc(b, 'square', 240, 170, t, 0.03, 0.035) },
+  pop:    { gap: 0.04, vol: 4, play: (b, t) => { const f = 650 * (0.85 + Math.random() * 0.3); osc(b, 'square', f, f * 0.28, t, 0.07, 0.07); } },
+  gem:    { gap: 0.025, vol: 4, play: (b, t) => {
+    const k = Math.min(14, AUDIO.combo), f = hz(84 + k);      // each gem in a quick row rings a semitone higher
+    osc(b, 'triangle', f, f, t, 0.06, 0.1); osc(b, 'triangle', f * 2, f * 2, t + 0.03, 0.05, 0.05);
+  } },
+  click:  { gap: 0.05, vol: 3, play: (b, t) => { osc(b, 'p25', 880, 880, t, 0.04, 0.08); osc(b, 'p25', 1320, 1320, t + 0.035, 0.05, 0.07); } },
+  hurt:   { gap: 0.25, vol: 2, play: (b, t) => { osc(b, 'square', 190, 70, t, 0.18, 0.22); hiss(b, t, 0.1, 0.18, 'lowpass', 900, 300); } },
+  tail:   { gap: 1,    vol: 1.5,    play: (b, t) => { osc(b, 'square', 900, 1300, t, 0.05, 0.14); osc(b, 'sine', 1700, 280, t + 0.06, 0.55, 0.2); } },
+  heal:   { gap: 0.2,  vol: 1.5,  play: (b, t) => arp(b, 'triangle', ['C6', 'E6', 'G6', 'C7'], t, 0.05, 0.12, 0.13) },
+  magnet: { gap: 0.5,  vol: 2,  play: (b, t) => { osc(b, 'sine', 300, 2400, t, 0.35, 0.14); hiss(b, t, 0.35, 0.08, 'bandpass', 500, 5000, 2); } },
+  siren:  { gap: 2,    vol: 3,    play: (b, t) => { for (let i = 0; i < 4; i++) osc(b, 'square', i % 2 ? 880 : 660, i % 2 ? 880 : 660, t + i * 0.2, 0.19, 0.1); } },
+  alert:  { gap: 1,    vol: 2.5,    play: (b, t) => arp(b, 'p25', ['B5', 'E6', 'B5', 'E6'], t, 0.08, 0.08, 0.1) },
+  levelup: { gap: 0.3, vol: 1.5, play: (b, t) => { arp(b, 'p25', ['C5', 'E5', 'G5', 'C6', 'E6'], t, 0.06, 0.16, 0.12); osc(b, 'triangle', hz(48), hz(48), t, 0.4, 0.15); } },
+  chest:  { gap: 0.5,  vol: 2,  play: (b, t) => { arp(b, 'p25', ['G5', 'B5', 'D6', 'G6'], t, 0.07, 0.18, 0.12); arp(b, 'triangle', ['D7', 'G7', 'B6', 'E7', 'A7'], t + 0.3, 0.05, 0.08, 0.06); } },
+  evo:    { gap: 0.5,  vol: 1.2,  play: (b, t) => {
+    arp(b, 'p25', ['C5', 'E5', 'G5', 'C6', 'E6', 'G6'], t, 0.06, 0.16, 0.12);
+    for (const n of ['C5', 'E5', 'G5', 'C6']) osc(b, 'square', hz(midi(n)), hz(midi(n)), t + 0.4, 0.7, 0.05, 0.01);
+    osc(b, 'triangle', hz(36), hz(36), t + 0.4, 0.7, 0.18);
+  } },
+  gameover: { gap: 1,  vol: 1.5,  play: (b, t) => {
+    [['G4', 0, 0.3], ['E4', 0.32, 0.3], ['C4', 0.64, 0.3], ['B3', 0.96, 0.25], ['C4', 1.22, 0.8]].forEach(([n, at, d]) => osc(b, 'p25', hz(midi(n)), hz(midi(n)), t + at, d, 0.12, 0.01));
+    osc(b, 'triangle', hz(36), hz(36), t + 1.22, 0.9, 0.16);
+  } },
+  victory: { gap: 1,   vol: 1.2,   play: (b, t) => {
+    arp(b, 'p25', ['G4', 'C5', 'E5', 'G5'], t, 0.12, 0.14, 0.12);
+    for (const [n, v] of [['C6', 0.12], ['E5', 0.07], ['G5', 0.07]]) osc(b, 'p25', hz(midi(n)), hz(midi(n)), t + 0.5, 0.9, v, 0.012);
+    for (const [n, at] of [['C3', 0], ['G3', 0.24], ['C4', 0.5]]) osc(b, 'triangle', hz(midi(n)), hz(midi(n)), t + at, at < 0.5 ? 0.22 : 0.9, 0.18);
+  } },
+};
+function sfx(name) {
+  const c = AUDIO.ctx;
+  if (!c || c.state !== 'running' || !AUDIO.on.sfx || AUDIO.quiet) return;
+  const d = SFX[name], now = c.currentTime;
+  if (now - (AUDIO.last[name] || -9) < d.gap) return;
+  AUDIO.last[name] = now;
+  if (name === 'gem') { AUDIO.combo = now - AUDIO.comboT < 0.6 ? AUDIO.combo + 1 : 0; AUDIO.comboT = now; }
+  const g = c.createGain();
+  g.gain.value = d.vol || 1;
+  g.connect(AUDIO.sfx);
+  d.play(g, now + 0.005);
+  setTimeout(() => g.disconnect(), 2500);
+}
+
+/* ---------- music: a lookahead step sequencer ---------- */
+const MUS = { name: null, want: null, step: 0, t: 0, duck: 1 };
+function music(name) { MUS.want = name; }
+function musicDuck(level) {
+  if (MUS.duck === level) return;
+  MUS.duck = level;
+  const c = AUDIO.ctx;
+  if (c && AUDIO.on.music) AUDIO.mus.gain.setTargetAtTime(MIX.music * level, c.currentTime, 0.08);
+}
+function musicTick() {
+  const c = AUDIO.ctx;
+  if (!c || c.state !== 'running') return;
+  // battle <-> boss change on a bar line; leaving or entering the title, stopping and starting are immediate
+  const now = !MUS.name || !MUS.want || MUS.name === 'title' || MUS.want === 'title';
+  if (MUS.want !== MUS.name && (now || MUS.step % 8 === 0)) {
+    MUS.name = MUS.want; MUS.step = 0; MUS.t = c.currentTime + 0.06;
+  }
+  if (!MUS.name || !AUDIO.on.music) { MUS.t = c.currentTime + 0.06; return; }
+  const s = SONGS[MUS.name], sd = 60 / s.bpm / 2;
+  if (MUS.t < c.currentTime - 0.25) MUS.t = c.currentTime + 0.06;     // fell behind (the tab slept)
+  while (MUS.t < c.currentTime + 0.15) {
+    playStep(s, MUS.step % s.steps, MUS.t, sd);
+    MUS.t += sd; MUS.step++;
+    if (MUS.want !== MUS.name && (now || MUS.step % 8 === 0)) break;
+  }
+}
+function playStep(s, i, t, sd) {
+  const b = AUDIO.mus, pos = i % 8, ch = s.bars[Math.floor(i / 8) % s.bars.length], root = ch[0];
+  const n = s.notes[i];
+  if (n) osc(b, s.lead, hz(n.m), hz(n.m), t, n.len * sd * 0.92, s.leadVol, n.len >= 3 ? 0.012 : 0);
+  // bass
+  if (s.bass === 'oompah') { if (pos % 2 === 0) { const m = pos % 4 === 0 ? root - 12 : root - 5; osc(b, 'triangle', hz(m), hz(m), t, sd * 0.9, 0.22); } }
+  else if (s.bass === 'drive') { const m = root - (pos % 2 ? 0 : 12); osc(b, 'triangle', hz(m), hz(m), t, sd * 0.8, 0.22); }
+  else if (pos === 0 || pos === 4) { const m = pos ? root - 5 : root - 12; osc(b, 'triangle', hz(m), hz(m), t, sd * 3.6, 0.18); }
+  // accompaniment
+  if (s.acc === 'strum' && pos % 2) for (const m of ch.slice(0, 3)) osc(b, 'p12', hz(m + 12), hz(m + 12), t, sd * 0.7, 0.035);
+  else if (s.acc === 'pick') { const order = [0, 1, 2, 1, 2, 1, 2, 1], m = ch[order[pos]] + 12 + (pos === 4 ? 12 : 0); osc(b, 'triangle', hz(m), hz(m), t, sd * 1.6, 0.06); }
+  else if (s.acc === 'stab' && (pos === 0 || pos === 3 || pos === 6)) for (const m of [root, root + 7]) osc(b, 'p25', hz(m + 12), hz(m + 12), t, sd * 0.6, 0.04);
+  // drums
+  const dr = s.drums[pos];
+  if (dr === 'k') osc(b, 'sine', 150, 42, t, 0.13, 0.45);
+  else if (dr === 's') { hiss(b, t, 0.13, 0.2, 'bandpass', 1900, 1200, 0.9); osc(b, 'triangle', 190, 140, t, 0.07, 0.1); }
+  if (dr === 'h' || s.allHats) hiss(b, t, 0.035, dr === 'h' ? 0.07 : 0.035, 'highpass', 7500);
+}
+function soundToggleHTML() {
+  return `<div class="row toggles">
+    <button class="btn ghost tog" type="button" data-act="tog" data-k="sfx" aria-pressed="${AUDIO.on.sfx}">${AUDIO.on.sfx ? '🔊' : '🔇'} 효과음</button>
+    <button class="btn ghost tog" type="button" data-act="tog" data-k="music" aria-pressed="${AUDIO.on.music}">${AUDIO.on.music ? '🎵' : '🔇'} 배경음</button></div>`;
+}
+
+/* =====================================================================
    STATE — plain JSON (no Infinity, no class instances) so a page update can hand it back
    ===================================================================== */
 let S = null;          // the run
@@ -450,7 +701,8 @@ const DEBUG = { speed: 1, god: false, input: null };
 function newRun(hero) {
   return {
     v: 1, hero, t: 0, phase: 'play', seq: 1,
-    p: { x: 0, y: 0, hp: HEROES[hero].hp, face: 1, ax: 1, ay: 0, moving: false, hurt: 0, an: 'idle', at: 0, one: null },
+    p: { x: 0, y: 0, hp: HEROES[hero].hp, face: 1, ax: 1, ay: 0, moving: false, hurt: 0, inv: 0, tail: !!HEROES[hero].tail, an: 'idle', at: 0, one: null },
+    decoy: null,
     lvl: 1, xp: 0, kills: 0, pending: 0, chests: 0,
     weapons: [], passives: [],
     en: [], shots: [], gems: [], items: [], fx: [], nums: [],
@@ -466,6 +718,7 @@ function recalc() {
     cdMul: 1 - 0.08 * lv('tea'),
     magnet: 34 * (1 + 0.4 * lv('rainbow')),
     might: 1 + 0.1 * lv('musubi'),
+    amount: lv('egg'),
     speed: H.speed * (1 + 0.1 * lv('sneakers')),
     armor: H.armor,
   };
@@ -474,6 +727,7 @@ function wstats(w) {
   const d = WEAPONS[w.id], s = { ...d.base };
   for (let i = 0; i < w.lv - 1; i++) for (const [k, v] of Object.entries(d.lv[i])) if (k !== 'note') s[k] += v;
   if (w.evo) for (const [k, v] of Object.entries(d.evo.add)) s[k] = (s[k] || 0) + v;
+  if (ST.amount) { if ('count' in s) s.count += ST.amount; else if ('dirs' in s) s.dirs += ST.amount; }
   s.dmg *= ST.might;
   s.cd = Math.max(0.2, s.cd * ST.cdMul);
   return s;
@@ -553,22 +807,40 @@ function updatePlayer(dt) {
     if (S.hint) S.hint = false;
   }
   p.at += dt;
-  const A = ART[S.hero];
-  if (p.one && (p.moving || !A || p.at * SPRITE_FPS[p.one] >= A.seq[p.one].length)) p.one = null;
+  const A = heroArt(S.hero);
+  if (p.one && (p.moving || !A.seq[p.one] || p.at * SPRITE_FPS[p.one] >= A.seq[p.one].length)) p.one = null;
   setAnim(p, p.one || (p.moving ? 'walk' : 'idle'));
   if (p.hurt > 0) p.hurt -= dt;
+  if (p.inv > 0) p.inv -= dt;
+  if (S.decoy && S.t > S.decoy.until) S.decoy = null;
   if (ST.regen && p.hp < ST.maxHp) p.hp = Math.min(ST.maxHp, p.hp + ST.regen * dt);
 }
 function setAnim(u, name) { if (u.an !== name) { u.an = name; u.at = 0; } }
-function playOnce(name) { const p = S.p; if (!p.moving && ART[S.hero]?.seq[name]) { p.one = name; p.an = name; p.at = 0; } }
+function playOnce(name) { const p = S.p; if (!p.moving && heroArt(S.hero).seq[name]) { p.one = name; p.an = name; p.at = 0; } }
 let lastBuzz = 0;
 function hurtPlayer(n) {
-  if (DEBUG.god || S.phase !== 'play') return;
+  if (DEBUG.god || S.phase !== 'play' || S.p.inv > 0) return;
   const dmg = Math.max(1, Math.round(n - ST.armor));
   S.p.hp -= dmg; S.p.hurt = 0.25;
+  sfx('hurt');
   addNum(S.p.x, S.p.y - 34, dmg, 1);
   if (navigator.vibrate && S.t - lastBuzz > 0.4) { lastBuzz = S.t; try { navigator.vibrate(12); } catch { /* not allowed */ } }
-  if (S.p.hp <= 0) { S.p.hp = 0; endRun(false); }
+  if (S.p.hp <= 0) { if (S.p.tail) dropTail(); else { S.p.hp = 0; endRun(false); } }
+}
+// the gecko's one-time escape: half health back, a moment of safety, and the bugs go after the wriggling tail
+function dropTail() {
+  const p = S.p;
+  p.tail = false; p.hp = Math.round(ST.maxHp * 0.5); p.inv = 2.5;
+  const tx = p.x - p.face * 14, ty = p.y + 12;
+  S.decoy = { x: tx, y: ty, until: S.t + 3 };
+  S.fx.push({ k: 'tail', x: tx, y: ty, t: 0, life: 3, face: p.face });
+  for (const e of near(p.x, p.y, 90)) {
+    if (e.dead || ENEMIES[e.type].boss) continue;
+    const dx = e.x - p.x, dy = e.y - p.y, l = Math.hypot(dx, dy) || 1;
+    e.kx += dx / l * 260; e.ky += dy / l * 260;
+  }
+  banner('꼬리 자르기!', '꼬리를 떼어 주고 도망쳤다');
+  sfx('tail');
 }
 function heal(n) {
   S.p.hp = Math.min(ST.maxHp, S.p.hp + n);
@@ -605,6 +877,7 @@ function updateDirector(dt) {
 function runEvent(ev) {
   const p = S.p;
   if (ev.say) banner(ev.say, ev.sub);
+  sfx(ev.boss ? 'siren' : 'alert');
   if (ev.swarm) {
     const side = Math.floor(Math.random() * 4), hw = BW / 2 + 40, hh = BH / 2 + 40;
     const cx = p.x + [-hw, hw, 0, 0][side], cy = p.y + [0, 0, -hh, hh][side];
@@ -633,8 +906,8 @@ function updateEnemies(dt) {
     e.at += dt;
     if (e.dead) { e.fade -= dt; continue; }
     liveCount++;
-    const d = ENEMIES[e.type];
-    const dx = p.x - e.x, dy = p.y - e.y, dist = Math.hypot(dx, dy) || 1;
+    const d = ENEMIES[e.type], goal = S.decoy || p;
+    const dx = goal.x - e.x, dy = goal.y - e.y, dist = Math.hypot(dx, dy) || 1;
     let mx = dx / dist, my = dy / dist, spd = d.speed * e.sm;
     if (e.sx !== undefined) { mx = e.sx; my = e.sy; }
     if (d.wobble) { const w = Math.sin(S.t * 6 + e.ph) * 0.7; [mx, my] = [mx - my * w, my + mx * w]; }
@@ -678,19 +951,20 @@ function separate() {
 }
 function contact() {
   const p = S.p;
-  for (const e of near(p.x, p.y, PLAYER_R)) {
+  for (const e of near(p.x, p.y, PLAYER_R).slice()) {
     if (e.dead || e.hcd > 0) continue;
     const d = ENEMIES[e.type], rr = d.r + PLAYER_R;
     if ((e.x - p.x) ** 2 + (e.y - p.y) ** 2 > rr * rr) continue;
     e.hcd = 0.8;
     hurtPlayer(d.dmg * e.dm);
-    if (S.phase !== 'play') return;
+    if (S.phase !== 'play' || p.inv > 0) return;
   }
 }
 function damage(e, amount, src, nx = 0, ny = 0, knock = 0) {
   if (e.dead) return;
   const d = ENEMIES[e.type], dmg = Math.max(1, Math.round(amount * rand(0.9, 1.1)));
   e.hp -= dmg; e.flash = 0.1;
+  sfx('hit');
   const w = hasWeapon(src);
   if (w) w.dealt += dmg;
   if (knock && !d.boss) { const m = 1 / (d.mass || 1); e.kx += nx * knock * m; e.ky += ny * knock * m; }
@@ -701,12 +975,14 @@ function kill(e, src) {
   const d = ENEMIES[e.type];
   e.dead = true; e.fade = 0.35; e.at = 0; e.an = 'hit';
   S.kills++;
+  sfx('pop');
   S.fx.push({ k: 'poof', x: e.x, y: e.y, t: 0, life: 0.35, s: d.r });
   if (d.xp) S.gems.push({ x: e.x, y: e.y, v: d.xp, m: 0 });
   if (d.elite || (d.boss && !d.final)) S.items.push({ k: 'chest', x: e.x, y: e.y, m: 0, big: !!d.boss });
   else if (Math.random() < DROPS.heal) S.items.push({ k: 'heal', x: e.x, y: e.y, m: 0 });
   else if (Math.random() < DROPS.magnet) S.items.push({ k: 'magnet', x: e.x, y: e.y, m: 0 });
   if (src === 'sunscreen') { const w = hasWeapon('sunscreen'); if (w?.evo) heal(WEAPONS.sunscreen.evo.add.heal); }
+  if (src === 'tongue') { const w = hasWeapon('tongue'); if (w) heal(wstats(w).heal); }
   if (e.id === S.bossId) S.bossId = 0;
   if (d.final) endRun(true);
 }
@@ -716,6 +992,7 @@ const WB = {
   spray(w, s, dt) {
     if ((w.cd -= dt) > 0) return;
     w.cd = s.cd;
+    sfx('spray');
     // aims at the nearest bug in reach (friendlier on a phone than spraying where you walk), else where you walk
     const p = S.p, tg = nearest(1, s.range + 30)[0], hit = new Set();
     const base = tg ? Math.atan2(tg.y - p.y, tg.x - p.x) : Math.atan2(p.ay, p.ax);
@@ -740,6 +1017,7 @@ const WB = {
     if ((w.cd -= dt) > 0) return;
     w.cd = s.cd;
     const p = S.p, tg = nearest(s.count, 280);
+    sfx('spit');
     for (let i = 0; i < s.count; i++) {
       const e = tg[i] || tg[0];
       let a = e ? Math.atan2(e.y - p.y, e.x - p.x) : Math.atan2(p.ay, p.ax);
@@ -753,6 +1031,7 @@ const WB = {
     if ((w.cd -= dt) > 0) return;
     w.cd = s.cd;
     const p = S.p, tg = nearest(s.count, 240);
+    sfx('throw');
     for (let i = 0; i < s.count; i++) {
       const e = tg[i];
       const a = e ? Math.atan2(e.y - p.y, e.x - p.x) : Math.atan2(p.ay, p.ax) + (i - (s.count - 1) / 2) * 0.6;
@@ -776,7 +1055,7 @@ const WB = {
         }
       }
       if (w.on <= 0) w.cd = s.cd;
-    } else if ((w.cd -= dt) <= 0) { w.on = s.dur; }
+    } else if ((w.cd -= dt) <= 0) { w.on = s.dur; sfx('parasol'); }
   },
   sunscreen(w, s, dt) {
     if ((w.cd -= dt) > 0) return;
@@ -798,10 +1077,37 @@ const WB = {
       S.fx.push({ k: 'bomb', x, y, t: -i * 0.12, delay: 0.35, life: 0.8, r: s.radius, dmg: s.dmg, knock: s.knock, done: false });
     }
   },
+  tongue(w, s, dt) {
+    if ((w.cd -= dt) > 0) return;
+    const p = S.p, mx = p.face * 8, my = -10, tg = nearest(s.count, s.range + 12);   // mouth offset from the body centre
+    if (!tg.length) { w.cd = 0.15; return; }         // nothing in reach: look again soon
+    w.cd = s.cd;
+    sfx('tongue');
+    for (let i = 0; i < s.count; i++) {
+      const e = tg[i % tg.length], ox = p.x + mx, oy = p.y + my;
+      const a = Math.atan2(e.y - oy, e.x - ox) + (i >= tg.length ? (i - tg.length + 1) * 0.4 : 0);
+      const cx = Math.cos(a), cy = Math.sin(a), hits = [];
+      for (const o of near(ox + cx * s.range / 2, oy + cy * s.range / 2, s.range / 2 + 8)) {
+        if (o.dead) continue;
+        const r = ENEMIES[o.type].r, dx = o.x - ox, dy = o.y - oy, along = dx * cx + dy * cy;
+        if (along < 0 || along > s.range + r || Math.abs(dy * cx - dx * cy) > r + 4) continue;
+        hits.push([along, o]);
+      }
+      hits.sort((a, b) => a[0] - b[0]);
+      const stuck = hits.slice(0, s.pierce);
+      for (const [, o] of stuck) damage(o, s.dmg, 'tongue', cx, cy, s.knock);
+      // the tongue stops at the last bug it sticks to
+      const len = stuck.length === s.pierce ? stuck[stuck.length - 1][0] : s.range;
+      S.fx.push({ k: 'tongue', ox: mx, oy: my, a, len: Math.max(18, len), t: 0, life: 0.22 });
+    }
+    if (!p.moving) p.face = tg[0].x > p.x ? 1 : -1;
+    playOnce('attack');
+  },
   alpacaAttack(w, s, dt) {
     if ((w.cd -= dt) > 0) return;
     w.cd = s.cd;
     const p = S.p, vis = S.en.filter(e => !e.dead && onScreen(e.x, e.y, 10));
+    sfx('bleat');
     for (let i = 0; i < s.count; i++) {
       const dir = Math.random() < 0.5 ? 1 : -1, tgt = vis.length ? pick(vis) : null;
       const y = tgt ? tgt.y : p.y + rand(-BH * 0.3, BH * 0.3);
@@ -848,7 +1154,7 @@ function updatePickups(dt) {
     g.x += dx / d * step; g.y += dy / d * step;
     return d < 10;
   };
-  for (const g of S.gems) if (pull(g, mag2)) { g.got = true; gainXp(g.v); }
+  for (const g of S.gems) if (pull(g, mag2)) { g.got = true; gainXp(g.v); sfx('gem'); }
   S.gems = S.gems.filter(g => !g.got);
   for (const it of S.items) if (pull(it, it.k === 'chest' ? 18 * 18 : mag2)) { it.got = true; takeItem(it); }
   S.items = S.items.filter(it => !it.got);
@@ -864,8 +1170,8 @@ function gainXp(v) {
   while (S.xp >= xpNeed(S.lvl)) { S.xp -= xpNeed(S.lvl); S.lvl++; S.pending++; }
 }
 function takeItem(it) {
-  if (it.k === 'heal') { heal(ITEMS.heal.hp); addNum(S.p.x, S.p.y - 40, ITEMS.heal.hp, 0); }
-  else if (it.k === 'magnet') for (const g of S.gems) g.m = 1;
+  if (it.k === 'heal') { heal(ITEMS.heal.hp); addNum(S.p.x, S.p.y - 40, ITEMS.heal.hp, 0); sfx('heal'); }
+  else if (it.k === 'magnet') { for (const g of S.gems) g.m = 1; sfx('magnet'); }
   else if (it.k === 'chest') S.chests += it.big ? 3 : 1;
 }
 function addNum(x, y, n, red) {
@@ -877,6 +1183,7 @@ function updateFx(dt) {
     f.t += dt;
     if (f.k === 'bomb' && !f.done && f.t >= f.delay) {
       f.done = true;
+      sfx('boom');
       for (const e of near(f.x, f.y, f.r)) {
         const dx = e.x - f.x, dy = e.y - f.y, l = Math.hypot(dx, dy) || 1;
         if (e.dead || l > f.r + ENEMIES[e.type].r * 0.6) continue;
@@ -896,7 +1203,7 @@ function addWeapon(id) { S.weapons.push({ id, lv: 1, evo: false, cd: 0.4, on: 0,
 function levelChoices(n) {
   const pool = [];
   for (const w of S.weapons) if (!w.evo && w.lv < WEAPON_MAX) pool.push({ kind: 'weapon', id: w.id, lv: w.lv + 1 });
-  for (const p of S.passives) if (p.lv < PASSIVE_MAX) pool.push({ kind: 'passive', id: p.id, lv: p.lv + 1 });
+  for (const p of S.passives) if (p.lv < (PASSIVES[p.id].max || PASSIVE_MAX)) pool.push({ kind: 'passive', id: p.id, lv: p.lv + 1 });
   if (S.weapons.length < MAX_WEAPONS) for (const id in WEAPONS) if (!hasWeapon(id)) pool.push({ kind: 'weapon', id, lv: 1 });
   if (S.passives.length < MAX_PASSIVES) for (const id in PASSIVES) if (!hasPassive(id)) pool.push({ kind: 'passive', id, lv: 1 });
   const out = [];
@@ -927,11 +1234,14 @@ function openChest() {
     applyChoice(c); got.push(c);
   }
   recalc();
+  sfx(got.some(c => c.kind === 'evo') ? 'evo' : 'chest');
   showChest(got);
 }
 function endRun(win) {
   if (S.phase === 'over' || S.phase === 'win') return;
   S.phase = win ? 'win' : 'over';
+  music(null);
+  sfx(win ? 'victory' : 'gameover');
   const best = store.get('mbs.best') || {}, b = best[S.hero];
   const rec = { t: Math.floor(S.t), kills: S.kills, lvl: S.lvl, win };
   if (!b || win && !b.win || win === b.win && rec.t > b.t) { best[S.hero] = rec; store.set('mbs.best', best); }
@@ -1025,7 +1335,7 @@ function render() {
   // pickups
   for (const g of S.gems) {
     const img = g.v >= 10 ? PX.gem3 : g.v >= 2 ? PX.gem2 : PX.gem1;
-    ctx.drawImage(img, sx(g.x) - 2, sy(g.y) - 3 + (g.m ? 0 : Math.round(Math.sin(S.t * 4 + g.x) * 0.6)));
+    ctx.drawImage(img, sx(g.x) - (img.width >> 1), sy(g.y) - (img.height >> 1) + (g.m ? 0 : Math.round(Math.sin(S.t * 4 + g.x) * 0.6)));
   }
   for (const it of S.items) {
     const img = PX[it.k], bob = Math.round(Math.sin(S.t * 5 + it.x) * 1.5);
@@ -1036,7 +1346,7 @@ function render() {
   // units, sorted by where their feet are
   drawList.length = 0;
   for (const e of S.en) { const d = ENEMIES[e.type], A = artFor(d); e._fy = e.y + A.cy * (d.scale || 1); drawList.push(e); }
-  const PA = ART[S.hero];
+  const PA = heroArt(S.hero);
   p._fy = p.y + (PA ? PA.cy : 18); drawList.push(p);
   for (const sh of S.shots) if (sh.k === 'alpaca' && !(sh.wait > 0)) { sh._fy = sh.y + 24; drawList.push(sh); }
   drawList.sort((a, b) => a._fy - b._fy);
@@ -1054,10 +1364,10 @@ function render() {
   // projectiles and effects
   for (const sh of S.shots) {
     if (sh.wait > 0) continue;
-    if (sh.k === 'spit') ctx.drawImage(PX.spit, sx(sh.x) - 3, sy(sh.y) - 3);
+    if (sh.k === 'spit') ctx.drawImage(PX.spit, sx(sh.x) - (PX.spit.width >> 1), sy(sh.y) - (PX.spit.height >> 1));
     else if (sh.k === 'slipper') {
       ctx.save(); ctx.translate(sx(sh.x), sy(sh.y)); ctx.rotate(sh.rot);
-      const k = sh.r / 8; ctx.drawImage(PX.slipper, -3.5 * k, -5.5 * k, 7 * k, 11 * k); ctx.restore();
+      const k = sh.r / 8, w = PX.slipper.width * k, h = PX.slipper.height * k; ctx.drawImage(PX.slipper, -w / 2, -h / 2, w, h); ctx.restore();
     }
   }
   const par = hasWeapon('parasol');
@@ -1065,7 +1375,7 @@ function render() {
     const s = wstats(par), k = clamp(Math.min(par.on, s.dur - par.on + 0.001) * 6, 0.2, 1) * (s.size / 9);
     for (let i = 0; i < s.count; i++) {
       const a = par.ang + (i / s.count) * Math.PI * 2, x = p.x + Math.cos(a) * s.radius, y = p.y - 6 + Math.sin(a) * s.radius * 0.85;
-      const z = Math.round(17 * k);
+      const z = Math.round(PX.parasol.width * k);
       ctx.drawImage(PX.parasol, sx(x) - (z >> 1), sy(y) - (z >> 1), z, z);
     }
   }
@@ -1082,12 +1392,14 @@ function render() {
   for (const it of S.items) {
     if (it.k !== 'chest' || onScreen(it.x, it.y, 10) || Math.floor(S.t * 3) % 2) continue;
     const dx = it.x - p.x, dy = it.y - p.y, k = Math.min((BW / 2 - 14) / Math.abs(dx || 1), (BH / 2 - 60) / Math.abs(dy || 1));
-    ctx.drawImage(PX.chest, sx(p.x + dx * k) - 10, sy(p.y + dy * k) - 10);
+    ctx.drawImage(PX.chest, sx(p.x + dx * k) - (PX.chest.width >> 1), sy(p.y + dy * k) - (PX.chest.height >> 1));
   }
 }
 function drawPlayer(A) {
   const p = S.p, flash = p.hurt > 0 && Math.floor(p.hurt * 30) % 2 === 0;
-  if (A) drawArt(A, p.an, p.at, p.x, p._fy, p.face !== A.faces, flash, 1, 1, 0, p.one);
+  const blink = p.inv > 0 && Math.floor(p.inv * 12) % 2 === 0;      // safe for a moment after dropping the tail
+  const hop = p.moving && !A.seq.walk ? Math.abs(Math.sin(p.at * 12)) * 2 : 0;   // emoji stand-ins hop instead of walking
+  drawArt(A, p.an, p.at, p.x, p._fy - hop, p.face !== A.faces, flash, 1, blink ? 0.45 : 1, 0, p.one);
 }
 function drawEnemy(e) {
   const d = ENEMIES[e.type], A = artFor(d), sc = d.scale || 1;
@@ -1121,6 +1433,23 @@ function drawFx(f) {
     ctx.globalAlpha = 1 - k; ctx.fillStyle = '#f3ead3';
     for (let i = 0; i < 6; i++) { const a = i * 1.047 + f.s, r = 3 + k * (6 + f.s * 0.6); ctx.fillRect(sx(f.x + Math.cos(a) * r), sy(f.y + Math.sin(a) * r * 0.7), 2, 2); }
     ctx.globalAlpha = 1;
+  } else if (f.k === 'tongue') {
+    // follows the mouth; shoots out over the first 40% of its life, then reels back in
+    const p = S.p, r = k < 0.4 ? k / 0.4 : 1 - (k - 0.4) / 0.6, len = f.len * r;
+    const x0 = p.x + f.ox, y0 = p.y + f.oy, cx = Math.cos(f.a), cy = Math.sin(f.a);
+    for (const [c, sz] of [['#5a1630', 4], ['#ff7aa2', 2]]) {
+      ctx.fillStyle = c;
+      for (let d = 0; d <= len; d += 1) ctx.fillRect(sx(x0 + cx * d) - (sz >> 1), sy(y0 + cy * d) - (sz >> 1), sz, sz);
+    }
+    disc(x0 + cx * len, y0 + cy * len, 3, '#5a1630'); disc(x0 + cx * len, y0 + cy * len, 2, '#ff9dbb');
+  } else if (f.k === 'tail') {
+    // the dropped tail wriggles where it fell, then fades
+    ctx.globalAlpha = k > 0.8 ? (1 - k) / 0.2 : 1;
+    for (let i = 0; i < 7; i++) {
+      const x = f.x - f.face * i * 3, y = f.y + Math.sin(f.t * 18 + i * 0.9) * (1 + i * 0.4);
+      disc(x, y, 3.2 - i * 0.35, '#1b3a10'); disc(x, y, 2.2 - i * 0.3, i % 2 ? '#9be04a' : '#7ccf3a');
+    }
+    ctx.globalAlpha = 1;
   } else if (f.k === 'dust') {
     ctx.globalAlpha = (1 - k) * 0.7; disc(f.x, f.y - k * 4, 2 + k * 3, '#d9c9a3'); ctx.globalAlpha = 1;
   }
@@ -1132,10 +1461,9 @@ function drawFx(f) {
 const els = {};
 const hudCache = {};
 function setText(el, v) { if (hudCache[el.id] !== v) { hudCache[el.id] = v; el.textContent = v; } }
-function iconStyle(icon) { return `background-image:url('sprites/icons/${icon}.png')`; }
-function iconHTML(cls, def, extra = '') {
-  return def.icon ? `<span class="${cls}" style="${iconStyle(def.icon)}"${extra}></span>` : `<span class="${cls}"${extra}>${def.emoji}</span>`;
-}
+// card-art icon over its emoji; a missing picture removes itself and the emoji shows
+const iconImg = def => (def.icon ? `<img src="sprites/icons/${def.icon}.png" alt="" onerror="this.remove()">` : '');
+function iconHTML(cls, def) { return `<span class="${cls}">${def.emoji || ''}${iconImg(def)}</span>`; }
 function renderHud() {
   if (!S) return;
   els.xpFill.style.width = (100 * S.xp / xpNeed(S.lvl)) + '%';
@@ -1146,7 +1474,7 @@ function renderHud() {
   const sig = S.weapons.map(w => w.id + w.lv + (w.evo ? '*' : '')).join() + '|' + S.passives.map(q => q.id + q.lv).join();
   if (hudCache.slots !== sig) {
     hudCache.slots = sig;
-    const cell = (def, lv, evo) => `<span class="slot${evo ? ' evo' : ''}" style="${def.icon ? iconStyle(def.icon) : ''}">${def.icon ? '' : def.emoji}<b>${evo ? '★' : lv}</b></span>`;
+    const cell = (def, lv, evo) => `<span class="slot${evo ? ' evo' : ''}">${def.emoji || ''}${iconImg(def)}<b>${evo ? '★' : lv}</b></span>`;
     els.slots.innerHTML = S.weapons.map(w => cell(WEAPONS[w.id], w.lv, w.evo)).join('') + S.passives.map(q => cell(PASSIVES[q.id], q.lv)).join('');
   }
   const boss = S.bossId && S.en.find(e => e.id === S.bossId);
@@ -1185,6 +1513,7 @@ function deltaText(d) { return d.note || Object.entries(d).map(([k, v]) => STAT_
 let choices = [];
 function openLevelUp() {
   S.phase = 'levelup';
+  sfx('levelup');
   choices = levelChoices(3);
   const lv = S.lvl - S.pending + 1;
   openModal(`<h2>레벨 업! <small>Lv ${lv}</small></h2><p class="sub">하나 골라요.</p>
@@ -1214,14 +1543,16 @@ function itemsList(withDmg) {
       <small>${w.evo ? d.evo.blurb : d.blurb}</small></span><span class="v">${withDmg ? w.dealt.toLocaleString() : ''}</span></li>`;
   });
   const ps = S.passives.map(q => { const d = PASSIVES[q.id]; return `<li>${iconHTML('ic', d)}<span class="n"><b>${d.name}</b> <span class="tag">Lv ${q.lv}</span><small>${d.text} (레벨마다)</small></span><span></span></li>`; });
-  return `<ul class="items">${ws.join('')}${ps.join('')}</ul>`;
+  const tail = HEROES[S.hero].tail ? `<li>${iconHTML('ic', { emoji: '🦎' })}<span class="n"><b>꼬리 자르기</b> <span class="tag${S.p.tail ? ' gold' : ''}">${S.p.tail ? '남음' : '씀'}</span><small>${S.p.tail ? '한 번 쓰러져도 다시 일어난다.' : '이번 판에는 이미 썼다.'}</small></span><span></span></li>` : '';
+  return `<ul class="items">${tail}${ws.join('')}${ps.join('')}</ul>`;
 }
 let quitArmed = false;
 function showPause() {
   if (!S || S.phase !== 'play') return;
   S.phase = 'paused'; quitArmed = false;
   openModal(`<h2>잠깐 쉬는 중</h2><p class="sub">${fmtTime(S.t)} · Lv ${S.lvl} · 체력 ${Math.ceil(S.p.hp)}/${ST.maxHp}</p>${itemsList(false)}
-    <div class="row"><button class="btn" type="button" data-act="resume">계속하기</button><button class="btn ghost" type="button" data-act="quit" id="quitBtn">그만하기</button></div>`);
+    <div class="row"><button class="btn" type="button" data-act="resume">계속하기</button><button class="btn ghost" type="button" data-act="quit" id="quitBtn">그만하기</button></div>
+    ${soundToggleHTML()}`);
 }
 function showResults() {
   const win = S.phase === 'win';
@@ -1238,21 +1569,27 @@ function showTitle() {
   const bestLine = Object.keys(HEROES).filter(h => best[h]).map(h => `${HEROES[h].name} ${best[h].win ? '클리어' : fmtTime(best[h].t)}`).join(' · ');
   openModal(`<div class="title"><h1><span>마노아</span>벌레 서바이버</h1>
     <p class="sub">10분을 버티면 바퀴벌레 대왕이 온다. 잡으면 이긴다.</p>
-    <div class="heroes">${Object.entries(HEROES).map(([id, h]) => `<button class="hero" type="button" data-act="hero" data-id="${id}" aria-pressed="${id === heroSel}">
-      <canvas width="64" height="64" data-preview="${id}"></canvas><b>${h.name}</b><small>${h.blurb}</small>
-      <span class="st">체력 ${h.hp} · ${WEAPONS[h.weapon].name}</span></button>`).join('')}</div>
+    <div class="heroes">${Object.entries(HEROES).map(([id, h]) => `<button class="hero" type="button" data-act="hero" data-id="${id}" aria-pressed="${id === heroSel}" aria-label="${h.name}">
+      <canvas width="64" height="64" data-preview="${id}"></canvas><b>${h.name}</b>
+      <span class="st">체력 ${h.hp}<br>${WEAPONS[h.weapon].name}</span></button>`).join('')}</div>
+    <p class="hero-info" id="heroInfo">${heroInfo(heroSel)}</p>
     <div class="row"><button class="btn" type="button" data-act="start">출발!</button></div>
+    ${soundToggleHTML()}
     <ul class="how"><li>화면 아무 데나 대고 끌면 움직여요. 공격은 알아서 해요.</li><li>보석을 주워 레벨 업, 상자는 무기를 진화시켜요.</li></ul>
     ${bestLine ? `<p class="best">최고 기록 · ${bestLine}</p>` : ''}</div>`);
 }
+function heroInfo(id) {
+  const h = HEROES[id];
+  return `<b>${h.name}</b> · ${h.blurb}${h.trait ? '<br>' + h.trait : ''}`;
+}
 function drawPreviews() {
   for (const c of els.modalBody.querySelectorAll('canvas[data-preview]')) {
-    const A = ART[c.dataset.preview], g = c.getContext('2d');
+    const id = c.dataset.preview, A = heroArt(id), g = c.getContext('2d'), C = A.cell;
     g.clearRect(0, 0, 64, 64);
-    if (!A) continue;
-    const an = c.dataset.preview === heroSel && A.seq.walk ? 'walk' : 'idle';
+    const an = id === heroSel && A.seq.walk ? 'walk' : 'idle';
     const seq = A.seq[an], i = Math.floor(demoT * SPRITE_FPS[an]) % seq.length;
-    g.drawImage(A.n, seq[i] * 64, A.row[an] * 64, 64, 64, 0, 0, 64, 64);
+    const hop = id === heroSel && !A.seq.walk ? Math.round(Math.abs(Math.sin(demoT * 10)) * 3) : 0;
+    g.drawImage(A.n, seq[i] * C, A.row[an] * C, C, C, 32 - C / 2, 61 - A.base - hop, C, C);   // feet on the same row for every hero
   }
 }
 function startRun(hero) {
@@ -1267,9 +1604,22 @@ function startRun(hero) {
 }
 
 function act(name, data) {
-  if (name === 'hero') {
+  audioInit();                     // every menu tap counts as the gesture that unlocks sound
+  if (name !== 'tog') sfx('click');
+  if (name === 'tog') {
+    AUDIO.on[data.k] = !AUDIO.on[data.k];
+    store.set('mbs.audio', AUDIO.on);
+    applyAudioPrefs();
+    for (const b of els.modalBody.querySelectorAll('.tog')) {
+      const on = AUDIO.on[b.dataset.k];
+      b.setAttribute('aria-pressed', String(on));
+      b.textContent = `${on ? (b.dataset.k === 'sfx' ? '🔊' : '🎵') : '🔇'} ${b.dataset.k === 'sfx' ? '효과음' : '배경음'}`;
+    }
+    if (data.k === 'sfx') sfx('click');
+  } else if (name === 'hero') {
     heroSel = data.id;
     for (const b of els.modalBody.querySelectorAll('.hero')) b.setAttribute('aria-pressed', String(b.dataset.id === heroSel));
+    $('heroInfo').innerHTML = heroInfo(heroSel);
   } else if (name === 'start' || name === 'retry') startRun(heroSel);
   else if (name === 'title') showTitle();
   else if (name === 'pick') {
@@ -1302,6 +1652,7 @@ function inputVec() {
 function releaseJoy() { joy.id = null; joy.x = joy.y = 0; els.joy.hidden = true; }
 function bindInput() {
   els.game.addEventListener('pointerdown', e => {
+    audioInit();
     if (!els.modal.hidden || joy.id !== null || e.target.closest('button')) return;
     joy.id = e.pointerId; joy.ox = e.clientX; joy.oy = e.clientY; joy.x = joy.y = 0;
     els.joy.style.left = joy.ox + 'px'; els.joy.style.top = joy.oy + 'px'; els.knob.style.transform = '';
@@ -1343,7 +1694,10 @@ function bindInput() {
   });
   addEventListener('keyup', e => keys.delete(e.code));
   addEventListener('blur', () => { keys.clear(); releaseJoy(); });
-  document.addEventListener('visibilitychange', () => { if (document.hidden) showPause(); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { showPause(); AUDIO.ctx?.suspend().catch(() => {}); }
+    else AUDIO.ctx?.resume().catch(() => {});
+  });
   addEventListener('resize', resize);
 }
 
@@ -1366,11 +1720,18 @@ function frame(now) {
   render();
   renderHud();
   if (!S && !els.modal.hidden) drawPreviews();
+  if (!S) { music('title'); musicDuck(1); }
+  else if (S.phase === 'over' || S.phase === 'win') music(null);
+  else {
+    music(S.bossId ? 'boss' : 'battle');
+    musicDuck(S.phase === 'paused' ? 0.35 : S.phase === 'play' ? 1 : 0.6);
+  }
 }
 
 async function boot(data) {
   for (const id of ['game', 'hud', 'xpFill', 'lvl', 'slots', 'timer', 'kills', 'pauseBtn', 'boss', 'bossName', 'bossFill', 'banner', 'joy', 'knob', 'modal', 'modalBody']) els[id] = $(id);
   resize();
+  Object.assign(AUDIO.on, store.get('mbs.audio') || {});
   bindInput();
   makePixelArt();
   await loadArt();
@@ -1389,9 +1750,11 @@ window.__mbs = {
   DEBUG, get S() { return S; },
   give(id) { applyChoice({ kind: WEAPONS[id] ? 'weapon' : 'passive', id }); },
   chest() { S.chests++; },
+  audio: { AUDIO, MUS, SONGS, SFX, MIX, playStep, compileSong, pulseWave },
   start(hero) { startRun(hero); },
   sim(sec, steer) {
     const end = S.t + sec, t0 = performance.now();
+    AUDIO.quiet = true;
     while (S.t < end && S.phase === 'play') {
       DEBUG.input = steer ? steer(S) : null;
       update(STEP);
@@ -1400,6 +1763,7 @@ window.__mbs = {
       while (S.pending) { applyChoice(pick(levelChoices(3))); S.pending--; }
     }
     DEBUG.input = null;
+    AUDIO.quiet = false;
     return { t: Math.round(S.t), phase: S.phase, hp: Math.round(S.p.hp), lvl: S.lvl, en: S.en.length, kills: S.kills, ms: Math.round(performance.now() - t0),
       w: S.weapons.map(w => w.id + w.lv + (w.evo ? '*' : '')).join(' '), p: S.passives.map(q => q.id + q.lv).join(' ') };
   },

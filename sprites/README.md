@@ -1,6 +1,6 @@
 # Sprites
 
-PixelLab output, one sheet per unit, unique frames only. Play order, cell size and feet row are in `SPRITES` in `index.html`.
+PixelLab and Codex output, one sheet per unit, unique frames only. Play order, cell size and feet row are in `SPRITES` in `index.html`.
 
 | Sheet | Cell | Rows (frames) | Notes |
 |---|---|---|---|
@@ -12,12 +12,14 @@ PixelLab output, one sheet per unit, unique frames only. Play order, cell size a
 | `mosquito.png` | 48 | idle 3 | wing buzz, played 0-1-2-1 |
 | `snail.png` | 64 | idle 1 | single frame; the game stretches it to crawl |
 | `ant.png` | 32 | idle 1 | single frame; the game bobs it |
+| `gecko.png` | 64 | idle 4 / attack 4 / hit 3 / walk 6 | Codex; rows counted from the sheet (`auto: true`) |
 | `mist.png` | 64x32 | | card game spray cloud, drawn rotated toward the target |
-| `icons/<id>.png` | 64x48 | | the card game's card art, reused as weapon / passive icons |
+| `icons/<id>.png` | 64x48 | | the card game's card art, reused as weapon / passive icons; `tongue`, `egg`, `musubi`, `sneakers` are Codex |
+| `props/<key>.png` | ~16 | | Codex pickups: `heal` (pineapple), `magnet`, `chest`; listed in `PROP_ART` |
 
 For the card game sheets (base prompts, how the rows were made) see `sprites/README.md` in `~/Documents/manoa-bug-squad`.
 
-## Made for this game
+## Made for this game with PixelLab
 
 All seed 7, transparent background. Style flags for new bugs match the card game: `create_image_pixen`, `view: side`, `direction: west`, `outline: single color black outline`, `detail: medium detail`.
 
@@ -31,9 +33,14 @@ All seed 7, transparent background. Style flags for new bugs match the card game
 
 Total: 7 generations (2 walks, flyroach, mosquito base + buzz, snail, ant). With the card game's 31 that is 38 of the trial's 40.
 
+## Made for this game with Codex
+
+Procedure, prompt rules and templates: `art/CODEX.md`. Originals and the exact prompts are in `art/codex/`.
+
+- **gecko** (2026-11-24): first a single base picture (gold dust day gecko, side view facing right) for the design; it came out 68 px long, so Codex redrew it as a whole sheet at ~44x26 art pixels with the first picture attached as the design reference (`art/codex/gecko_sheet.*`). Converted with `scripts/pixelize.py` (art pixel 6.0 px → 17 frames, the hurt frame's impact lines dropped as specks).
+- **icons** `tongue`, `egg`, `musubi`, `sneakers` and **props** `heal`, `magnet`, `chest`: one Codex session with the card art attached as the style reference (`art/codex/icons/`). Converted with `--canvas 64x48` and `--each`.
+
 ## Still placeholders (next art to make)
 
-- Pickups: pineapple 🍍 (heal), magnet 🧲, treasure chest 🎁
-- Passives without card art: 스팸 무스비 🍙, 하얀 운동화 👟
 - Projectiles drawn in code that could become real sprites: slipper, parasol (top view), spit glob, raid explosion
 - Optional: hit rows for the new bugs, a snail / ant walk, a ground tileset (`create_topdown_tileset`)
