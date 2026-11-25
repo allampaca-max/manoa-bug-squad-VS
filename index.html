@@ -468,10 +468,18 @@ const ITEMS = { heal: { emoji: '🍍', hp: 30 }, magnet: { emoji: '🧲' }, ches
 // (per minute survived, more for a clear). Kept when the run ends, win or lose.
 const COINS = { elite: 5, boss: 20, final: 40, chest: 4, minute: 3, clear: 25 };
 
+// 옆집 아저씨: once a run, when health drops below `below` after the first `after` seconds, the neighbour shouts (nearby bugs
+// freeze for a moment), strides in and wipes bugs up with a kitchen towel for `stay` seconds: up to `grab` small bugs per swipe
+// vanish into the towel, elites take `hit` damage, bosses he leaves alone. Then he walks back out.
+const UNCLE = { name: '옆집 아저씨', sprite: 'uncle', emoji: '👨', size: 30, scale: 1.15, speed: 150, rush: 260, stay: 8, every: 0.32, reach: 30, grab: 6, hit: 120,
+  below: 0.3, after: 60, freeze: 2 };
+
 // 틈 (cracks in the old house): the hard mode. Level g multiplies the bugs; clearing any stage at g opens g+1.
 const GAP_MAX = 5;
-const gapMods = g => ({ count: 1 + 0.25 * g, rate: 1 + 0.15 * g, hp: 1 + 0.25 * g, dmg: 1 + 0.15 * g, speed: 1 + 0.04 * g, swarm: 1 + 0.2 * g,
+// The bug-side multipliers ramp in over the first ~2.5 minutes (gx), so a hard run doesn't end before the first level-ups.
+const gapMods = g => ({ count: 1 + 0.25 * g, rate: 1 + 0.15 * g, hp: 1 + 0.25 * g, dmg: 1 + 0.12 * g, speed: 1 + 0.02 * g, swarm: 1 + 0.2 * g,
   elites: 1 + Math.floor(g / 3), coin: 1 + 0.25 * g });
+const GAP_RAMP = 150;
 const GAP_TEXT = ['보통', '틈이 조금 보인다', '여기저기 틈', '틈투성이', '벽이 숭숭', '집이 벌레 집'];
 
 // shop: permanent upgrades bought with coins, for every hero. per = one level; price = cost × (next level). desc + val(total) is the text.
@@ -520,6 +528,8 @@ const SPRITES = {
   ensignWasp: { sheet: 'sprites/ensignWasp.png', cy: 10, faces: -1, lift: 12, auto: true },
   ensignWaspBig: { sheet: 'sprites/ensignWaspBig.png', cell: 96, base: 93, cy: 20, faces: -1, lift: 12, auto: true },
   antQueen:  { sheet: 'sprites/antQueen.png',  cell: 96, base: 93, cy: 26, faces: -1, auto: true },
+  // 옆집 아저씨 (Codex): idle / swipe / startled / walk, faces right like the heroes
+  uncle:     { sheet: 'sprites/uncle.png',     cell: 96, base: 93, cy: 28, faces: 1, auto: true },   // drawn at UNCLE.scale: taller than the girl
 };
 const SPRITE_FPS = { idle: 6, walk: 12, attack: 14, hit: 14, fly: 14, run: 18 };
 // props that have a picture in sprites/props/<key>.png, replacing the code-drawn one or the emoji.
@@ -907,6 +917,8 @@ const SFX = {
   foam:   { gap: 0.15, vol: 2, play: (b, t) => { hiss(b, t, 0.22, 0.3, 'bandpass', 2500, 1200, 1.5); for (let i = 0; i < 3; i++) osc(b, 'sine', 700 + i * 260, 1100 + i * 300, t + 0.05 + i * 0.05, 0.05, 0.08); } },
   gulp:   { gap: 0.08, vol: 2.5, play: (b, t) => { osc(b, 'sine', 520, 160, t, 0.12, 0.22); osc(b, 'sine', 300, 600, t + 0.1, 0.06, 0.1); } },
   sizzle: { gap: 0.25, vol: 1.5, play: (b, t) => { hiss(b, t, 0.5, 0.22, 'highpass', 5000); hiss(b, t + 0.05, 0.35, 0.12, 'bandpass', 3000, 3000, 3); } },
+  dingdong: { gap: 2, vol: 2, play: (b, t) => { osc(b, 'triangle', hz(76), hz(76), t, 0.5, 0.2); osc(b, 'triangle', hz(72), hz(72), t + 0.35, 0.8, 0.2); osc(b, 'sine', hz(88), hz(88), t, 0.25, 0.05); } },
+  swish:  { gap: 0.15, vol: 2, play: (b, t) => { hiss(b, t, 0.16, 0.3, 'bandpass', 900, 3200, 1.2); } },
   coin:   { gap: 0.05, vol: 2.5, play: (b, t) => { osc(b, 'p25', hz(83), hz(83), t, 0.05, 0.1); osc(b, 'p25', hz(88), hz(88), t + 0.05, 0.14, 0.1); } },
   heal:   { gap: 0.2,  vol: 1.5,  play: (b, t) => arp(b, 'triangle', ['C6', 'E6', 'G6', 'C7'], t, 0.05, 0.12, 0.13) },
   magnet: { gap: 0.5,  vol: 2,  play: (b, t) => { osc(b, 'sine', 300, 2400, t, 0.35, 0.14); hiss(b, t, 0.35, 0.08, 'bandpass', 500, 5000, 2); } },
@@ -1012,6 +1024,7 @@ function newRun(hero, stage, gap = 0) {
     decoy: null,
     lvl: 1, xp: 0, kills: 0, pending: 0, chests: 0, coins: 0, banked: 0,
     rerolls: up.reroll || 0, skips: up.skip || 0, banishes: up.banish || 0, revives: up.revive || 0, banned: [],
+    uncle: null, uncleUsed: false, uncleGot: 0,
     weapons: [], passives: [],
     en: [], shots: [], gems: [], items: [], fx: [], nums: [],
     spawnT: 0, ev: 0, bossId: 0, hint: true,
@@ -1151,6 +1164,7 @@ function update(dt) {
   updateEnemies(dt);
   buildGrid();
   separate();
+  updateUncle(dt);
   if (OBS.length) for (const e of S.en) if (!e.dead && !e.lead && blocked(ENEMIES[e.type])) unstick(e, footOf(e), Math.min(ENEMIES[e.type].r, 12) * 0.8);
   for (const w of S.weapons) WB[w.id](w, wstats(w), dt);
   updateShots(dt);
@@ -1225,12 +1239,74 @@ function heal(n) {
   S.p.hp = Math.min(ST.maxHp, S.p.hp + n);
 }
 
+/* ---------- 옆집 아저씨 ---------- */
+function callUncle() {
+  const p = S.p, q = spawnPoint(16);
+  S.uncleUsed = true;
+  p.inv = Math.max(p.inv, 1.5);                             // "어이!" — a moment's cover while he hurries over
+  S.uncle = { x: q.x, y: q.y, ox: q.x, oy: q.y, t: 0, at: 0, an: 'walk', face: q.x < p.x ? 1 : -1, cd: 0.4, swiping: 0 };
+  for (const e of near(p.x, p.y, 130)) { const d = ENEMIES[e.type]; if (!e.dead && !d.boss) e.stun = Math.max(e.stun || 0, stunFor(d, UNCLE.freeze)); }
+  banner('옆집 아저씨 출동!', '"어이~" 키친타올 한 장이면 된다');
+  sfx('dingdong');
+}
+function updateUncle(dt) {
+  const p = S.p, u = S.uncle;
+  if (!u) {
+    if (!S.uncleUsed && S.t > UNCLE.after && p.hp > 0 && p.hp < ST.maxHp * UNCLE.below) callUncle();
+    return;
+  }
+  u.t += dt; u.at += dt; u.cd -= dt;
+  if (u.swiping > 0) { u.swiping -= dt; return; }          // finish the swipe before moving on
+  let tx, ty, tg = null;
+  if (u.t > UNCLE.stay) {
+    tx = u.ox; ty = u.oy;                                   // home time: back the way he came
+    if (Math.hypot(u.x - tx, u.y - ty) < 20 || !onScreen(u.x, u.y, -60)) { S.uncle = null; return; }
+  } else {
+    // the nearest small bug to the hero, else stand guard beside the hero
+    let bd = 150 * 150;
+    for (const e of near(p.x, p.y, 150)) {
+      if (e.dead || ENEMIES[e.type].boss) continue;
+      const d2 = (e.x - p.x) ** 2 + (e.y - p.y) ** 2 + ((e.x - u.x) ** 2 + (e.y - u.y) ** 2) * 0.3;
+      if (d2 < bd) { bd = d2; tg = e; }
+    }
+    if (tg) { tx = tg.x - Math.sign(tg.x - u.x || 1) * 16; ty = tg.y; }
+    else { tx = p.x - p.face * 34; ty = p.y + 4; }
+  }
+  const dx = tx - u.x, dy = ty - u.y, l = Math.hypot(dx, dy);
+  if (l > 3) {
+    const far = u.t < UNCLE.stay && Math.hypot(u.x - p.x, u.y - p.y) > 90;      // hurrying over from next door
+    const st = Math.min(l, (far ? UNCLE.rush : UNCLE.speed) * dt);
+    u.x += dx / l * st; u.y += dy / l * st;
+    if (Math.abs(dx) > 2) u.face = dx > 0 ? 1 : -1;
+    setAnim(u, 'walk');
+  } else setAnim(u, 'idle');
+  // a swipe whenever bugs are within reach of the towel
+  if (tg && u.cd <= 0 && (tg.x - u.x) ** 2 + (tg.y - u.y) ** 2 < (UNCLE.reach + 10) ** 2) {
+    u.cd = UNCLE.every; u.swiping = 0.28; u.face = tg.x > u.x ? 1 : -1;
+    setAnim(u, 'attack'); u.at = 0;
+    const fx = u.x + u.face * 14, fy = u.y + 4;
+    let n = 0;
+    for (const e of near(fx, fy, UNCLE.reach)) {
+      const d = ENEMIES[e.type];
+      if (e.dead || d.boss || (e.x - fx) ** 2 + (e.y - fy) ** 2 > (UNCLE.reach + d.r) ** 2) continue;
+      if (d.elite) { damage(e, UNCLE.hit, 'uncle', u.face, 0, 80); continue; }
+      if (n++ >= UNCLE.grab) break;
+      S.fx.push({ k: 'wiped', x: e.x, y: e.y, tx: fx, ty: fy - 8, t: 0, life: 0.25, type: e.type, face: e.face });
+      kill(e, 'uncle'); S.uncleGot++;
+    }
+    S.fx.push({ k: 'wipe', x: u.x, y: u.y, face: u.face, t: 0, life: 0.25 });
+    sfx('swish');
+  }
+}
+
 /* ---------- spawning ---------- */
+// a 틈 multiplier as it stands right now: 40% of the way at the start, all of it by GAP_RAMP seconds
+const gx = k => 1 + (ST.gap[k] - 1) * Math.min(1, 0.4 + 0.6 * S.t / GAP_RAMP);
 function spawn(type, x, y, extra) {
   const d = ENEMIES[type], min = Math.floor(S.t / 60);
-  const hp = Math.round(d.hp * (d.boss ? 1 : 1 + 0.15 * min) * ST.gap.hp);
+  const hp = Math.round(d.hp * (d.boss ? 1 : 1 + 0.15 * min) * gx('hp'));
   const e = { id: S.seq++, type, x, y, hp, mhp: hp, kx: 0, ky: 0, face: -1, an: 'idle', at: Math.random() * 3, ph: Math.random() * 6.28,
-    flash: 0, hcd: 0, pcd: 0, sm: 1, dm: (1 + 0.08 * min) * ST.gap.dmg, dead: false, fade: 0 };
+    flash: 0, hcd: 0, pcd: 0, sm: 1, dm: (1 + 0.08 * min) * gx('dmg'), dead: false, fade: 0 };
   if (extra) Object.assign(e, extra);
   if (OBS.length && blocked(d)) unstick(e, footOf(e), Math.min(d.r, 12) * 0.8);
   S.en.push(e);
@@ -1250,8 +1326,8 @@ function updateDirector(dt) {
   while (S.ev < st.events.length && S.t >= st.events[S.ev].at) runEvent(st.events[S.ev++]);
   const wv = st.waves[Math.min(st.waves.length - 1, Math.floor(S.t / 60))];
   if ((S.spawnT -= dt) > 0) return;
-  S.spawnT = wv.every / ST.gap.rate;
-  const want = Math.round(wv.n * ST.gap.count);
+  S.spawnT = wv.every / gx('rate');
+  const want = Math.round(wv.n * gx('count'));
   let n = liveCount < want ? Math.min(8, Math.ceil((want - liveCount) / 3)) : 1;
   n = Math.min(n, MAX_ENEMIES - liveCount);
   for (let i = 0; i < n; i++) { const q = spawnPoint(); spawn(weighted(wv.mix), q.x, q.y); }
@@ -1264,7 +1340,7 @@ function runEvent(ev) {
     const side = Math.floor(Math.random() * 4), hw = BW / 2 + 40, hh = BH / 2 + 40;
     const cx = p.x + [-hw, hw, 0, 0][side], cy = p.y + [0, 0, -hh, hh][side];
     const dx = p.x - cx, dy = p.y - cy, l = Math.hypot(dx, dy);
-    for (let i = 0, n = Math.round(ev.n * ST.gap.swarm); i < n; i++) {
+    for (let i = 0, n = Math.round(ev.n * gx('swarm')); i < n; i++) {
       const along = rand(-50, 10), across = rand(-70, 70);
       spawn(ev.swarm, cx + (dx / l) * along - (dy / l) * across, cy + (dy / l) * along + (dx / l) * across, { sx: dx / l, sy: dy / l, sm: 1.3 });
     }
@@ -1273,10 +1349,10 @@ function runEvent(ev) {
     const side = Math.floor(Math.random() * 4), hw = BW / 2 + 30, hh = BH / 2 + 30;
     const sx = [1, -1, 0, 0][side], sy = [0, 0, 1, -1][side], off = rand(-0.25, 0.25);
     const x0 = p.x - sx * hw + (sy ? off * BW : 0), y0 = p.y - sy * hh + (sx ? off * BH : 0);
-    for (let i = 0, n = Math.round(ev.n * ST.gap.swarm); i < n && liveCount + i < MAX_ENEMIES; i++)
+    for (let i = 0, n = Math.round(ev.n * gx('swarm')); i < n && liveCount + i < MAX_ENEMIES; i++)
       spawn(ev.march, x0 - sx * i * 9, y0 - sy * i * 9, { sx, sy, sm: 1.1, wob: 0.9, ph: -i * 0.42 });
   } else if (ev.ring) {
-    const rx = BW * 0.62, ry = BH * 0.58, n = Math.round(ev.n * ST.gap.swarm);
+    const rx = BW * 0.62, ry = BH * 0.58, n = Math.round(ev.n * gx('swarm'));
     for (let i = 0; i < n; i++) {
       const a = (i / n) * Math.PI * 2;
       spawn(ev.ring, p.x + Math.cos(a) * rx, p.y + Math.sin(a) * ry, { sm: 0.6 });
@@ -1290,7 +1366,7 @@ function runEvent(ev) {
 /* ---------- enemies ---------- */
 const leaders = new Map();
 function updateEnemies(dt) {
-  const p = S.p, farX = BW * 0.9 + 120, farY = BH * 0.9 + 120, decay = Math.exp(-10 * dt);
+  const p = S.p, farX = BW * 0.9 + 120, farY = BH * 0.9 + 120, decay = Math.exp(-10 * dt), gSpeed = gx('speed');
   liveCount = 0;
   leaders.clear();
   for (const e of S.en) if (!e.dead && ENEMIES[e.type].trail) leaders.set(e.id, e);
@@ -1314,7 +1390,7 @@ function updateEnemies(dt) {
       }
     }
     const dx = goal.x - e.x, dy = goal.y - e.y, dist = Math.hypot(dx, dy) || 1;
-    let mx = dx / dist, my = dy / dist, spd = d.speed * e.sm * ST.gap.speed;
+    let mx = dx / dist, my = dy / dist, spd = d.speed * e.sm * gSpeed;
     if (e.sx !== undefined) { mx = e.sx; my = e.sy; }
     const wob = e.wob ?? d.wobble;
     if (wob) { const w = Math.sin(S.t * (d.wobbleHz || 6) + e.ph) * wob; [mx, my] = [mx - my * w, my + mx * w]; }
@@ -1972,10 +2048,12 @@ function render() {
   for (const sh of S.shots) if (sh.k === 'alpaca' && !(sh.wait > 0)) { sh._fy = sh.y + 24; drawList.push(sh); }
   for (const o of OBS) if (onScreen(o.x, o.y - 50, -90)) { o._fy = o.y; drawList.push(o); }
   for (const f of S.fx) if (f.k === 'jug') { f._fy = f.y + 6; drawList.push(f); }
+  if (S.uncle) { S.uncle._fy = S.uncle.y + artFor(UNCLE).cy * UNCLE.scale; S.uncle.k = 'uncle'; drawList.push(S.uncle); }
   drawList.sort((a, b) => a._fy - b._fy);
   for (const u of drawList) {
     if (u.k in OBSTACLES) shadow(u.x, u.y - 2, Math.round(OBSTACLES[u.k].w * 0.9), 8);
     else if (u.k === 'jug') shadow(u.x, u._fy, 16);
+    else if (u.k === 'uncle') shadow(u.x, u._fy, 24);
     else if (u === p) shadow(p.x, p._fy, 22);
     else if (u.k === 'alpaca') shadow(u.x, u._fy, 24);
     else if (!u.dead) { const d = ENEMIES[u.type]; shadow(u.x, u._fy, Math.round(d.r * 2 * (d.fly ? 0.7 : 1))); }
@@ -1985,6 +2063,7 @@ function render() {
     else if (u.k === 'alpaca') { const A = ART.alpaca; if (A) drawArt(A, A.seq.walk ? 'walk' : 'idle', u.at, u.x, u._fy, u.vx < 0, false, 1, 1, SPRITE_FPS.run); }
     else if (u.k in OBSTACLES) { const img = PX[u.k], w = img.width * PROP_SCALE, h = img.height * PROP_SCALE; ctx.drawImage(img, sx(u.x) - (w >> 1), sy(u.y) - h, w, h); }
     else if (u.k === 'jug') drawJug(u);
+    else if (u.k === 'uncle') { const A = artFor(UNCLE); drawArt(A, u.an, u.at, u.x, u._fy, u.face !== A.faces, false, UNCLE.scale, 1, u.an === 'walk' ? SPRITE_FPS.run : 0, u.an === 'attack'); }
     else drawEnemy(u);
   }
 
@@ -2023,14 +2102,14 @@ function render() {
   }
 }
 // main screen: a roach legs it across the yard with the three heroes after it (sprites at 2x)
-const PARADE = [['roach', 0], ['girl', -170], ['alpaca', -300], ['gecko', -420]];
+const PARADE = [['roach', 0], ['girl', -170], ['alpaca', -300], ['gecko', -420], ['uncle', -560]];
 function drawParade() {
-  const L = 14, sc = 2, feet = camY + Math.round(BH * 0.56), lead = -110 + (BW + 650) * ((demoT % L) / L);
-  const art = id => (id === 'roach' ? artFor(ENEMIES.roach) : heroArt(id));
+  const L = 16, sc = 2, feet = camY + Math.round(BH * 0.56), lead = -110 + (BW + 790) * ((demoT % L) / L);
+  const art = id => (id === 'roach' ? artFor(ENEMIES.roach) : id === 'uncle' ? artFor(UNCLE) : heroArt(id));
   for (const [, off] of PARADE) shadow(camX + lead + off, feet, 44);
   for (const [id, off] of PARADE) {
     const A = art(id), an = A.seq.walk ? 'walk' : 'idle';
-    drawArt(A, an, demoT + off / 100, camX + lead + off, feet, A.faces !== 1, false, sc, 1, id === 'roach' ? 16 : 0);
+    drawArt(A, an, demoT + off / 100, camX + lead + off, feet, A.faces !== 1, false, sc * (id === 'uncle' ? UNCLE.scale : 1), 1, id === 'roach' ? 16 : 0);
   }
   // the girl gives it a spray every so often
   const k = (demoT % 1.8) / 0.5;
@@ -2175,6 +2254,19 @@ function drawFx(f) {
     ctx.fillStyle = '#c9d2da';
     for (let i = 0; i < 26; i++) { ctx.fillRect(sx(x - 3 + i * 0.25), sy(y - 4 - i), 1, 1); ctx.fillRect(sx(x + 3 + i * 0.45), sy(y - 4 - i), 1, 1); }
     ctx.globalAlpha = 1;
+  } else if (f.k === 'wipe') {
+    // a white kitchen-towel sweep low in front of him
+    ctx.globalAlpha = 1 - k;
+    for (let i = 0; i < 9; i++) {
+      const a = -0.9 + (i / 8) * 1.8 * Math.min(1, k * 2.5), x = f.x + f.face * (10 + Math.cos(a) * 20), y = f.y + 6 + Math.sin(a) * 9;
+      ctx.fillStyle = '#7d8a8f'; ctx.fillRect(sx(x) - 2, sy(y) - 2, 5, 5);
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(sx(x) - 1, sy(y) - 1, 3, 3);
+    }
+    ctx.globalAlpha = 1;
+  } else if (f.k === 'wiped') {
+    // the bug shrinks into the towel
+    const A = artFor(ENEMIES[f.type]), x = f.x + (f.tx - f.x) * k, y = f.y + (f.ty - f.y) * k;
+    drawArt(A, 'idle', 0, x, y + A.cy * (1 - k), f.face !== A.faces, true, (ENEMIES[f.type].scale || 1) * (1 - k * 0.8), 1 - k);
   } else if (f.k === 'revive') {
     ctx.globalAlpha = 1 - k;
     ring(f.x, f.y - 10, 10 + k * 70, (10 + k * 70) * 0.8, '#ffe066', 3, k * 4);
@@ -2290,7 +2382,10 @@ function itemsList(withDmg) {
   });
   const ps = S.passives.map(q => { const d = PASSIVES[q.id]; return `<li>${iconHTML('ic', d)}<span class="n"><b>${d.name}</b> <span class="tag">Lv ${q.lv}</span><small>${d.text} (레벨마다)</small></span><span></span></li>`; });
   const tail = HEROES[S.hero].tail ? `<li>${iconHTML('ic', { emoji: '🦎' })}<span class="n"><b>꼬리 자르기</b> <span class="tag${S.p.tail ? ' gold' : ''}">${S.p.tail ? '남음' : '씀'}</span><small>${S.p.tail ? '한 번 쓰러져도 다시 일어난다.' : '이번 판에는 이미 썼다.'}</small></span><span></span></li>` : '';
-  return `<ul class="items">${tail}${ws.join('')}${ps.join('')}</ul>`;
+  const uc = S.uncleUsed;
+  const uncle = `<li>${iconHTML('ic', { emoji: UNCLE.emoji })}<span class="n"><b>${UNCLE.name}</b> <span class="tag${uc ? '' : ' gold'}">${uc ? '왔다 감' : '대기 중'}</span>
+    <small>${uc ? `키친타올로 벌레 ${S.uncleGot}마리를 슥 훔쳐 갔다.` : '체력이 바닥나면 한 번 와서 벌레를 키친타올로 슥 훔쳐 간다.'}</small></span><span class="v">${withDmg && uc ? S.uncleGot + '마리' : ''}</span></li>`;
+  return `<ul class="items">${tail}${ws.join('')}${ps.join('')}${uncle}</ul>`;
 }
 let quitArmed = false;
 function showPause() {
@@ -2652,7 +2747,7 @@ async function boot(data) {
   const saved = data && data.state;
   if (saved && saved.v === 1 && ['play', 'paused', 'levelup', 'chest'].includes(saved.phase)) {
     // a run saved by an older version: fill in what it didn't have yet
-    S = Object.assign({ stage: 'backyard', gap: 0, up: {}, coins: 0, banked: 0, rerolls: 0, skips: 0, banishes: 0, revives: 0, banned: [] }, saved);
+    S = Object.assign({ stage: 'backyard', gap: 0, up: {}, coins: 0, banked: 0, rerolls: 0, skips: 0, banishes: 0, revives: 0, banned: [], uncle: null, uncleUsed: false, uncleGot: 0 }, saved);
     heroSel = S.hero; stageSel = S.stage; recalc();
     els.hud.hidden = false;
     S.phase = 'play'; showPause();
