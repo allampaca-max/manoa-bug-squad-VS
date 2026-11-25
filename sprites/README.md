@@ -17,7 +17,7 @@ PixelLab and Codex output, one sheet per unit, unique frames only. Play order, c
 | `caneSpider.png` `termiteQueen.png` | 96 | idle 4 | Codex at full size; the 5:00 boss is the spider at 2x, the queen is drawn at 2x |
 | `mist.png` | 64x32 | | card game spray cloud, drawn rotated toward the target |
 | `icons/<id>.png` | 64x48 | | the card game's card art, reused as weapon / passive icons; `tongue`, `egg`, `musubi`, `sneakers` are Codex |
-| `props/<key>.png` | ~16 | | Codex pickups: `heal` (pineapple), `magnet`, `chest`; laundry obstacles `washer`, `dryer`, `basket`, `bottle` (drawn at 2x); listed in `PROP_ART` |
+| `props/<key>.png` | ~16 | | Codex pickups: `heal` (pineapple), `magnet`, `chest`, `coin` (also the coin glyph in menus); laundry obstacles `washer`, `dryer`, `basket`, `bottle` (drawn at 2x); listed in `PROP_ART` |
 
 For the card game sheets (base prompts, how the rows were made) see `sprites/README.md` in `~/Documents/manoa-bug-squad`.
 

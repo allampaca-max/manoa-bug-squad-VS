@@ -62,7 +62,11 @@ button{font:inherit;color:inherit}
 #timer{font:700 26px/1 var(--f-pixel);letter-spacing:1px;color:var(--white);text-shadow:var(--outline);font-variant-numeric:tabular-nums}
 #timer.late{color:var(--plumeria)}
 .hright{justify-self:end;display:flex;align-items:center;gap:8px}
-#kills{font:700 14px/1 var(--f-pixel);color:var(--white);text-shadow:var(--outline);font-variant-numeric:tabular-nums;white-space:nowrap}
+#kills,#coinHud{font:700 14px/1 var(--f-pixel);color:var(--white);text-shadow:var(--outline);font-variant-numeric:tabular-nums;white-space:nowrap}
+#coinHud{color:var(--plumeria)}
+.counts{display:grid;gap:4px;justify-items:end}
+.tmid{display:grid;justify-items:center;gap:3px}
+#gapTag{padding:2px 6px 1px;border-radius:4px;background:var(--hibiscus);color:var(--white);font:700 11px/1.2 var(--f-pixel);box-shadow:0 0 0 1px var(--ink)}
 #pauseBtn{pointer-events:auto;width:36px;height:36px;border-radius:9px;border:2px solid var(--line);background:var(--slate);display:grid;place-items:center;cursor:pointer}
 #pauseBtn i{display:block;width:12px;height:14px;border-left:4px solid var(--sand);border-right:4px solid var(--sand)}
 #pauseBtn:focus-visible{outline:2px solid var(--plumeria);outline-offset:2px}
@@ -140,6 +144,44 @@ button{font:inherit;color:inherit}
 .hero-info b{color:var(--sand);font-weight:normal;font-family:var(--f-display)}
 .best{margin:10px 0 0;font:600 12px/1.3 var(--f-pixel);color:var(--sand-dim)}
 
+/* coins, shop, 틈 picker, level-up helpers */
+.coin{display:inline-block;width:12px;height:13px;margin-right:4px;background:url(sprites/props/coin.png) center/contain no-repeat;image-rendering:pixelated;vertical-align:-2px}
+#coinHud::before{content:'';display:inline-block;width:13px;height:14px;margin-right:4px;background:url(sprites/props/coin.png) center/contain no-repeat;image-rendering:pixelated;vertical-align:-2px}
+.coin-chip{display:inline-block;padding:2px 7px 1px;border-radius:999px;background:var(--ink);color:var(--plumeria);font:700 13px/1.2 var(--f-pixel);font-variant-numeric:tabular-nums;white-space:nowrap;vertical-align:1px}
+.coin-chip.big{font-size:16px;vertical-align:4px}
+.coin-line{margin:-4px 0 12px;color:var(--sand-dim);font-size:13.5px}
+.main-nav .row.three .btn{flex-basis:90px;font-size:18px;padding:10px 6px}
+.main-nav .row.three .coin-chip{display:block;margin:4px auto 0;width:max-content;font-size:12px}
+.shop .choice{grid-template-columns:54px minmax(0,1fr) auto;gap:10px;padding:7px 8px}
+.shop .ic{width:54px;height:40px;font-size:24px}
+.shop .choice b{font-size:17px}
+.shop .choice[aria-disabled="true"]{cursor:default}
+.shop .choice.maxed{border-style:dashed}
+.pips{display:inline-flex;gap:3px;margin-left:8px;vertical-align:2px}
+.pips i{width:8px;height:8px;border-radius:2px;background:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.pips i.on{background:var(--plumeria);box-shadow:none}
+.price{font:700 14px/1 var(--f-pixel);color:var(--plumeria);white-space:nowrap;font-variant-numeric:tabular-nums}
+.price.poor{color:var(--sand-dim);opacity:.7}
+.maxed .price{color:var(--surf)}
+.gap{margin-top:12px;padding:10px;border-radius:12px;border:2px solid var(--line);background:var(--night)}
+.gap-row{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:8px;align-items:center}
+.gbtn{flex:none;min-height:44px;padding:0;font:26px/1 var(--f-display)}
+.gbtn:disabled{opacity:.35;cursor:default}
+.gap-mid{display:grid;justify-items:center;gap:4px;text-align:center}
+.gap-mid b{font:18px/1.2 var(--f-display);color:var(--sand)}
+.gap-mid small{color:var(--sand-dim);font-size:12.5px;line-height:1.35}
+.cracks{display:flex;gap:4px}
+.cracks i{width:16px;height:7px;border-radius:2px;background:var(--ink);box-shadow:inset 0 0 0 1px var(--line);opacity:.5}
+.cracks i.open{opacity:1}
+.cracks i.on{background:var(--hibiscus);box-shadow:none;opacity:1}
+.gap-lock{display:block;margin-top:8px;text-align:center;color:var(--sand-dim);font-size:12px}
+.helpers{margin-top:10px}
+.help{flex-basis:90px;display:grid;justify-items:center;gap:2px;padding:7px 4px;min-height:48px;font-size:15px;white-space:nowrap}
+.help small{font:600 11px/1 var(--f-pixel);color:var(--sand-dim)}
+.help.on{border-color:var(--hibiscus);color:var(--white)}
+.choices.banishing .choice{border-color:var(--hibiscus);border-style:dashed}
+.choices.banishing .choice:disabled{opacity:.4}
+
 /* results / pause */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 14px}
 .stats div{padding:8px 4px;border-radius:8px;background:var(--night);text-align:center;color:var(--sand-dim);font-size:12.5px}
@@ -163,8 +205,8 @@ button{font:inherit;color:inherit}
     <div class="xp"><i id="xpFill"></i><b id="lvl">Lv 1</b></div>
     <div class="hrow">
       <div id="slots"></div>
-      <div id="timer">00:00</div>
-      <div class="hright"><span id="kills">0</span><button id="pauseBtn" type="button" aria-label="일시정지"><i></i></button></div>
+      <div class="tmid"><div id="timer">00:00</div><span id="gapTag" hidden></span></div>
+      <div class="hright"><span class="counts"><span id="kills">0</span><span id="coinHud">0</span></span><button id="pauseBtn" type="button" aria-label="일시정지"><i></i></button></div>
     </div>
     <div id="boss" hidden><span id="bossName"></span><div class="bar"><i id="bossFill"></i></div></div>
   </div>
@@ -349,8 +391,37 @@ const OBSTACLES = {
   bottle: { w: 42, box: [-18, -18, 18, 0], weight: 2 },
 };
 const xpNeed = lv => 4 + (lv - 1) * 5;
-const DROPS = { heal: 1 / 140, magnet: 1 / 420 };
-const ITEMS = { heal: { emoji: '🍍', hp: 30 }, magnet: { emoji: '🧲' }, chest: { emoji: '🎁' } };
+const DROPS = { heal: 1 / 140, magnet: 1 / 420, coin: 1 / 25 };
+const ITEMS = { heal: { emoji: '🍍', hp: 30 }, magnet: { emoji: '🧲' }, chest: { emoji: '🎁' }, coin: { emoji: '🪙' } };
+// coins: 1 from a lucky bug, a handful from elites and bosses, a few in every chest, plus a bonus at the end
+// (per minute survived, more for a clear). Kept when the run ends, win or lose.
+const COINS = { elite: 5, boss: 20, final: 40, chest: 4, minute: 3, clear: 25 };
+
+// 틈 (cracks in the old house): the hard mode. Level g multiplies the bugs; clearing any stage at g opens g+1.
+const GAP_MAX = 5;
+const gapMods = g => ({ count: 1 + 0.25 * g, rate: 1 + 0.15 * g, hp: 1 + 0.25 * g, dmg: 1 + 0.15 * g, speed: 1 + 0.04 * g, swarm: 1 + 0.2 * g,
+  elites: 1 + Math.floor(g / 3), coin: 1 + 0.25 * g });
+const GAP_TEXT = ['보통', '틈이 조금 보인다', '여기저기 틈', '틈투성이', '벽이 숭숭', '집이 벌레 집'];
+
+// shop: permanent upgrades bought with coins, for every hero. per = one level; price = cost × (next level). desc + val(total) is the text.
+// icon: reuses a passive's card art where it fits.
+const pct = v => Math.round(v * 100) + '%';
+const UPGRADES = {
+  hp:      { name: '튼튼한 몸',  icon: 'fluff',    max: 5, cost: 40,  per: 10,   desc: '최대 체력',      val: v => `+${v}` },
+  might:   { name: '힘',        icon: 'musubi',   emoji: '🍙', max: 5, cost: 60, per: 0.05, desc: '모든 피해', val: v => `+${pct(v)}` },
+  armor:   { name: '두꺼운 옷',  emoji: '🧥', max: 2, cost: 150, per: 1,    desc: '받는 피해',      val: v => `-${v}` },
+  regen:   { name: '회복',      icon: 'hug',      max: 3, cost: 50,  per: 0.1,  desc: '초당 체력 회복', val: v => `+${v.toFixed(1)}` },
+  speed:   { name: '빠른 발',    icon: 'sneakers', emoji: '👟', max: 3, cost: 50, per: 0.05, desc: '이동 속도', val: v => `+${pct(v)}` },
+  magnet:  { name: '줍는 범위',  icon: 'rainbow',  max: 3, cost: 30,  per: 0.15, desc: '줍는 범위',      val: v => `+${pct(v)}` },
+  cdr:     { name: '쿨타임',     icon: 'tea',      max: 3, cost: 80,  per: 0.03, desc: '쿨타임',         val: v => `-${pct(v)}` },
+  growth:  { name: '성장',      emoji: '📈', max: 3, cost: 50,  per: 0.08, desc: '경험치',         val: v => `+${pct(v)}` },
+  greed:   { name: '동전 운',    emoji: '🪙', max: 3, cost: 40,  per: 0.1,  desc: '동전',           val: v => `+${pct(v)}` },
+  revive:  { name: '한 번 더',   emoji: '💖', max: 1, cost: 400, per: 1,    desc: '쓰러지면 한 번 다시 일어난다', val: () => '' },
+  reroll:  { name: '다시 뽑기',  emoji: '🎲', max: 3, cost: 60,  per: 1,    desc: '레벨 업 선택지를 새로 뽑는다. 판마다', val: v => `${v}번` },
+  skip:    { name: '건너뛰기',   emoji: '⏭️', max: 3, cost: 30,  per: 1,    desc: '레벨 업을 넘기고 체력 +10. 판마다', val: v => `${v}번` },
+  banish:  { name: '빼 버리기',  emoji: '🚫', max: 3, cost: 60,  per: 1,    desc: '싫은 아이템을 이번 판에서 뺀다. 판마다', val: v => `${v}번` },
+};
+const upPrice = (id, lv) => UPGRADES[id].cost * (lv + 1);
 
 // 픽셀 스프라이트 (PixelLab 64px). 시트 한 줄 = idle / attack / hit / walk, 숫자는 그 줄에서 재생할 칸 순서.
 // cy: 몸 중심에서 발까지 (시트 픽셀). faces: 그림이 보는 쪽 (1 오른쪽, -1 왼쪽). lift: 나는 벌레가 그림자에서 뜬 높이.
@@ -377,7 +448,7 @@ const SPRITES = {
 const SPRITE_FPS = { idle: 6, walk: 12, attack: 14, hit: 14, fly: 14, run: 18 };
 // props that have a picture in sprites/props/<key>.png, replacing the code-drawn one or the emoji.
 // keys: gem1 gem2 gem3 (XP, small to big) spit slipper parasol heal magnet chest, laundry props washer dryer basket bottle
-const PROP_ART = ['heal', 'magnet', 'chest', 'washer', 'dryer', 'basket', 'bottle'];
+const PROP_ART = ['heal', 'magnet', 'chest', 'coin', 'washer', 'dryer', 'basket', 'bottle'];
 
 /* =====================================================================
    HELPERS
@@ -727,6 +798,7 @@ const SFX = {
   click:  { gap: 0.05, vol: 3, play: (b, t) => { osc(b, 'p25', 880, 880, t, 0.04, 0.08); osc(b, 'p25', 1320, 1320, t + 0.035, 0.05, 0.07); } },
   hurt:   { gap: 0.25, vol: 2, play: (b, t) => { osc(b, 'square', 190, 70, t, 0.18, 0.22); hiss(b, t, 0.1, 0.18, 'lowpass', 900, 300); } },
   tail:   { gap: 1,    vol: 1.5,    play: (b, t) => { osc(b, 'square', 900, 1300, t, 0.05, 0.14); osc(b, 'sine', 1700, 280, t + 0.06, 0.55, 0.2); } },
+  coin:   { gap: 0.05, vol: 2.5, play: (b, t) => { osc(b, 'p25', hz(83), hz(83), t, 0.05, 0.1); osc(b, 'p25', hz(88), hz(88), t + 0.05, 0.14, 0.1); } },
   heal:   { gap: 0.2,  vol: 1.5,  play: (b, t) => arp(b, 'triangle', ['C6', 'E6', 'G6', 'C7'], t, 0.05, 0.12, 0.13) },
   magnet: { gap: 0.5,  vol: 2,  play: (b, t) => { osc(b, 'sine', 300, 2400, t, 0.35, 0.14); hiss(b, t, 0.35, 0.08, 'bandpass', 500, 5000, 2); } },
   siren:  { gap: 2,    vol: 3,    play: (b, t) => { for (let i = 0; i < 4; i++) osc(b, 'square', i % 2 ? 880 : 660, i % 2 ? 880 : 660, t + i * 0.2, 0.19, 0.1); } },
@@ -818,33 +890,41 @@ function soundToggleHTML() {
    ===================================================================== */
 let S = null;          // the run
 let ST = null;         // derived player stats (from hero + passives), rebuilt by recalc()
-let heroSel = 'girl', stageSel = 'backyard';
+let heroSel = 'girl', stageSel = 'backyard', gapSel = 0;
 const DEBUG = { speed: 1, god: false, input: null };
 
-function newRun(hero, stage) {
+// the shop's upgrades and coins live in mbs.meta; a run copies the upgrades in at the start (S.up) so it stays self-contained
+const loadMeta = () => Object.assign({ coins: 0, up: {}, earned: 0 }, store.get('mbs.meta') || {});
+function newRun(hero, stage, gap = 0) {
+  const up = { ...loadMeta().up };
   return {
-    v: 1, hero, stage, t: 0, phase: 'play', seq: 1,
+    v: 1, hero, stage, gap, up, t: 0, phase: 'play', seq: 1,
     p: { x: 0, y: 0, hp: HEROES[hero].hp, face: 1, ax: 1, ay: 0, moving: false, hurt: 0, inv: 0, tail: !!HEROES[hero].tail, an: 'idle', at: 0, one: null },
     decoy: null,
-    lvl: 1, xp: 0, kills: 0, pending: 0, chests: 0,
+    lvl: 1, xp: 0, kills: 0, pending: 0, chests: 0, coins: 0, banked: 0,
+    rerolls: up.reroll || 0, skips: up.skip || 0, banishes: up.banish || 0, revives: up.revive || 0, banned: [],
     weapons: [], passives: [],
     en: [], shots: [], gems: [], items: [], fx: [], nums: [],
     spawnT: 0, ev: 0, bossId: 0, hint: true,
   };
 }
 function recalc() {
-  const H = HEROES[S.hero];
+  const H = HEROES[S.hero], U = S.up || {};
   const lv = id => S.passives.find(p => p.id === id)?.lv || 0;
+  const up = id => (U[id] || 0) * UPGRADES[id].per;
   ST = {
-    maxHp: H.hp + 20 * lv('fluff'),
-    regen: 0.3 * lv('hug'),
-    cdMul: 1 - 0.08 * lv('tea'),
-    magnet: 34 * (1 + 0.4 * lv('rainbow')),
-    might: 1 + 0.1 * lv('musubi'),
+    maxHp: H.hp + 20 * lv('fluff') + up('hp'),
+    regen: 0.3 * lv('hug') + up('regen'),
+    cdMul: (1 - 0.08 * lv('tea')) * (1 - up('cdr')),
+    magnet: 34 * (1 + 0.4 * lv('rainbow') + up('magnet')),
+    might: (1 + 0.1 * lv('musubi')) * (1 + up('might')),
     amount: lv('egg'),
-    speed: H.speed * (1 + 0.1 * lv('sneakers')),
-    armor: H.armor,
+    speed: H.speed * (1 + 0.1 * lv('sneakers') + up('speed')),
+    armor: H.armor + up('armor'),
+    growth: 1 + up('growth'),
+    gap: gapMods(S.gap || 0),
   };
+  ST.coinMul = ST.gap.coin * (1 + up('greed'));
 }
 function wstats(w) {
   const d = WEAPONS[w.id], s = { ...d.base };
@@ -997,8 +1077,26 @@ function hurtPlayer(n) {
   S.p.hp -= dmg; S.p.hurt = 0.25;
   sfx('hurt');
   addNum(S.p.x, S.p.y - 34, dmg, 1);
-  if (navigator.vibrate && S.t - lastBuzz > 0.4) { lastBuzz = S.t; try { navigator.vibrate(12); } catch { /* not allowed */ } }
-  if (S.p.hp <= 0) { if (S.p.tail) dropTail(); else { S.p.hp = 0; endRun(false); } }
+  if (navigator.vibrate && !AUDIO.quiet && S.t - lastBuzz > 0.4) { lastBuzz = S.t; try { navigator.vibrate(12); } catch { /* not allowed */ } }
+  if (S.p.hp <= 0) { if (S.p.tail) dropTail(); else if (S.revives > 0) revive(); else { S.p.hp = 0; endRun(false); } }
+}
+// push every bug near the hero away (tail drop, revive)
+function shove(r, k) {
+  const p = S.p;
+  for (const e of near(p.x, p.y, r)) {
+    if (e.dead || ENEMIES[e.type].boss) continue;
+    const dx = e.x - p.x, dy = e.y - p.y, l = Math.hypot(dx, dy) || 1;
+    e.kx += dx / l * k; e.ky += dy / l * k;
+  }
+}
+// the shop's 한 번 더: back on your feet with most of your health, the crowd pushed back
+function revive() {
+  const p = S.p;
+  S.revives--; p.hp = Math.round(ST.maxHp * 0.7); p.inv = 3;
+  shove(140, 340);
+  S.fx.push({ k: 'revive', x: p.x, y: p.y, t: 0, life: 0.9 });
+  banner('한 번 더!', '다시 일어났다');
+  sfx('heal');
 }
 // the gecko's one-time escape: half health back, a moment of safety, and the bugs go after the wriggling tail
 function dropTail() {
@@ -1007,11 +1105,7 @@ function dropTail() {
   const tx = p.x - p.face * 14, ty = p.y + 12;
   S.decoy = { x: tx, y: ty, until: S.t + 3 };
   S.fx.push({ k: 'tail', x: tx, y: ty, t: 0, life: 3, face: p.face });
-  for (const e of near(p.x, p.y, 90)) {
-    if (e.dead || ENEMIES[e.type].boss) continue;
-    const dx = e.x - p.x, dy = e.y - p.y, l = Math.hypot(dx, dy) || 1;
-    e.kx += dx / l * 260; e.ky += dy / l * 260;
-  }
+  shove(90, 260);
   banner('꼬리 자르기!', '꼬리를 떼어 주고 도망쳤다');
   sfx('tail');
 }
@@ -1022,9 +1116,9 @@ function heal(n) {
 /* ---------- spawning ---------- */
 function spawn(type, x, y, extra) {
   const d = ENEMIES[type], min = Math.floor(S.t / 60);
-  const hp = Math.round(d.hp * (d.boss ? 1 : 1 + 0.15 * min));
+  const hp = Math.round(d.hp * (d.boss ? 1 : 1 + 0.15 * min) * ST.gap.hp);
   const e = { id: S.seq++, type, x, y, hp, mhp: hp, kx: 0, ky: 0, face: -1, an: 'idle', at: Math.random() * 3, ph: Math.random() * 6.28,
-    flash: 0, hcd: 0, pcd: 0, sm: 1, dm: 1 + 0.08 * min, dead: false, fade: 0 };
+    flash: 0, hcd: 0, pcd: 0, sm: 1, dm: (1 + 0.08 * min) * ST.gap.dmg, dead: false, fade: 0 };
   if (extra) Object.assign(e, extra);
   if (OBS.length && blocked(d)) unstick(e, footOf(e), Math.min(d.r, 12) * 0.8);
   S.en.push(e);
@@ -1044,8 +1138,9 @@ function updateDirector(dt) {
   while (S.ev < st.events.length && S.t >= st.events[S.ev].at) runEvent(st.events[S.ev++]);
   const wv = st.waves[Math.min(st.waves.length - 1, Math.floor(S.t / 60))];
   if ((S.spawnT -= dt) > 0) return;
-  S.spawnT = wv.every;
-  let n = liveCount < wv.n ? Math.min(8, Math.ceil((wv.n - liveCount) / 3)) : 1;
+  S.spawnT = wv.every / ST.gap.rate;
+  const want = Math.round(wv.n * ST.gap.count);
+  let n = liveCount < want ? Math.min(8, Math.ceil((want - liveCount) / 3)) : 1;
   n = Math.min(n, MAX_ENEMIES - liveCount);
   for (let i = 0; i < n; i++) { const q = spawnPoint(); spawn(weighted(wv.mix), q.x, q.y); }
 }
@@ -1057,20 +1152,20 @@ function runEvent(ev) {
     const side = Math.floor(Math.random() * 4), hw = BW / 2 + 40, hh = BH / 2 + 40;
     const cx = p.x + [-hw, hw, 0, 0][side], cy = p.y + [0, 0, -hh, hh][side];
     const dx = p.x - cx, dy = p.y - cy, l = Math.hypot(dx, dy);
-    for (let i = 0; i < ev.n; i++) {
+    for (let i = 0, n = Math.round(ev.n * ST.gap.swarm); i < n; i++) {
       const along = rand(-50, 10), across = rand(-70, 70);
       spawn(ev.swarm, cx + (dx / l) * along - (dy / l) * across, cy + (dy / l) * along + (dx / l) * across, { sx: dx / l, sy: dy / l, sm: 1.3 });
     }
   } else if (ev.ring) {
-    const rx = BW * 0.62, ry = BH * 0.58;
-    for (let i = 0; i < ev.n; i++) {
-      const a = (i / ev.n) * Math.PI * 2;
+    const rx = BW * 0.62, ry = BH * 0.58, n = Math.round(ev.n * ST.gap.swarm);
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2;
       spawn(ev.ring, p.x + Math.cos(a) * rx, p.y + Math.sin(a) * ry, { sm: 0.6 });
     }
-  } else if (ev.elite || ev.boss) {
-    const q = spawnPoint(60), e = spawn(ev.elite || ev.boss, q.x, q.y);
-    if (ev.boss) S.bossId = e.id;
-  }
+  } else if (ev.boss) {
+    const q = spawnPoint(60);
+    S.bossId = spawn(ev.boss, q.x, q.y).id;
+  } else if (ev.elite) for (let i = 0; i < ST.gap.elites; i++) { const q = spawnPoint(60); spawn(ev.elite, q.x, q.y); }
 }
 
 /* ---------- enemies ---------- */
@@ -1083,7 +1178,7 @@ function updateEnemies(dt) {
     liveCount++;
     const d = ENEMIES[e.type], goal = S.decoy || p;
     const dx = goal.x - e.x, dy = goal.y - e.y, dist = Math.hypot(dx, dy) || 1;
-    let mx = dx / dist, my = dy / dist, spd = d.speed * e.sm;
+    let mx = dx / dist, my = dy / dist, spd = d.speed * e.sm * ST.gap.speed;
     if (e.sx !== undefined) { mx = e.sx; my = e.sy; }
     if (d.wobble) { const w = Math.sin(S.t * (d.wobbleHz || 6) + e.ph) * d.wobble; [mx, my] = [mx - my * w, my + mx * w]; }
     if (d.summon && (e.sumT = (e.sumT ?? d.summon.every) - dt) <= 0) {
@@ -1163,10 +1258,24 @@ function kill(e, src) {
   if (d.elite || (d.boss && !d.final)) { const c = { k: 'chest', x: e.x, y: e.y, m: 0, big: !!d.boss }; if (OBS.length) unstick(c, 0, 12); S.items.push(c); }
   else if (Math.random() < DROPS.heal) S.items.push({ k: 'heal', x: e.x, y: e.y, m: 0 });
   else if (Math.random() < DROPS.magnet) S.items.push({ k: 'magnet', x: e.x, y: e.y, m: 0 });
+  else if (Math.random() < DROPS.coin) dropCoins(e.x, e.y, 1);
+  if (d.final) S.coins += COINS.final * ST.coinMul;          // the run ends right here, so straight into the pocket
+  else if (d.elite || d.boss) dropCoins(e.x, e.y, d.boss ? COINS.boss : COINS.elite);
   if (src === 'sunscreen') { const w = hasWeapon('sunscreen'); if (w?.evo) heal(WEAPONS.sunscreen.evo.add.heal); }
   if (src === 'tongue') { const w = hasWeapon('tongue'); if (w) heal(wstats(w).heal); }
   if (e.id === S.bossId) S.bossId = 0;
   if (d.final) endRun(true);
+}
+
+// coins scatter a little; a big pile is a few heavier coins so the floor doesn't fill up
+function dropCoins(x, y, n) {
+  const pieces = Math.min(n, 8);
+  for (let i = 0; i < pieces; i++) {
+    const v = Math.floor(n / pieces) + (i < n % pieces ? 1 : 0), a = Math.random() * 6.28, r = pieces > 1 ? rand(6, 20) : 0;
+    const c = { k: 'coin', x: x + Math.cos(a) * r, y: y + Math.sin(a) * r * 0.7, m: 0, v };
+    if (OBS.length) unstick(c, 0, 5);
+    S.items.push(c);
+  }
 }
 
 /* ---------- weapons ---------- */
@@ -1348,13 +1457,14 @@ function updatePickups(dt) {
   }
 }
 function gainXp(v) {
-  S.xp += v;
+  S.xp += v * ST.growth;
   while (S.xp >= xpNeed(S.lvl)) { S.xp -= xpNeed(S.lvl); S.lvl++; S.pending++; }
 }
 function takeItem(it) {
   if (it.k === 'heal') { heal(ITEMS.heal.hp); addNum(S.p.x, S.p.y - 40, ITEMS.heal.hp, 0); sfx('heal'); }
   else if (it.k === 'magnet') { for (const g of S.gems) g.m = 1; sfx('magnet'); }
   else if (it.k === 'chest') S.chests += it.big ? 3 : 1;
+  else if (it.k === 'coin') { S.coins += it.v * ST.coinMul; sfx('coin'); }
 }
 function addNum(x, y, n, red) {
   if (S.nums.length > 70) S.nums.shift();
@@ -1383,11 +1493,11 @@ function updateFx(dt) {
    ===================================================================== */
 function addWeapon(id) { S.weapons.push({ id, lv: 1, evo: false, cd: 0.4, on: 0, ang: 0, dealt: 0 }); }
 function levelChoices(n) {
-  const pool = [];
-  for (const w of S.weapons) if (!w.evo && w.lv < WEAPON_MAX) pool.push({ kind: 'weapon', id: w.id, lv: w.lv + 1 });
-  for (const p of S.passives) if (p.lv < (PASSIVES[p.id].max || PASSIVE_MAX)) pool.push({ kind: 'passive', id: p.id, lv: p.lv + 1 });
-  if (S.weapons.length < MAX_WEAPONS) for (const id in WEAPONS) if (!hasWeapon(id)) pool.push({ kind: 'weapon', id, lv: 1 });
-  if (S.passives.length < MAX_PASSIVES) for (const id in PASSIVES) if (!hasPassive(id)) pool.push({ kind: 'passive', id, lv: 1 });
+  const pool = [], ok = id => !S.banned.includes(id);
+  for (const w of S.weapons) if (!w.evo && w.lv < WEAPON_MAX && ok(w.id)) pool.push({ kind: 'weapon', id: w.id, lv: w.lv + 1 });
+  for (const p of S.passives) if (p.lv < (PASSIVES[p.id].max || PASSIVE_MAX) && ok(p.id)) pool.push({ kind: 'passive', id: p.id, lv: p.lv + 1 });
+  if (S.weapons.length < MAX_WEAPONS) for (const id in WEAPONS) if (!hasWeapon(id) && ok(id)) pool.push({ kind: 'weapon', id, lv: 1 });
+  if (S.passives.length < MAX_PASSIVES) for (const id in PASSIVES) if (!hasPassive(id) && ok(id)) pool.push({ kind: 'passive', id, lv: 1 });
   const out = [];
   while (out.length < n && pool.length) out.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
   if (!out.length) out.push({ kind: 'heal', id: 'heal', lv: 0 });
@@ -1408,7 +1518,8 @@ function evolvable() {
 }
 function openChest() {
   const n = S.chests; S.chests = 0; S.phase = 'chest';
-  const got = [];
+  const got = [], coins = Math.round(COINS.chest * n * ST.coinMul);
+  S.coins += coins;
   for (let i = 0; i < n; i++) {
     const ev = evolvable()[0];
     if (ev) { ev.evo = true; got.push({ kind: 'evo', id: ev.id }); continue; }
@@ -1417,21 +1528,46 @@ function openChest() {
   }
   recalc();
   sfx(got.some(c => c.kind === 'evo') ? 'evo' : 'chest');
-  showChest(got);
+  showChest(got, coins);
 }
 function endRun(win) {
   if (S.phase === 'over' || S.phase === 'win') return;
   S.phase = win ? 'win' : 'over';
   music(null);
   sfx(win ? 'victory' : 'gameover');
-  saveRecord({ t: Math.floor(S.t), kills: S.kills, lvl: S.lvl, win });
+  const before = gapOpen();
+  S.bonus = Math.round((Math.floor(S.t / 60) * COINS.minute + (win ? COINS.clear : 0)) * ST.coinMul);
+  S.coins += S.bonus;
+  saveRecord({ t: Math.floor(S.t), kills: S.kills, lvl: S.lvl, win, gap: S.gap || 0 });
+  S.opened = gapOpen() > before ? gapOpen() : 0;      // the results screen announces a newly opened 틈 level
+  bankCoins();
   setTimeout(showResults, win ? 1200 : 900);
 }
+// move the run's coins into the shop wallet: at the end, on quitting, and whenever the page is hidden (phones drop
+// background tabs). S.banked counts what is already in, so nothing is counted twice.
+function bankCoins() {
+  if (!S) return;
+  const n = Math.floor(S.coins) - (S.banked || 0);
+  if (n <= 0) return;
+  S.banked = (S.banked || 0) + n;
+  const m = loadMeta();
+  m.coins += n; m.earned += n;
+  store.set('mbs.meta', m);
+}
+// highest 틈 level you may pick: one above the highest level any stage was cleared at
+function gapOpen() {
+  let g = 0;
+  for (const st of Object.values(store.get('mbs.records') || {})) for (const r of Object.values(st)) if (r.win) g = Math.max(g, (r.gap || 0) + 1);
+  return Math.min(GAP_MAX, g);
+}
+// a win beats a loss, a win at a higher 틈 beats a lower one, then longer survival
+const recRank = r => [r.win ? 1 : 0, r.win ? r.gap || 0 : 0, r.t];
+function better(a, b) { const x = recRank(a), y = recRank(b); for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return x[i] > y[i]; return false; }
 
-// best run per stage and hero (a win beats any loss, then longer survival), plus lifetime totals
+// best run per stage and hero, plus lifetime totals
 function saveRecord(rec) {
   const all = store.get('mbs.records') || {}, st = all[S.stage] || (all[S.stage] = {}), b = st[S.hero];
-  if (!b || (rec.win && !b.win) || (rec.win === b.win && rec.t > b.t)) { st[S.hero] = rec; store.set('mbs.records', all); }
+  if (!b || better(rec, b)) { st[S.hero] = rec; store.set('mbs.records', all); }
   const tot = store.get('mbs.stats') || { runs: 0, kills: 0, wins: 0, secs: 0 };
   tot.runs++; tot.kills += rec.kills; tot.wins += rec.win ? 1 : 0; tot.secs += rec.t;
   store.set('mbs.stats', tot);
@@ -1538,7 +1674,7 @@ function render() {
   }
   for (const it of S.items) {
     const img = PX[it.k], bob = Math.round(Math.sin(S.t * 5 + it.x) * 1.5);
-    shadow(it.x, it.y + 8, 12);
+    if (it.k === 'coin') shadow(it.x, it.y + 6, 8); else shadow(it.x, it.y + 8, 12);
     ctx.drawImage(img, sx(it.x) - (img.width >> 1), sy(it.y) - (img.height >> 1) + bob);
   }
 
@@ -1671,6 +1807,11 @@ function drawFx(f) {
       disc(x, y, 3.2 - i * 0.35, '#1b3a10'); disc(x, y, 2.2 - i * 0.3, i % 2 ? '#9be04a' : '#7ccf3a');
     }
     ctx.globalAlpha = 1;
+  } else if (f.k === 'revive') {
+    ctx.globalAlpha = 1 - k;
+    ring(f.x, f.y - 10, 10 + k * 70, (10 + k * 70) * 0.8, '#ffe066', 3, k * 4);
+    ring(f.x, f.y - 10, 6 + k * 46, (6 + k * 46) * 0.8, '#ff9fb2', 3, -k * 4);
+    ctx.globalAlpha = 1;
   } else if (f.k === 'dust') {
     ctx.globalAlpha = (1 - k) * 0.7; disc(f.x, f.y - k * 4, 2 + k * 3, '#d9c9a3'); ctx.globalAlpha = 1;
   }
@@ -1683,6 +1824,7 @@ const els = {};
 const hudCache = {};
 function setText(el, v) { if (hudCache[el.id] !== v) { hudCache[el.id] = v; el.textContent = v; } }
 // card-art icon over its emoji; a missing picture removes itself and the emoji shows
+const COIN = '<i class="coin" aria-label="동전"></i>';
 const iconImg = def => (def.icon ? `<img src="sprites/icons/${def.icon}.png" alt="" onerror="this.remove()">` : '');
 function iconHTML(cls, def) { return `<span class="${cls}">${def.emoji || ''}${iconImg(def)}</span>`; }
 function renderHud() {
@@ -1692,6 +1834,9 @@ function renderHud() {
   setText(els.timer, fmtTime(S.t));
   els.timer.classList.toggle('late', S.t >= STAGES[S.stage].minutes * 60 - 60);
   setText(els.kills, '☠ ' + S.kills);
+  setText(els.coinHud, String(Math.floor(S.coins || 0)));
+  els.gapTag.hidden = !S.gap;
+  if (S.gap) setText(els.gapTag, '틈 ' + S.gap);
   const sig = S.weapons.map(w => w.id + w.lv + (w.evo ? '*' : '')).join() + '|' + S.passives.map(q => q.id + q.lv).join();
   if (hudCache.slots !== sig) {
     hudCache.slots = sig;
@@ -1710,11 +1855,12 @@ function banner(text, sub) {
 }
 
 let modalArmedAt = 0;
-function openModal(html, cls = '') {
+function openModal(html, cls = '', arm = true) {
   els.modalBody.className = 'panel ' + cls;
   els.modalBody.innerHTML = html;
   els.modal.hidden = false;
   els.modalBody.scrollTop = 0;
+  if (!arm) return;                          // redrawn by a button inside the panel: already safe to tap
   modalArmedAt = performance.now() + 380;    // a finger still on the joystick must not pick something by lifting
   releaseJoy();
 }
@@ -1731,21 +1877,32 @@ function choiceText(c) {
   return { name: d.name, tag: c.lv === 1 ? '<span class="tag new">새 아이템</span>' : `<span class="tag">Lv ${c.lv}</span>`, d: d.text, def: d };
 }
 function deltaText(d) { return d.note || Object.entries(d).map(([k, v]) => STAT_TEXT[k](v)).join(' · '); }
-let choices = [];
+let choices = [], banishing = false;
 function openLevelUp() {
   S.phase = 'levelup';
   sfx('levelup');
   choices = levelChoices(3);
+  banishing = false;
+  drawLevelUp(true);
+}
+// the shop's helpers sit under the choices; they only show once bought
+function drawLevelUp(arm) {
   const lv = S.lvl - S.pending + 1;
-  openModal(`<h2>레벨 업! <small>Lv ${lv}</small></h2><p class="sub">하나 골라요.</p>
-    <div class="choices">${choices.map((c, i) => {
+  const help = [
+    S.rerolls ? `<button class="btn ghost help" type="button" data-act="reroll">🎲 다시 뽑기<small>${S.rerolls}번 남음</small></button>` : '',
+    S.banishes ? `<button class="btn ghost help${banishing ? ' on' : ''}" type="button" data-act="banish" aria-pressed="${banishing}">🚫 ${banishing ? '그만 빼기' : '빼기'}<small>${S.banishes}번 남음</small></button>` : '',
+    S.skips ? `<button class="btn ghost help" type="button" data-act="skip">⏭️ 건너뛰기<small>체력 +10 · ${S.skips}번</small></button>` : '',
+  ].join('');
+  openModal(`<h2>레벨 업! <small>Lv ${lv}</small></h2><p class="sub">${banishing ? '이번 판에서 뺄 걸 골라요. 다시 안 나와요.' : '하나 골라요.'}</p>
+    <div class="choices${banishing ? ' banishing' : ''}">${choices.map((c, i) => {
       const t = choiceText(c);
       const hint = c.kind === 'weapon' && c.lv === WEAPON_MAX && hasPassive(WEAPONS[c.id].evo.with) ? `<span class="d">보물 상자를 열면 진화!</span>` : '';
-      return `<button class="choice" type="button" data-act="pick" data-i="${i}">${iconHTML('ic', t.def)}
+      return `<button class="choice" type="button" data-act="pick" data-i="${i}" ${banishing && c.kind === 'heal' ? 'disabled' : ''}>${iconHTML('ic', t.def)}
         <span><b>${t.name}</b>${t.tag}<span class="d">${t.d}</span>${hint}</span></button>`;
-    }).join('')}</div>`);
+    }).join('')}</div>
+    ${help ? `<div class="row helpers">${help}</div>` : ''}`, '', !!arm);
 }
-function showChest(got) {
+function showChest(got, coins) {
   const li = got.map((c, i) => {
     if (c.kind === 'evo') {
       const d = WEAPONS[c.id];
@@ -1754,7 +1911,7 @@ function showChest(got) {
     const t = choiceText(c);
     return `<li class="chest-pop" style="animation-delay:${i * 0.25}s">${iconHTML('ic', t.def)}<span class="n"><b>${t.name}</b>${t.tag}<small>${t.d}</small></span><span></span></li>`;
   }).join('');
-  openModal(`<h2>보물 상자!</h2><p class="sub">벌레가 숨겨 둔 걸 찾았다.</p><ul class="items">${li}</ul>
+  openModal(`<h2>보물 상자!</h2><p class="sub">벌레가 숨겨 둔 걸 찾았다.${coins ? ` <span class="coin-chip">${COIN}+${coins}</span>` : ''}</p><ul class="items">${li}</ul>
     <div class="row"><button class="btn" type="button" data-act="chestOk">좋아!</button></div>`);
 }
 function itemsList(withDmg) {
@@ -1771,14 +1928,17 @@ let quitArmed = false;
 function showPause() {
   if (!S || S.phase !== 'play') return;
   S.phase = 'paused'; quitArmed = false;
-  openModal(`<h2>잠깐 쉬는 중</h2><p class="sub">${fmtTime(S.t)} · Lv ${S.lvl} · 체력 ${Math.ceil(S.p.hp)}/${ST.maxHp}</p>${itemsList(false)}
+  openModal(`<h2>잠깐 쉬는 중${S.gap ? ` <small>틈 ${S.gap}</small>` : ''}</h2><p class="sub">${fmtTime(S.t)} · Lv ${S.lvl} · 체력 ${Math.ceil(S.p.hp)}/${ST.maxHp} · ${COIN}${Math.floor(S.coins)}</p>${itemsList(false)}
     <div class="row"><button class="btn" type="button" data-act="resume">계속하기</button><button class="btn ghost" type="button" data-act="quit" id="quitBtn">그만하기</button></div>
     ${soundToggleHTML()}`);
 }
 function showResults() {
-  const win = S.phase === 'win';
-  openModal(`<h2>${win ? '퇴치 성공!' : '쓰러졌다…'}</h2><p class="sub">${win ? STAGES[S.stage].winText : `${HEROES[S.hero].name}, 다음엔 꼭 버티자.`}</p>
+  bankCoins();                        // anything picked up in the last frame of the run
+  const win = S.phase === 'win', wallet = loadMeta().coins;
+  openModal(`<h2>${win ? '퇴치 성공!' : '쓰러졌다…'}${S.gap ? ` <small>틈 ${S.gap}</small>` : ''}</h2><p class="sub">${win ? STAGES[S.stage].winText : `${HEROES[S.hero].name}, 다음엔 꼭 버티자.`}</p>
     <div class="stats"><div><b>${fmtTime(S.t)}</b>버틴 시간</div><div><b>${S.lvl}</b>레벨</div><div><b>${S.kills}</b>잡은 벌레</div></div>
+    <p class="coin-line"><span class="coin-chip">${COIN}+${Math.floor(S.coins)}</span> ${S.bonus ? `(버틴 보너스 ${S.bonus} 포함) ` : ''}지갑에 ${wallet.toLocaleString()}개. 메인 화면 상점에서 써요.</p>
+    ${S.opened ? `<p class="coin-line"><span class="tag new">틈 ${S.opened}</span> 더 어려운 틈 단계가 열렸어요. 스테이지 고르는 화면에서 바꿔요.</p>` : ''}
     <p class="sub">오른쪽 숫자는 무기마다 준 피해예요.</p>
     ${itemsList(true)}
     <div class="row"><button class="btn" type="button" data-act="retry">다시 하기</button><button class="btn ghost" type="button" data-act="toMain">메인으로</button></div>`);
@@ -1790,10 +1950,10 @@ function openMenu(html, cls = '') {
   els.menu.hidden = false;
   els.menu.scrollTop = 0;
 }
-function remember() { store.set('mbs.last', { hero: heroSel, stage: stageSel }); }
+function remember() { store.set('mbs.last', { hero: heroSel, stage: stageSel, gap: gapSel }); }
 // 로 / 으로 after a Korean word (ㄹ and no final consonant take 로)
 function ro(word) { const c = word.charCodeAt(word.length - 1) - 0xAC00, j = c >= 0 && c < 11172 ? c % 28 : 0; return j === 0 || j === 8 ? '로' : '으로'; }
-function bestText(r) { return r ? (r.win ? '클리어' : fmtTime(r.t)) : '—'; }
+function bestText(r) { return r ? (r.win ? (r.gap ? `클리어 · 틈 ${r.gap}` : '클리어') : fmtTime(r.t)) : '—'; }
 function showMain() {
   S = null; ST = null;
   els.hud.hidden = true;
@@ -1804,7 +1964,7 @@ function showMain() {
   openMenu(`<header class="logo"><span>마노아</span><b>벌레 서바이버</b><small>선크림 소녀 · 알파카 · 세탁실 게코</small></header>
     <nav class="main-nav">
       <button class="btn big" type="button" data-act="toHeroes">시작하기</button>
-      <div class="row"><button class="btn ghost" type="button" data-act="records">기록</button><button class="btn ghost" type="button" data-act="settings">설정</button></div>
+      <div class="row three"><button class="btn ghost" type="button" data-act="shop">상점 <span class="coin-chip">${COIN}${loadMeta().coins.toLocaleString()}</span></button><button class="btn ghost" type="button" data-act="records">기록</button><button class="btn ghost" type="button" data-act="settings">설정</button></div>
       ${line ? `<p class="best">${STAGES[stageSel].name} 최고 · ${line}</p>` : ''}
     </nav>`, 'main');
 }
@@ -1825,6 +1985,7 @@ function showStages() {
       <span><b>${st.name}</b><small>${st.blurb}</small>
       <span class="meta">${st.ready ? `${st.minutes}분 · 보스 ${ENEMIES[st.boss].name} · 최고 ${bestText((rec[id] || {})[heroSel])}` : '준비 중'}</span>
       ${st.ready && !Object.keys(rec[id] || {}).length ? '<span class="tag new">NEW</span>' : ''}</span></button>`).join('')}</div>
+    ${gapHTML()}
     <div class="row"><button class="btn ghost" type="button" data-act="toHeroes">뒤로</button><button class="btn" type="button" data-act="start">출발!</button></div></div>`);
 }
 function showRecords() {
@@ -1832,19 +1993,71 @@ function showRecords() {
   const stages = Object.entries(STAGES).filter(([, st]) => st.ready).map(([id, st]) => `<h3>${st.name}</h3><ul class="items">${Object.entries(HEROES).map(([h, hd]) => {
     const r = (rec[id] || {})[h];
     return `<li><canvas width="64" height="64" data-preview="${h}" data-still="1"></canvas><span class="n"><b>${hd.name}</b>${r?.win ? ' <span class="tag gold">클리어</span>' : ''}
-      <small>${r ? `${fmtTime(r.t)} 버팀 · 벌레 ${r.kills} · Lv ${r.lvl}` : '아직 기록이 없어요'}</small></span><span class="v">${bestText(r)}</span></li>`;
+      <small>${r ? `${fmtTime(r.t)} 버팀 · 벌레 ${r.kills} · Lv ${r.lvl}${r.gap ? ` · 틈 ${r.gap}` : ''}` : '아직 기록이 없어요'}</small></span><span class="v">${bestText(r)}</span></li>`;
   }).join('')}</ul>`).join('');
   openMenu(`<div class="panel"><h2>기록</h2>
     <div class="stats"><div><b>${tot.runs}</b>판</div><div><b>${tot.kills.toLocaleString()}</b>잡은 벌레</div><div><b>${tot.wins}</b>클리어</div></div>
     ${stages}
     <div class="row"><button class="btn ghost" type="button" data-act="toMain">뒤로</button></div></div>`);
 }
+let refundArmed = false;
+function showShop(keepScroll) {
+  const m = loadMeta(), top = keepScroll ? els.menu.querySelector('.panel')?.scrollTop || 0 : 0;
+  refundArmed = false;
+  const rows = Object.entries(UPGRADES).map(([id, u]) => {
+    const lv = m.up[id] || 0, maxed = lv >= u.max, price = upPrice(id, lv), poor = !maxed && m.coins < price;
+    const pips = Array.from({ length: u.max }, (_, i) => `<i class="${i < lv ? 'on' : ''}"></i>`).join('');
+    return `<button class="choice up${maxed ? ' maxed' : ''}" type="button" data-act="buy" data-id="${id}" ${maxed || poor ? 'aria-disabled="true"' : ''}>
+      ${iconHTML('ic', u)}<span><b>${u.name}</b><span class="pips" aria-label="${lv}/${u.max}">${pips}</span>
+      <span class="d">${u.desc} ${lv && !maxed ? `${u.val(lv * u.per)} → ${u.val((lv + 1) * u.per)}` : u.val(Math.max(lv, 1) * u.per)}</span></span>
+      <span class="price${poor ? ' poor' : ''}">${maxed ? 'MAX' : `${COIN}${price}`}</span></button>`;
+  }).join('');
+  const spent = Object.values(m.up).some(v => v);
+  openMenu(`<div class="panel shop"><h2>상점 <span class="coin-chip big">${COIN}${m.coins.toLocaleString()}</span></h2>
+    <p class="sub">판이 끝나면 주운 동전이 여기 모여요. 산 강화는 모든 캐릭터에게 붙어요.</p>
+    <div class="choices">${rows}</div>
+    <div class="row"><button class="btn ghost" type="button" data-act="toMain">뒤로</button>${spent ? '<button class="btn ghost" type="button" data-act="refund" id="refundBtn">전부 되돌리기</button>' : ''}</div></div>`);
+  if (top) els.menu.querySelector('.panel').scrollTop = top;
+}
+function buy(id) {
+  const m = loadMeta(), u = UPGRADES[id], lv = m.up[id] || 0, price = upPrice(id, lv);
+  if (lv >= u.max) return;
+  if (m.coins < price) { sfx('hurt'); return; }
+  m.coins -= price; m.up[id] = lv + 1;
+  store.set('mbs.meta', m);
+  sfx('chest');
+  showShop(true);
+}
+// every coin spent comes back (for trying a hard run bare)
+function refund() {
+  const m = loadMeta();
+  for (const [id, lv] of Object.entries(m.up)) for (let i = 0; i < lv; i++) m.coins += upPrice(id, i);
+  m.up = {};
+  store.set('mbs.meta', m);
+  showShop();
+  banner('동전을 전부 돌려받았어요');
+}
+// the 틈 picker on the stage screen
+function gapHTML() {
+  const open = gapOpen(), g = Math.min(gapSel, open), x = gapMods(g);
+  const cracks = Array.from({ length: GAP_MAX }, (_, i) => `<i class="${i < g ? 'on' : i < open ? 'open' : ''}"></i>`).join('');
+  const info = g ? `벌레 수 +${Math.round((x.count - 1) * 100)}% · 체력 +${Math.round((x.hp - 1) * 100)}% · 공격 +${Math.round((x.dmg - 1) * 100)}% · 동전 +${Math.round((x.coin - 1) * 100)}%`
+    : '지금 그대로. 깨고 나면 다음 틈이 열려요.';
+  const nun = n => ('2459'.includes(String(n).slice(-1)) ? '는' : '은');      // 이·사·오·구 end in a vowel
+  const lock = open < GAP_MAX ? `<small class="gap-lock">${open ? `틈 ${open + 1}${nun(open + 1)} 아무 스테이지나 틈 ${open}에서 깨면 열려요.` : '아무 스테이지나 한 번 깨면 틈 1(하드 모드)이 열려요.'}</small>` : '';
+  return `<div class="gap" id="gapBox"><div class="gap-row">
+      <button class="btn ghost gbtn" type="button" data-act="gap" data-d="-1" aria-label="틈 줄이기" ${g <= 0 ? 'disabled' : ''}>−</button>
+      <div class="gap-mid"><b>틈 ${g} · ${GAP_TEXT[g]}</b><span class="cracks">${cracks}</span><small>${info}</small></div>
+      <button class="btn ghost gbtn" type="button" data-act="gap" data-d="1" aria-label="틈 늘리기" ${g >= open ? 'disabled' : ''}>+</button>
+    </div>${lock}</div>`;
+}
+
 let wipeArmed = false;
 function showSettings() {
   wipeArmed = false;
   openMenu(`<div class="panel"><h2>설정</h2><p class="sub">소리는 이 기기에만 저장돼요. 아이폰은 무음 모드면 소리가 안 나요.</p>
     ${soundToggleHTML()}
-    <div class="row"><button class="btn ghost" type="button" data-act="wipe" id="wipeBtn">기록 지우기</button></div>
+    <div class="row"><button class="btn ghost" type="button" data-act="wipe" id="wipeBtn">기록·동전 지우기</button></div>
     <p class="credits">캐릭터와 카드 그림은 카드 게임 「마노아 벌레 퇴치단」에서 왔고, 새 그림은 PixelLab과 Codex로 그렸어요. 소리는 전부 코드로 만든 칩튠이에요.</p>
     <div class="row"><button class="btn" type="button" data-act="toMain">뒤로</button></div></div>`);
 }
@@ -1872,12 +2085,13 @@ function drawPreviews() {
     if (!st.ready) { g.fillStyle = 'rgba(11,16,19,.55)'; g.fillRect(0, 0, 96, 64); }
   }
 }
-function startRun(hero, stage) {
+function startRun(hero, stage, gap = Math.min(gapSel, gapOpen())) {
   heroSel = hero; stageSel = stage; remember();
   els.menu.hidden = true;
-  S = newRun(hero, stage);
+  S = newRun(hero, stage, gap);
   addWeapon(HEROES[hero].weapon);
   recalc();
+  S.p.hp = ST.maxHp;
   for (const k in hudCache) delete hudCache[k];
   closeModal();
   els.hud.hidden = false;
@@ -1910,20 +2124,43 @@ function act(name, data) {
   else if (name === 'toStages') showStages();
   else if (name === 'records') showRecords();
   else if (name === 'settings') showSettings();
-  else if (name === 'wipe') {
-    if (!wipeArmed) { wipeArmed = true; const b = $('wipeBtn'); b.textContent = '정말 지울까요? 한 번 더 누르면 지워져요'; b.classList.add('warn'); }
-    else { store.set('mbs.records', {}); store.set('mbs.stats', null); try { localStorage.removeItem('mbs.best'); } catch { /* blocked */ } showSettings(); banner('기록을 지웠어요'); }
+  else if (name === 'shop') showShop();
+  else if (name === 'buy') buy(data.id);
+  else if (name === 'refund') {
+    if (!refundArmed) { refundArmed = true; const b = $('refundBtn'); b.textContent = '한 번 더 누르면 되돌려요'; b.classList.add('warn'); }
+    else refund();
+  } else if (name === 'gap') {
+    gapSel = clamp(Math.min(gapSel, gapOpen()) + +data.d, 0, gapOpen()); remember();
+    $('gapBox').outerHTML = gapHTML();
+  } else if (name === 'wipe') {
+    if (!wipeArmed) { wipeArmed = true; const b = $('wipeBtn'); b.textContent = '정말 지울까요? 동전과 강화도 사라져요'; b.classList.add('warn'); }
+    else {
+      store.set('mbs.records', {}); store.set('mbs.stats', null); store.set('mbs.meta', null); gapSel = 0; remember();
+      try { localStorage.removeItem('mbs.best'); } catch { /* blocked */ }
+      showSettings(); banner('기록을 지웠어요');
+    }
   }
   else if (name === 'pick') {
-    applyChoice(choices[+data.i]);
+    const c = choices[+data.i];
+    if (banishing) {
+      if (c.kind === 'heal') return;
+      S.banned.push(c.id); S.banishes--; banishing = false;
+      choices = levelChoices(3);
+      drawLevelUp();
+      return;
+    }
+    applyChoice(c);
     S.pending--;
     closeModal();
     S.phase = 'play';
-  } else if (name === 'chestOk') { closeModal(); S.phase = 'play'; }
+  } else if (name === 'reroll' && S.rerolls > 0) { S.rerolls--; banishing = false; choices = levelChoices(3); drawLevelUp(); }
+  else if (name === 'banish' && S.banishes > 0) { banishing = !banishing; drawLevelUp(); }
+  else if (name === 'skip' && S.skips > 0) { S.skips--; S.pending--; heal(10); closeModal(); S.phase = 'play'; }
+  else if (name === 'chestOk') { closeModal(); S.phase = 'play'; }
   else if (name === 'resume') { closeModal(); S.phase = 'play'; }
   else if (name === 'quit') {
-    if (!quitArmed) { quitArmed = true; const b = $('quitBtn'); b.textContent = '정말 그만할까요?'; b.classList.add('warn'); }
-    else showMain();
+    if (!quitArmed) { quitArmed = true; const b = $('quitBtn'); b.textContent = '정말 그만할까요? 동전은 챙겨요'; b.classList.add('warn'); }
+    else { bankCoins(); showMain(); }
   }
 }
 
@@ -1991,7 +2228,7 @@ function bindInput() {
   addEventListener('keyup', e => keys.delete(e.code));
   addEventListener('blur', () => { keys.clear(); releaseJoy(); });
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) { showPause(); AUDIO.ctx?.suspend().catch(() => {}); }
+    if (document.hidden) { showPause(); bankCoins(); AUDIO.ctx?.suspend().catch(() => {}); }
     else AUDIO.ctx?.resume().catch(() => {});
   });
   addEventListener('resize', resize);
@@ -2025,19 +2262,22 @@ function frame(now) {
 }
 
 async function boot(data) {
-  for (const id of ['game', 'hud', 'xpFill', 'lvl', 'slots', 'timer', 'kills', 'pauseBtn', 'boss', 'bossName', 'bossFill', 'banner', 'joy', 'knob', 'menu', 'modal', 'modalBody']) els[id] = $(id);
+  for (const id of ['game', 'hud', 'xpFill', 'lvl', 'slots', 'timer', 'gapTag', 'kills', 'coinHud', 'pauseBtn', 'boss', 'bossName', 'bossFill', 'banner', 'joy', 'knob', 'menu', 'modal', 'modalBody']) els[id] = $(id);
   resize();
   Object.assign(AUDIO.on, store.get('mbs.audio') || {});
   migrateRecords();
   const last = store.get('mbs.last') || {};
   if (HEROES[last.hero]) heroSel = last.hero;
   if (STAGES[last.stage]?.ready) stageSel = last.stage;
+  gapSel = clamp(last.gap | 0, 0, gapOpen());
   bindInput();
   makePixelArt();
   await loadArt();
   const saved = data && data.state;
   if (saved && saved.v === 1 && ['play', 'paused', 'levelup', 'chest'].includes(saved.phase)) {
-    S = saved; S.stage = S.stage || 'backyard'; heroSel = S.hero; stageSel = S.stage; recalc();
+    // a run saved by an older version: fill in what it didn't have yet
+    S = Object.assign({ stage: 'backyard', gap: 0, up: {}, coins: 0, banked: 0, rerolls: 0, skips: 0, banishes: 0, revives: 0, banned: [] }, saved);
+    heroSel = S.hero; stageSel = S.stage; recalc();
     els.hud.hidden = false;
     S.phase = 'play'; showPause();
   } else showMain();
@@ -2051,7 +2291,7 @@ window.__mbs = {
   give(id) { applyChoice({ kind: WEAPONS[id] ? 'weapon' : 'passive', id }); },
   chest() { S.chests++; },
   audio: { AUDIO, MUS, SONGS, SFX, MIX, playStep, compileSong, pulseWave },
-  start(hero, stage = 'backyard') { startRun(hero, stage); },
+  start(hero, stage = 'backyard', gap = 0) { startRun(hero, stage, gap); },
   freeze(t) { demoT = t; DEBUG.still = true; },
   sim(sec, steer) {
     const end = S.t + sec, t0 = performance.now();
