@@ -1,0 +1,18 @@
+Make two pixel-art pictures with your image generation tool, one generated image per file, and save them. Do not write code for the art itself and do not touch anything outside this folder.
+
+Style for both: match the attached reference exactly. It shows four sprites from the same game (cockroach, centipede, mosquito, gecko), each a 64x64-pixel sprite enlarged 8x: 16-bit retro game sprites, cute chibi monsters with big round cartoon eyes, clean 1-art-pixel near-black outline, 3-4 shades per colour, no anti-aliasing, no blur, no gradients. Fully transparent background (if impossible, one flat pure magenta #FF00FF). No text, no labels, no grid lines, no shadows, no border.
+
+Picture 1: ./out/laundry/bugs_sheet.png - a sprite sheet of five household bugs from a Hawaii laundry room. Five rows, one creature per row, four frames per row showing a looping movement, read left to right. Every frame faces LEFT, shows the full body and has the same size within its row. Leave at least 8 art pixels of empty space between frames and between rows so nothing touches. Every art pixel is an exact square block of 4x4 image pixels.
+- Row 1, silverfish: a cute silvery-grey teardrop-shaped bug with a segmented body, long antennae and three tail bristles, skittering; about 40 art pixels long and 14 tall.
+- Row 2, moth: a fuzzy beige-brown moth with big round dusty wings and fluffy antennae, flapping its wings while hovering; about 30 art pixels wide and 26 tall.
+- Row 3, winged termite: a small pale cream termite with a round tan head and two pairs of long see-through wings, flying; about 22 art pixels long and 16 tall.
+- Row 4, cane spider: a big hairy brown Hawaiian huntsman spider with long banded legs and two big cartoon eyes, scuttling with its legs moving; about 56 art pixels wide and 34 tall.
+- Row 5, termite queen: a huge pale termite queen with a small head, big cartoon eyes, a little crown and an enormous swollen striped cream abdomen, wriggling slowly; about 60 art pixels long and 34 tall.
+
+Picture 2: ./out/laundry/props.png - four separate laundry-room objects in one row with lots of empty space between them, seen from the front and slightly above (the top surface is visible), bottom edge flat on the floor. Every art pixel is an exact square block of 8x8 image pixels.
+- a white front-loading washing machine with a round glass door showing blue water and colourful clothes, and a small control panel on top; about 44 art pixels wide and 54 tall
+- a white clothes dryer with a round dark door and a control panel; about 44 art pixels wide and 54 tall
+- a plastic laundry basket overflowing with colourful clothes and a sock hanging over the edge; about 36 art pixels wide and 28 tall
+- a big blue laundry detergent bottle with a handle and a white cap; about 16 art pixels wide and 26 tall
+
+When done, reply with only the two file paths.

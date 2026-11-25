@@ -247,14 +247,23 @@ const PASSIVES = {
 };
 
 // sprite: key in SPRITES (falls back to `fallback`, then to the emoji). r = hit radius. hp scales with the minute.
+// wobble: sideways weave (amount, wobbleHz how fast). dash: stops, shivers, lunges (dashMul times its speed). summon: lays bugs around itself.
 const ENEMIES = {
   roach:     { name: '바퀴벌레', sprite: 'roach', emoji: '🪳', hp: 8, speed: 38, dmg: 3, xp: 1, r: 13 },
   ant:       { name: '개미', sprite: 'ant', emoji: '🐜', size: 14, hp: 3, speed: 50, dmg: 2, xp: 1, r: 8, mass: 0.5 },
-  mosquito:  { name: '모기', sprite: 'mosquito', emoji: '🦟', size: 18, hp: 5, speed: 64, dmg: 2, xp: 1, r: 10, wobble: true, fly: true },
+  mosquito:  { name: '모기', sprite: 'mosquito', emoji: '🦟', size: 18, hp: 5, speed: 64, dmg: 2, xp: 1, r: 10, wobble: 0.7, fly: true },
   centipede: { name: '지네', sprite: 'centipede', emoji: '🐛', hp: 24, speed: 30, dmg: 5, xp: 2, r: 14, mass: 2 },
   snail:     { name: '달팽이', sprite: 'snail', emoji: '🐌', size: 22, hp: 60, speed: 18, dmg: 6, xp: 4, r: 15, mass: 4, crawl: true },
   flyroach:  { name: '날아다니는 바퀴벌레', sprite: 'flyroach', fallback: 'roach', emoji: '🪳', hp: 160, speed: 62, dmg: 8, xp: 15, r: 16, mass: 6, fly: true, dash: true, elite: true },
   kingCentipede: { name: '왕지네', sprite: 'centipede', emoji: '🐛', scale: 2, tint: ['#ff3b1f', 0.35], hp: 2200, speed: 42, dmg: 12, xp: 60, r: 28, mass: 60, boss: true },
+  // laundry room
+  silverfish: { name: '좀벌레', sprite: 'silverfish', emoji: '🐛', size: 20, hp: 6, speed: 72, dmg: 3, xp: 1, r: 9, wobble: 0.9, wobbleHz: 9 },
+  moth:      { name: '나방', sprite: 'moth', emoji: '🦋', size: 22, hp: 10, speed: 40, dmg: 3, xp: 1, r: 11, fly: true, wobble: 1.1, wobbleHz: 2.5 },
+  termite:   { name: '흰개미', sprite: 'termite', emoji: '🐜', size: 14, hp: 2, speed: 60, dmg: 2, xp: 1, r: 6, mass: 0.4, fly: true, wobble: 0.4, wobbleHz: 8 },
+  caneSpider: { name: '카네 거미', sprite: 'caneSpider', emoji: '🕷️', hp: 220, speed: 74, dmg: 9, xp: 15, r: 20, mass: 6, dash: true, elite: true },
+  bigSpider: { name: '대왕 카네 거미', sprite: 'caneSpider', emoji: '🕷️', scale: 2, tint: ['#2a1200', 0.3], hp: 2600, speed: 46, dmg: 11, xp: 60, r: 34, mass: 60, dash: true, dashMul: 2.4, boss: true },
+  termiteQueen: { name: '흰개미 여왕', sprite: 'termiteQueen', emoji: '👑', scale: 2, hp: 11000, speed: 20, dmg: 16, xp: 0, r: 40, mass: 80, boss: true, final: true,
+    summon: { type: 'termite', every: 2.6, n: 6 } },
   kingRoach: { name: '바퀴벌레 대왕', sprite: 'flyroach', fallback: 'roach', emoji: '🪳', scale: 2, tint: ['#3a0a4a', 0.4], hp: 9000, speed: 58, dmg: 16, xp: 0, r: 30, mass: 80, fly: true, dash: true, boss: true, final: true },
 };
 
@@ -290,11 +299,54 @@ const EVENTS = [
   { at: 570, elite: 'flyroach' },
   { at: RUN_SECONDS, boss: 'kingRoach', say: '바퀴벌레 대왕 등장!', sub: '잡으면 이긴다!' },
 ];
-// stages: waves, timed events, ground tile. ready: false shows a locked card on the stage screen.
+const LAUNDRY_WAVES = [
+  { n: 20,  every: 0.8,  mix: { roach: 2, silverfish: 2 } },
+  { n: 32,  every: 0.7,  mix: { silverfish: 3, moth: 2 } },
+  { n: 45,  every: 0.6,  mix: { moth: 2, roach: 2, termite: 2 } },
+  { n: 60,  every: 0.55, mix: { centipede: 2, silverfish: 3 } },
+  { n: 75,  every: 0.5,  mix: { moth: 2, termite: 3, roach: 2 } },
+  { n: 85,  every: 0.45, mix: { silverfish: 3, centipede: 2, moth: 1 } },
+  { n: 100, every: 0.4,  mix: { moth: 3, termite: 3, silverfish: 2 } },
+  { n: 120, every: 0.35, mix: { roach: 2, centipede: 2, moth: 2, silverfish: 2 } },
+  { n: 140, every: 0.3,  mix: { termite: 3, silverfish: 3, centipede: 2 } },
+  { n: 160, every: 0.3,  mix: { roach: 2, centipede: 2, moth: 2, silverfish: 2, termite: 2 } },
+];
+const LAUNDRY_EVENTS = [
+  { at: 45,  swarm: 'termite', n: 30, say: '흰개미 떼가 날아든다!' },
+  { at: 110, swarm: 'silverfish', n: 20, say: '좀벌레가 쏟아져 나온다!' },
+  { at: 150, elite: 'caneSpider', say: '카네 거미다…!' },
+  { at: 200, ring: 'moth', n: 24, say: '나방이 빙빙 돈다' },
+  { at: 240, elite: 'caneSpider' },
+  { at: 270, swarm: 'termite', n: 45, say: '흰개미 떼가 날아든다!' },
+  { at: 300, boss: 'bigSpider', say: '대왕 카네 거미!' },
+  { at: 360, swarm: 'silverfish', n: 30, say: '좀벌레가 쏟아져 나온다!' },
+  { at: 390, elite: 'caneSpider' },
+  { at: 420, ring: 'roach', n: 28, say: '세탁기 뒤에서 바퀴벌레가!' },
+  { at: 450, elite: 'caneSpider' },
+  { at: 480, swarm: 'termite', n: 70, say: '흰개미 대발생!' },
+  { at: 510, elite: 'caneSpider' },
+  { at: 540, ring: 'centipede', n: 30, say: '지네한테 둘러싸였다!' },
+  { at: 570, elite: 'caneSpider' },
+  { at: RUN_SECONDS, boss: 'termiteQueen', say: '흰개미 여왕 등장!', sub: '잡으면 이긴다!' },
+];
+// stages: waves, timed events, ground tile, floor clutter (decor), song. obstacles: laundry props block feet.
+// ready: false shows a locked card on the stage screen.
 const STAGES = {
   backyard: { name: '마노아 뒷마당', blurb: '비 갠 오후의 뒷마당. 바퀴벌레가 제일 많이 나온다.', minutes: RUN_SECONDS / 60, boss: 'kingRoach',
-    ground: 'grass', mascot: 'roach', waves: WAVES, events: EVENTS, ready: true },
-  laundry:  { name: '우리 집 세탁실', blurb: '게코가 사는 곳. 세탁기 뒤에서 뭔가 기어 나온다…', ground: 'tiles', mascot: 'gecko', ready: false },
+    ground: 'grass', decor: 'yard', song: 'battle', mascot: 'roach', waves: WAVES, events: EVENTS, ready: true,
+    winText: '바퀴벌레 대왕까지 잡았다. 마노아는 오늘도 평화롭다.' },
+  laundry:  { name: '우리 집 세탁실', blurb: '게코가 사는 곳. 세탁기 뒤에서 뭔가 기어 나온다… 가전제품은 지나갈 수 없다.', minutes: RUN_SECONDS / 60, boss: 'termiteQueen',
+    ground: 'tiles', decor: 'indoor', song: 'laundry', obstacles: true, mascot: 'gecko', waves: LAUNDRY_WAVES, events: LAUNDRY_EVENTS, ready: true,
+    winText: '흰개미 여왕까지 잡았다. 세탁실은 이제 게코 차지.' },
+};
+// props that block feet (flying bugs and bosses go over them), drawn at 2x so the room feels gecko-sized.
+// w: drawn width; box: footprint from the bottom centre. The picture is PX[key] (sprites/props/<key>.png via PROP_ART).
+const PROP_SCALE = 2;
+const OBSTACLES = {
+  washer: { w: 66, box: [-32, -40, 32, 0], weight: 3 },
+  dryer:  { w: 66, box: [-32, -40, 32, 0], weight: 2 },
+  basket: { w: 72, box: [-34, -26, 34, 0], weight: 3 },
+  bottle: { w: 42, box: [-18, -18, 18, 0], weight: 2 },
 };
 const xpNeed = lv => 4 + (lv - 1) * 5;
 const DROPS = { heal: 1 / 140, magnet: 1 / 420 };
@@ -315,11 +367,17 @@ const SPRITES = {
   ant:       { sheet: 'sprites/ant.png',       cell: 32, base: 32, cy: 11, faces: -1, idle: [0] },
   // auto: rows without a list are read off the sheet (every non-empty cell, left to right), so new art drops in as-is
   gecko:     { sheet: 'sprites/gecko.png',     cy: 14, faces: 1, auto: true },
+  // laundry room (Codex): small bugs sampled at half size, the spider and the queen at full size in 96px cells
+  silverfish: { sheet: 'sprites/silverfish.png', cy: 6, faces: -1, auto: true },
+  moth:      { sheet: 'sprites/moth.png',      cy: 8, faces: -1, lift: 10, auto: true },
+  termite:   { sheet: 'sprites/termite.png',   cy: 5, faces: -1, lift: 8, auto: true },
+  caneSpider: { sheet: 'sprites/caneSpider.png', cell: 96, base: 93, cy: 15, faces: -1, auto: true },
+  termiteQueen: { sheet: 'sprites/termiteQueen.png', cell: 96, base: 93, cy: 15, faces: -1, auto: true },
 };
 const SPRITE_FPS = { idle: 6, walk: 12, attack: 14, hit: 14, fly: 14, run: 18 };
 // props that have a picture in sprites/props/<key>.png, replacing the code-drawn one or the emoji.
-// keys: gem1 gem2 gem3 (XP, small to big) spit slipper parasol heal magnet chest
-const PROP_ART = ['heal', 'magnet', 'chest'];
+// keys: gem1 gem2 gem3 (XP, small to big) spit slipper parasol heal magnet chest, laundry props washer dryer basket bottle
+const PROP_ART = ['heal', 'magnet', 'chest', 'washer', 'dryer', 'basket', 'bottle'];
 
 /* =====================================================================
    HELPERS
@@ -468,6 +526,12 @@ function makePixelArt() {
   PX.puddle = blobArt(26, 10, '#5aa0c8', '#9fd2ec', '#3f7fa6', '#2f5f80');
   PX.dirt = blobArt(22, 12, '#7a6040', '#8c7150', '#69532f', null);
   for (const [k, v] of Object.entries(ITEMS)) PX[k] = bakeEmoji(v.emoji, 14).n;
+  // laundry room: stand-in appliances until their pictures exist, and floor clutter
+  PX.washer = applianceArt('#5fa8e0', true); PX.dryer = applianceArt('#3d4148', false);
+  PX.basket = bakeEmoji('🧺', 30).n; PX.bottle = bakeEmoji('🧴', 22).n;
+  PX.lint = blobArt(9, 6, '#b9b4ab', '#d8d4cc', '#9a958c', null);
+  PX.drip = blobArt(7, 4, '#6fb3e8', '#a8d4f5', '#4a8fc8', null);
+  PX.sock = pixmap(['.oo....', 'owwo...', 'orro...', 'orro...', 'orro...', 'orrroo.', 'orrrrro', '.oooooo'], { o: '#3a1a14', w: '#f4f4f4', r: '#e05a4a' });
   // 3x5 digits with a 1px dark outline, white and red rows
   const DIG = ['111101101101111', '010110010010111', '111001111100111', '111001111001111', '101101111001001',
     '111100111001111', '111100111101111', '111001001010010', '111101111101111', '111101111001111'];
@@ -483,6 +547,23 @@ function makePixelArt() {
   TILES.grass = groundTile();
   TILES.tiles = laundryTile();
 }
+// a white appliance from the front: control strip on top, round door
+function applianceArt(glass, clothes) {
+  const W = 44, H = 54, c = cnv(W, H), g = c.getContext('2d');
+  g.fillStyle = '#26282b'; g.fillRect(0, 0, W, H);
+  g.fillStyle = '#eeeeea'; g.fillRect(1, 1, W - 2, H - 2);
+  g.fillStyle = '#d4d4ce'; g.fillRect(1, 1, W - 2, 10); g.fillRect(1, H - 4, W - 2, 3);
+  g.fillStyle = '#26282b'; g.fillRect(1, 11, W - 2, 1); g.fillRect(30, 4, 6, 4);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const d = Math.hypot(x - 22 + 0.5, y - 32 + 0.5);
+    if (d > 14) continue;
+    g.fillStyle = d > 12.5 ? '#26282b' : d > 10.5 ? '#9aa0a6' : glass;
+    if (clothes && d < 9 && y > 33 && (x * 7 + y * 3) % 5 === 0) g.fillStyle = ['#f6c453', '#e2493a', '#ffffff'][(x + y) % 3];
+    if (d < 10.5 && x < 18 && y < 28) g.fillStyle = '#d8ecf8';
+    g.fillRect(x, y, 1, 1);
+  }
+  return c;
+}
 function blobArt(w, h, base, light, dark, line) {
   const c = cnv(w, h), g = c.getContext('2d'), rx = w / 2, ry = h / 2;
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
@@ -496,8 +577,8 @@ function blobArt(w, h, base, light, dark, line) {
 // 64px laundry-room floor: cream and grey linoleum squares with grout and a little wear
 function laundryTile() {
   const T = 64, c = cnv(T, T), g = c.getContext('2d'), rnd = mulberry32(31);
-  for (let y = 0; y < 2; y++) for (let x = 0; x < 2; x++) { g.fillStyle = (x + y) % 2 ? '#c9c2b2' : '#e6dfcd'; g.fillRect(x * 32, y * 32, 32, 32); }
-  g.fillStyle = '#a9a191';
+  for (let y = 0; y < 2; y++) for (let x = 0; x < 2; x++) { g.fillStyle = (x + y) % 2 ? '#d2cbba' : '#e0d9c7'; g.fillRect(x * 32, y * 32, 32, 32); }
+  g.fillStyle = '#b5ad9c';
   for (let i = 0; i < T; i += 32) { g.fillRect(i, 0, 1, T); g.fillRect(0, i, T, 1); }
   for (let i = 0; i < 140; i++) { g.fillStyle = rnd() < 0.5 ? 'rgba(90,80,60,.10)' : 'rgba(255,255,255,.18)'; g.fillRect(rnd() * T | 0, rnd() * T | 0, 1, 1); }
   return c;
@@ -529,7 +610,7 @@ const MIX = { master: 0.9, sfx: 1, music: 0.5 };
 const AUDIO = { ctx: null, out: null, sfx: null, mus: null, noise: null, waves: {}, on: { sfx: true, music: true }, quiet: false, last: {}, combo: 0, comboT: 0 };
 
 // 8th-note steps, 8 per bar. mel: a note (C5, F#4) starts, '-' holds it, '.' rests. chords: one per bar.
-// bass: oompah | drive | soft. acc: strum (off-beat chords) | pick (ukulele arpeggio) | stab. drums: one 8-step bar of k(ick) s(nare) h(at); allHats adds a quiet hat on every step.
+// bass: oompah | drive | funk | soft. acc: strum (off-beat chords) | pick (ukulele arpeggio) | stab. drums: one 8-step bar of k(ick) s(nare) h(at); allHats adds a quiet hat on every step.
 const SONGS = {
   title: { bpm: 96, lead: 'triangle', leadVol: 0.16, bass: 'soft', acc: 'pick', drums: 'k..h..h.',
     chords: 'G Em C D G Em C D',
@@ -541,6 +622,10 @@ const SONGS = {
           A4 . D5 . F#5 - E5 D5 | C5 - A4 . F#4 . A4 C5 | B4 D5 G5 - F#5 - E5 D5 | G4 - - - . . D5 D5
           E5 . G5 . B5 - A5 G5 | E5 - C5 . E5 . G5 E5 | D5 . B4 . D5 - G5 F#5 | E5 - D5 - A4 - . .
           E5 . G5 . B5 - C6 B5 | A5 - G5 . E5 . G5 A5 | F#5 - E5 - D5 - C5 - | D5 . C5 . B4 . A4 .` },
+  laundry: { bpm: 124, lead: 'p25', leadVol: 0.1, bass: 'funk', acc: 'stab', drums: 'khskkhsh',
+    chords: 'Dm7 G7 Dm7 G7 Am7 Dm7 Em7 A7',
+    mel: `D5 . F5 . A5 G5 F5 . | E5 . D5 . B4 - . . | D5 . F5 . A5 . C6 A5 | G5 - F5 E5 D5 - . .
+          E5 . A5 . C6 B5 A5 G5 | F5 - E5 D5 A4 - . . | G5 . E5 . B5 . A5 G5 | C#5 . E5 . G5 . A5 .` },
   boss: { bpm: 152, lead: 'square', leadVol: 0.08, bass: 'drive', acc: 'stab', drums: 'khkskhks', allHats: true,
     chords: 'Em C D B7 Em C D B7',
     mel: `E5 E5 . G5 . F#5 E5 D#5 | E5 - . C5 . E5 G5 . | F#5 F#5 . A5 . G5 F#5 E5 | D#5 - . F#5 . B5 - A5
@@ -710,6 +795,7 @@ function playStep(s, i, t, sd) {
   // bass
   if (s.bass === 'oompah') { if (pos % 2 === 0) { const m = pos % 4 === 0 ? root - 12 : root - 5; osc(b, 'triangle', hz(m), hz(m), t, sd * 0.9, 0.22); } }
   else if (s.bass === 'drive') { const m = root - (pos % 2 ? 0 : 12); osc(b, 'triangle', hz(m), hz(m), t, sd * 0.8, 0.22); }
+  else if (s.bass === 'funk') { const m = { 0: root - 12, 3: root, 5: root - 5, 6: root - 12 }[pos]; if (m) osc(b, 'triangle', hz(m), hz(m), t, sd * 0.7, 0.24); }
   else if (pos === 0 || pos === 4) { const m = pos ? root - 5 : root - 12; osc(b, 'triangle', hz(m), hz(m), t, sd * 3.6, 0.18); }
   // accompaniment
   if (s.acc === 'strum' && pos % 2) for (const m of ch.slice(0, 3)) osc(b, 'p12', hz(m + 12), hz(m + 12), t, sd * 0.7, 0.035);
@@ -816,15 +902,64 @@ function nearest(k, range) {
   }
   return out;
 }
+/* ---------- laundry obstacles: placed per 300px chunk by a hash, so the same ones are always in the same place ---------- */
+const OB_CHUNK = 300, obCache = new Map();
+let OBS = [];        // obstacles around the player this frame: { k, x, y (bottom centre), x0, y0, x1, y1 (footprint) }
+function chunkObstacles(cx, cy) {
+  const key = cx * 100003 + cy;
+  let list = obCache.get(key);
+  if (list) return list;
+  list = [];
+  const r = mulberry32(hash2(cx * 7 + 3, cy * 11 + 5)), kinds = Object.keys(OBSTACLES);
+  const total = kinds.reduce((t, k) => t + OBSTACLES[k].weight, 0);
+  const add = (k, x, y) => {
+    const o = OBSTACLES[k], ob = { k, x, y, x0: x + o.box[0], y0: y + o.box[1], x1: x + o.box[2], y1: y + o.box[3] };
+    if (Math.hypot(x, y) < 190) return false;                                              // keep the start clear
+    if (list.some(q => ob.x0 < q.x1 + 24 && ob.x1 > q.x0 - 24 && ob.y0 < q.y1 + 40 && ob.y1 > q.y0 - 40)) return false;   // room to walk between
+    list.push(ob); return true;
+  };
+  for (let i = 0, n = Math.floor(r() * 2.6); i < n; i++) {
+    let v = r() * total, k = kinds[0];
+    for (const kk of kinds) if ((v -= OBSTACLES[kk].weight) < 0) { k = kk; break; }
+    const x = cx * OB_CHUNK + 50 + r() * (OB_CHUNK - 100), y = cy * OB_CHUNK + 70 + r() * (OB_CHUNK - 100);
+    if (add(k, x, y) && k === 'washer' && r() < 0.5) add('dryer', x + 68, y);              // a washer and dryer side by side
+  }
+  if (obCache.size > 600) obCache.clear();
+  obCache.set(key, list);
+  return list;
+}
+function gatherObstacles() {
+  if (!STAGES[S.stage].obstacles) { OBS = []; return; }
+  const p = S.p, hw = BW * 0.9 + 160, hh = BH * 0.9 + 160, out = [];
+  for (let cx = Math.floor((p.x - hw) / OB_CHUNK); cx <= Math.floor((p.x + hw) / OB_CHUNK); cx++)
+    for (let cy = Math.floor((p.y - hh) / OB_CHUNK); cy <= Math.floor((p.y + hh) / OB_CHUNK); cy++) out.push(...chunkObstacles(cx, cy));
+  OBS = out;
+}
+// push a foot circle (u.x, u.y + fy, radius r) out of every obstacle it overlaps; the move slides along the edge
+function unstick(u, fy, r) {
+  for (const o of OBS) {
+    const px = u.x, py = u.y + fy;
+    if (px < o.x0 - r || px > o.x1 + r || py < o.y0 - r || py > o.y1 + r) continue;
+    const dx = px - clamp(px, o.x0, o.x1), dy = py - clamp(py, o.y0, o.y1), d = Math.hypot(dx, dy);
+    if (d >= r) continue;
+    if (d > 0.001) { u.x += dx / d * (r - d); u.y += dy / d * (r - d); continue; }
+    const l = px - o.x0, rt = o.x1 - px, t = py - o.y0, b = o.y1 - py, m = Math.min(l, rt, t, b);   // inside: leave by the nearest side
+    if (m === l) u.x -= l + r; else if (m === rt) u.x += rt + r; else if (m === t) u.y -= t + r; else u.y += b + r;
+  }
+}
+const blocked = d => !d.fly && !d.boss;
+function footOf(e) { const d = ENEMIES[e.type]; return artFor(d).cy * (d.scale || 1) - 2; }
 function onScreen(x, y, m = 0) { return Math.abs(x - S.p.x) < BW / 2 - m && Math.abs(y - S.p.y) < BH / 2 - m; }
 
 function update(dt) {
   S.t += dt;
+  gatherObstacles();
   updatePlayer(dt);
   updateDirector(dt);
   updateEnemies(dt);
   buildGrid();
   separate();
+  if (OBS.length) for (const e of S.en) if (!e.dead && blocked(ENEMIES[e.type])) unstick(e, footOf(e), Math.min(ENEMIES[e.type].r, 12) * 0.8);
   for (const w of S.weapons) WB[w.id](w, wstats(w), dt);
   updateShots(dt);
   contact();
@@ -842,6 +977,7 @@ function updatePlayer(dt) {
     p.ax = ix / m; p.ay = iy / m;
     if (Math.abs(p.ax) > 0.2) p.face = p.ax > 0 ? 1 : -1;
     if (S.hint) S.hint = false;
+    if (OBS.length) unstick(p, heroArt(S.hero).cy - 3, 7);
   }
   p.at += dt;
   const A = heroArt(S.hero);
@@ -890,6 +1026,7 @@ function spawn(type, x, y, extra) {
   const e = { id: S.seq++, type, x, y, hp, mhp: hp, kx: 0, ky: 0, face: -1, an: 'idle', at: Math.random() * 3, ph: Math.random() * 6.28,
     flash: 0, hcd: 0, pcd: 0, sm: 1, dm: 1 + 0.08 * min, dead: false, fade: 0 };
   if (extra) Object.assign(e, extra);
+  if (OBS.length && blocked(d)) unstick(e, footOf(e), Math.min(d.r, 12) * 0.8);
   S.en.push(e);
   return e;
 }
@@ -948,13 +1085,20 @@ function updateEnemies(dt) {
     const dx = goal.x - e.x, dy = goal.y - e.y, dist = Math.hypot(dx, dy) || 1;
     let mx = dx / dist, my = dy / dist, spd = d.speed * e.sm;
     if (e.sx !== undefined) { mx = e.sx; my = e.sy; }
-    if (d.wobble) { const w = Math.sin(S.t * 6 + e.ph) * 0.7; [mx, my] = [mx - my * w, my + mx * w]; }
+    if (d.wobble) { const w = Math.sin(S.t * (d.wobbleHz || 6) + e.ph) * d.wobble; [mx, my] = [mx - my * w, my + mx * w]; }
+    if (d.summon && (e.sumT = (e.sumT ?? d.summon.every) - dt) <= 0) {
+      e.sumT = d.summon.every;
+      for (let i = 0; i < d.summon.n && liveCount < MAX_ENEMIES; i++) {
+        const a = Math.random() * Math.PI * 2;
+        spawn(d.summon.type, e.x + Math.cos(a) * (d.r + 12), e.y + Math.sin(a) * (d.r + 12), { sm: 1.2 });
+      }
+    }
     if (d.dash) {
       // chase → stop and shiver → dash in a straight line → chase
       e.aiT = (e.aiT ?? rand(2, 4)) - dt;
       if (!e.ai && e.aiT <= 0 && dist < 260) { e.ai = 1; e.aiT = 0.6; e.dx = mx; e.dy = my; }
       else if (e.ai === 1) { spd = 0; if (e.aiT <= 0) { e.ai = 2; e.aiT = 0.55; } }
-      else if (e.ai === 2) { mx = e.dx; my = e.dy; spd *= 3.4; if (e.aiT <= 0) { e.ai = 0; e.aiT = rand(2.5, 4); } }
+      else if (e.ai === 2) { mx = e.dx; my = e.dy; spd *= d.dashMul || 3.4; if (e.aiT <= 0) { e.ai = 0; e.aiT = rand(2.5, 4); } }
     }
     e.x += (mx * spd + e.kx) * dt; e.y += (my * spd + e.ky) * dt;
     e.kx *= decay; e.ky *= decay;
@@ -1015,8 +1159,8 @@ function kill(e, src) {
   S.kills++;
   sfx('pop');
   S.fx.push({ k: 'poof', x: e.x, y: e.y, t: 0, life: 0.35, s: d.r });
-  if (d.xp) S.gems.push({ x: e.x, y: e.y, v: d.xp, m: 0 });
-  if (d.elite || (d.boss && !d.final)) S.items.push({ k: 'chest', x: e.x, y: e.y, m: 0, big: !!d.boss });
+  if (d.xp) { const g = { x: e.x, y: e.y, v: d.xp, m: 0 }; if (OBS.length) unstick(g, 0, 6); S.gems.push(g); }
+  if (d.elite || (d.boss && !d.final)) { const c = { k: 'chest', x: e.x, y: e.y, m: 0, big: !!d.boss }; if (OBS.length) unstick(c, 0, 12); S.items.push(c); }
   else if (Math.random() < DROPS.heal) S.items.push({ k: 'heal', x: e.x, y: e.y, m: 0 });
   else if (Math.random() < DROPS.magnet) S.items.push({ k: 'magnet', x: e.x, y: e.y, m: 0 });
   if (src === 'sunscreen') { const w = hasWeapon('sunscreen'); if (w?.evo) heal(WEAPONS.sunscreen.evo.add.heal); }
@@ -1330,9 +1474,10 @@ function drawArt(A, an, t, x, feet, flip, flash, sc = 1, alpha = 1, fps, once, s
   ctx.drawImage(src, seq[i] * c, row * c, c, c, sx(x) - (w >> 1), sy(feet - A.base * sc), w, c * sc);
   if (alpha < 1) ctx.globalAlpha = 1;
 }
-function shadow(x, y, w) {
-  const h = Math.max(2, Math.round(w * 0.32)), X = sx(x - w / 2), Y = sy(y - h / 2);
-  ctx.fillStyle = 'rgba(14,32,12,.32)';
+let shadowColor = 'rgba(14,32,12,.32)';      // green-black on grass, warm brown indoors (set per frame)
+function shadow(x, y, w, h = Math.max(2, Math.round(w * 0.32))) {
+  const X = sx(x - w / 2), Y = sy(y - h / 2);
+  ctx.fillStyle = shadowColor;
   ctx.fillRect(X + 2, Y, w - 4, h); ctx.fillRect(X, Y + 1, w, h - 2);
 }
 // a filled pixel circle (crisp at canvas resolution)
@@ -1360,10 +1505,12 @@ function drawGround() {
   for (let y = -mod(camY, T); y < BH; y += T) for (let x = -mod(camX, T); x < BW; x += T) ctx.drawImage(TILE, x, y);
   // a few props per 160px chunk, placed by a hash so they stay put
   const C = 160;
+  const indoor = STAGES[S ? S.stage : 'backyard'].decor === 'indoor';
   for (let cx = Math.floor(camX / C) - 1; cx <= Math.floor((camX + BW) / C); cx++) for (let cy = Math.floor(camY / C) - 1; cy <= Math.floor((camY + BH) / C); cy++) {
-    const r = mulberry32(hash2(cx, cy)), n = Math.floor(r() * 3.2);
+    const r = mulberry32(hash2(cx, cy)), n = Math.floor(r() * (indoor ? 2 : 3.2));
     for (let i = 0; i < n; i++) {
-      const v = r(), img = v < 0.3 ? PX.tuft : v < 0.5 ? PX.rock : v < 0.66 ? PX.flower : v < 0.76 ? PX.hibiscus : v < 0.9 ? PX.dirt : PX.puddle;
+      const v = r(), img = indoor ? (v < 0.45 ? PX.lint : v < 0.65 ? PX.sock : v < 0.85 ? PX.drip : PX.puddle)
+        : v < 0.3 ? PX.tuft : v < 0.5 ? PX.rock : v < 0.66 ? PX.flower : v < 0.76 ? PX.hibiscus : v < 0.9 ? PX.dirt : PX.puddle;
       ctx.drawImage(img, Math.round(cx * C + r() * C - camX), Math.round(cy * C + r() * C - camY));
     }
   }
@@ -1372,6 +1519,7 @@ function drawGround() {
 function render() {
   const p = S ? S.p : { x: demoT * 14, y: demoT * 6 };
   camX = Math.round(p.x) - (BW >> 1); camY = Math.round(p.y) - (BH >> 1);
+  shadowColor = S && STAGES[S.stage].decor === 'indoor' ? 'rgba(70,52,34,.26)' : 'rgba(14,32,12,.32)';
   drawGround();
   if (!S) { if (els.menu.classList.contains('main')) drawParade(); return; }
 
@@ -1400,15 +1548,18 @@ function render() {
   const PA = heroArt(S.hero);
   p._fy = p.y + (PA ? PA.cy : 18); drawList.push(p);
   for (const sh of S.shots) if (sh.k === 'alpaca' && !(sh.wait > 0)) { sh._fy = sh.y + 24; drawList.push(sh); }
+  for (const o of OBS) if (onScreen(o.x, o.y - 50, -90)) { o._fy = o.y; drawList.push(o); }
   drawList.sort((a, b) => a._fy - b._fy);
   for (const u of drawList) {
-    if (u === p) shadow(p.x, p._fy, 22);
+    if (u.k in OBSTACLES) shadow(u.x, u.y - 2, Math.round(OBSTACLES[u.k].w * 0.9), 8);
+    else if (u === p) shadow(p.x, p._fy, 22);
     else if (u.k === 'alpaca') shadow(u.x, u._fy, 24);
     else if (!u.dead) { const d = ENEMIES[u.type]; shadow(u.x, u._fy, Math.round(d.r * 2 * (d.fly ? 0.7 : 1))); }
   }
   for (const u of drawList) {
     if (u === p) drawPlayer(PA);
     else if (u.k === 'alpaca') { const A = ART.alpaca; if (A) drawArt(A, A.seq.walk ? 'walk' : 'idle', u.at, u.x, u._fy, u.vx < 0, false, 1, 1, SPRITE_FPS.run); }
+    else if (u.k in OBSTACLES) { const img = PX[u.k], w = img.width * PROP_SCALE, h = img.height * PROP_SCALE; ctx.drawImage(img, sx(u.x) - (w >> 1), sy(u.y) - h, w, h); }
     else drawEnemy(u);
   }
 
@@ -1626,7 +1777,7 @@ function showPause() {
 }
 function showResults() {
   const win = S.phase === 'win';
-  openModal(`<h2>${win ? '퇴치 성공!' : '쓰러졌다…'}</h2><p class="sub">${win ? '바퀴벌레 대왕까지 잡았다. 마노아는 오늘도 평화롭다.' : `${HEROES[S.hero].name}, 다음엔 꼭 버티자.`}</p>
+  openModal(`<h2>${win ? '퇴치 성공!' : '쓰러졌다…'}</h2><p class="sub">${win ? STAGES[S.stage].winText : `${HEROES[S.hero].name}, 다음엔 꼭 버티자.`}</p>
     <div class="stats"><div><b>${fmtTime(S.t)}</b>버틴 시간</div><div><b>${S.lvl}</b>레벨</div><div><b>${S.kills}</b>잡은 벌레</div></div>
     <p class="sub">오른쪽 숫자는 무기마다 준 피해예요.</p>
     ${itemsList(true)}
@@ -1648,13 +1799,13 @@ function showMain() {
   els.hud.hidden = true;
   closeModal();
   els.banner.classList.remove('show');
-  const rec = (store.get('mbs.records') || {}).backyard || {};
+  const rec = (store.get('mbs.records') || {})[stageSel] || {};
   const line = Object.keys(HEROES).filter(h => rec[h]).map(h => `${HEROES[h].name} ${bestText(rec[h])}`).join(' · ');
   openMenu(`<header class="logo"><span>마노아</span><b>벌레 서바이버</b><small>선크림 소녀 · 알파카 · 세탁실 게코</small></header>
     <nav class="main-nav">
       <button class="btn big" type="button" data-act="toHeroes">시작하기</button>
       <div class="row"><button class="btn ghost" type="button" data-act="records">기록</button><button class="btn ghost" type="button" data-act="settings">설정</button></div>
-      ${line ? `<p class="best">최고 기록 · ${line}</p>` : ''}
+      ${line ? `<p class="best">${STAGES[stageSel].name} 최고 · ${line}</p>` : ''}
     </nav>`, 'main');
 }
 function showHeroes() {
@@ -1672,7 +1823,8 @@ function showStages() {
         aria-pressed="${id === stageSel}" ${st.ready ? '' : 'disabled'} aria-label="${st.name}">
       <canvas width="96" height="64" data-stage="${id}"></canvas>
       <span><b>${st.name}</b><small>${st.blurb}</small>
-      <span class="meta">${st.ready ? `${st.minutes}분 · 보스 ${ENEMIES[st.boss].name} · 최고 ${bestText((rec[id] || {})[heroSel])}` : '준비 중'}</span></span></button>`).join('')}</div>
+      <span class="meta">${st.ready ? `${st.minutes}분 · 보스 ${ENEMIES[st.boss].name} · 최고 ${bestText((rec[id] || {})[heroSel])}` : '준비 중'}</span>
+      ${st.ready && !Object.keys(rec[id] || {}).length ? '<span class="tag new">NEW</span>' : ''}</span></button>`).join('')}</div>
     <div class="row"><button class="btn ghost" type="button" data-act="toHeroes">뒤로</button><button class="btn" type="button" data-act="start">출발!</button></div></div>`);
 }
 function showRecords() {
@@ -1867,7 +2019,7 @@ function frame(now) {
   if (!S) { music('title'); musicDuck(1); }
   else if (S.phase === 'over' || S.phase === 'win') music(null);
   else {
-    music(S.bossId ? 'boss' : 'battle');
+    music(S.bossId ? 'boss' : STAGES[S.stage].song);
     musicDuck(S.phase === 'paused' ? 0.35 : S.phase === 'play' ? 1 : 0.6);
   }
 }

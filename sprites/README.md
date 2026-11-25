@@ -13,9 +13,11 @@ PixelLab and Codex output, one sheet per unit, unique frames only. Play order, c
 | `snail.png` | 64 | idle 1 | single frame; the game stretches it to crawl |
 | `ant.png` | 32 | idle 1 | single frame; the game bobs it |
 | `gecko.png` | 64 | idle 4 / attack 4 / hit 3 / walk 6 | Codex; rows counted from the sheet (`auto: true`) |
+| `silverfish.png` `moth.png` `termite.png` | 64 | idle 4 | Codex, sampled at half size (see below) |
+| `caneSpider.png` `termiteQueen.png` | 96 | idle 4 | Codex at full size; the 5:00 boss is the spider at 2x, the queen is drawn at 2x |
 | `mist.png` | 64x32 | | card game spray cloud, drawn rotated toward the target |
 | `icons/<id>.png` | 64x48 | | the card game's card art, reused as weapon / passive icons; `tongue`, `egg`, `musubi`, `sneakers` are Codex |
-| `props/<key>.png` | ~16 | | Codex pickups: `heal` (pineapple), `magnet`, `chest`; listed in `PROP_ART` |
+| `props/<key>.png` | ~16 | | Codex pickups: `heal` (pineapple), `magnet`, `chest`; laundry obstacles `washer`, `dryer`, `basket`, `bottle` (drawn at 2x); listed in `PROP_ART` |
 
 For the card game sheets (base prompts, how the rows were made) see `sprites/README.md` in `~/Documents/manoa-bug-squad`.
 
@@ -39,6 +41,9 @@ Procedure, prompt rules and templates: `art/CODEX.md`. Originals and the exact p
 
 - **gecko** (2026-11-24): first a single base picture (gold dust day gecko, side view facing right) for the design; it came out 68 px long, so Codex redrew it as a whole sheet at ~44x26 art pixels with the first picture attached as the design reference (`art/codex/gecko_sheet.*`). Converted with `scripts/pixelize.py` (art pixel 6.0 px → 17 frames, the hurt frame's impact lines dropped as specks).
 - **icons** `tongue`, `egg`, `musubi`, `sneakers` and **props** `heal`, `magnet`, `chest`: one Codex session with the card art attached as the style reference (`art/codex/icons/`). Converted with `--canvas 64x48` and `--each`.
+
+- **laundry bugs** (`art/codex/laundry/`): one sheet, five rows of four frames, facing left. Codex drew them 1.7-2x bigger than asked (silverfish 69 px), so `silverfish`, `moth`, `termite` were converted with `--pitch 8` (half size, some detail lost) and `caneSpider`, `termiteQueen` at full size with `--cell 96 --base 93`; rows cut into one sheet each with ffmpeg.
+- **laundry props**: washer, dryer, basket, bottle from one picture, `--each`.
 
 ## Still placeholders (next art to make)
 

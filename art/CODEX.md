@@ -64,3 +64,6 @@ Save as ./out/<id>_sheet.png. When done, reply with only the file path.
 
 - `sprites/gecko.png`: idle 4 / attack 4 / hit 3 / walk 6 (`art/codex/gecko_sheet.*`)
 - Icons and pickups made in the same session: see `sprites/README.md`
+- Laundry bugs (silverfish, moth, termite, cane spider, termite queen) and laundry props (washer, dryer, basket, bottle): `art/codex/laundry/`
+
+Size drift: Codex often draws figures bigger than the art-pixel size asked for. Check the frame sizes `pixelize.py` prints; `--pitch` at twice the detected value halves a sheet (loses some 1px detail), or keep it full size in a bigger cell (`--cell 96 --base 93`).
