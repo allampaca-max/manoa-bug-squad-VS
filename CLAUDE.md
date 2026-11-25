@@ -6,9 +6,10 @@ Private inner-joke game for the owner and their wife: a Vampire Survivors–styl
 
 All code lives in `index.html` (vanilla HTML/CSS/JS, no build, no framework); pixel art lives in `sprites/`.
 
-- `DATA` section at the top of the script: heroes, weapons (level steps + evolutions), passives, enemies, per-minute `WAVES`, timed `EVENTS`, XP curve. Balance changes go here.
+- `DATA` section at the top of the script: heroes, weapons (level steps + evolutions), passives, enemies, per-minute `WAVES`, timed `EVENTS`, `STAGES` (each stage's waves, events, ground tile in `TILES`; `ready: false` shows a locked card), XP curve. Balance changes go here.
 - The world is one low-res canvas: 1 canvas px = 1 sprite px, about `VIEW_TARGET` px on the short side, scaled up with `image-rendering: pixelated`. `resize()` snaps the scale to whole device pixels when that is within 12%.
 - Run state `S` is plain JSON (no `Infinity`, no class instances) so the artifact's hot-reload snapshot can hand it back; a restored run opens paused. Derived player stats live in `ST` (`recalc()`); the spatial grid and baked art live outside `S`.
+- Two overlay layers: `#menu` holds the screens outside a run (`showMain` / `showHeroes` / `showStages` / `showRecords` / `showSettings`; the main screen's background parade is `drawParade`), `#modal` holds the in-run panels (level up, chest, pause, results). Both route `data-act` buttons through `act()`. Last picked hero and stage: localStorage `mbs.last`; records: `mbs.records[stage][hero]` (best run) and `mbs.stats` (totals), written by `saveRecord()`; the old per-hero `mbs.best` is folded in by `migrateRecords()`.
 - Fixed 60 Hz simulation (`update`) apart from `render`. Enemies sit in a 32px spatial hash (`buildGrid` / `near`); `near()` reuses one array, so never nest calls to it.
 - Weapons: data in `WEAPONS[id]`, behaviour in `WB[id]`. Reaching level n adds `lv[n-2]`; evolving needs max level + the `evo.with` passive + a chest (elites and the 5:00 boss drop chests).
 - Sprites: `SPRITES` in `DATA`, one sheet per unit, rows idle / attack / hit / walk, 64px cells unless `cell` / `base` say otherwise (`base` is the feet row, `cy` the body centre above it). `loadArt` bakes each sheet into plain / mirrored / white-flash canvases, plus tinted copies for bosses. Heroes face right and bugs face left in the art; the game mirrors them by movement. A unit without a sheet falls back to `fallback`, then to its emoji, so a new enemy can ship before its art.
@@ -21,7 +22,7 @@ All code lives in `index.html` (vanilla HTML/CSS/JS, no build, no framework); pi
 ## Testing
 
 - Local preview: `.claude/launch.json` serves this folder on :8124 (config `survivors`). file:// pages open as a `data:` snapshot in the browser pane, where relative `sprites/` URLs don't resolve.
-- `window.__mbs` is a test hook: `__mbs.start('girl')`, `__mbs.DEBUG.god = true`, `__mbs.give('raid')`, `__mbs.chest()`. `__mbs.audio` exposes the sound internals for offline rendering. `__mbs.sim(60, S => [dx, dy])` runs a minute headless (silently) with a steering function and random level-up picks; it works while the browser pane is hidden (rAF does not), so use it for balance checks.
+- `window.__mbs` is a test hook: `__mbs.start('girl', 'backyard')`, `__mbs.freeze(6.6)` (stops the menu animation at a moment, for screenshots), `__mbs.DEBUG.god = true`, `__mbs.give('raid')`, `__mbs.chest()`. `__mbs.audio` exposes the sound internals for offline rendering. `__mbs.sim(60, S => [dx, dy])` runs a minute headless (silently) with a steering function and random level-up picks; it works while the browser pane is hidden (rAF does not), so use it for balance checks.
 
 ## Publishing
 
