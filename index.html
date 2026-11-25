@@ -270,11 +270,25 @@ const WEAPONS = {
     base: { dmg: 12, cd: 0.85, range: 96, pierce: 2, count: 1, heal: 1, knock: 25 },
     lv: [{ dmg: 5 }, { range: 20, pierce: 1 }, { count: 1 }, { cd: -0.15, dmg: 5 }],
     evo: { with: 'egg', name: '게코 일가족', blurb: '새끼 게코들까지 혀를 날린다. 한 번에 여러 마리를 낚는다.', add: { count: 3, pierce: 2, heal: 1 } } },
+  // kitchen jokes: the Korean electric swatter (big bugs smell like barbecue), the wife's foot shampoo + chopsticks, the centipede water jug
+  swatter: { name: '전기파리채', icon: 'swatter', emoji: '⚡', blurb: '가까운 벌레를 지지고 옆 벌레로 전기가 튄다. 큰 벌레는 바베큐 냄새가 난다.',
+    base: { dmg: 16, cd: 1.2, range: 40, chain: 2, chainR: 52, knock: 30 },
+    lv: [{ dmg: 6 }, { chain: 2 }, { range: 10, cd: -0.2 }, { chain: 2, dmg: 6 }],
+    evo: { with: 'battery', name: '바베큐 파티', blurb: '전기가 줄줄이 튀고, 잡는 벌레마다 바베큐 냄새 연기가 피어오른다.', add: { chain: 4, dmg: 8, range: 8, bbq: 1 } } },
+  footShampoo: { name: '풋샴푸', icon: 'footShampoo', emoji: '🧴', blurb: '레이드 대신 건강하게. 거품을 쏴서 벌레를 기절시킨다. 기절한 벌레는 더 아프게 맞는다.',
+    base: { dmg: 3, cd: 2.2, count: 1, radius: 26, dur: 2, stun: 1.2 },
+    lv: [{ count: 1 }, { radius: 6, stun: 0.3 }, { dur: 1, dmg: 3 }, { count: 1, radius: 6 }],
+    evo: { with: 'chopsticks', name: '젓가락 신공', blurb: '거품에 기절한 벌레를 젓가락으로 집어서 버린다 (엘리트·보스 빼고).', add: { count: 1, stun: 0.5, pick: 1 } } },
+  waterJug: { name: '물통', icon: 'waterJug', emoji: '🫙', blurb: '물통을 놓으면 벌레가 빨려 들어간다. 지네는 무조건 쏙.',
+    base: { dmg: 30, cd: 6, count: 1, dur: 5, radius: 48, cap: 6, pull: 60 },
+    lv: [{ cap: 3 }, { radius: 12, pull: 20 }, { cd: -1, dmg: 15 }, { count: 1 }],
+    evo: { with: 'tea', name: '보리차 물통', blurb: '물통이 오래 버티고 더 많이 담는다. 하나 담을 때마다 체력 +1.', add: { cap: 6, dur: 3, radius: 12, heal: 1 } } },
 };
 const STAT_TEXT = {
   dmg: v => `피해 +${v}`, cd: v => `쿨타임 ${v}초`, range: v => `사거리 +${v}`, arc: () => '더 넓게', dirs: v => `방향 +${v}`,
   count: v => `개수 +${v}`, pierce: v => `관통 +${v}`, size: v => `크기 +${v}`, speed: v => `속도 +${v}`,
   radius: v => `범위 +${v}`, dur: v => `지속 +${v}초`, spin: () => '더 빨리 돈다', band: v => `폭 +${v}`, heal: v => `잡아먹으면 체력 +${v}`,
+  chain: v => `전기 +${v}마리`, stun: v => `기절 +${v}초`, cap: v => `+${v}마리 담음`, pull: v => `빨아들이는 힘 +${v}`,
 };
 
 // per = what one level adds; max overrides PASSIVE_MAX. The emoji shows until sprites/icons/<icon>.png exists.
@@ -286,6 +300,8 @@ const PASSIVES = {
   musubi:   { name: '스팸 무스비', emoji: '🍙', icon: 'musubi',   per: { might: 0.1 },  text: '모든 피해 +10%' },
   sneakers: { name: '하얀 운동화', emoji: '👟', icon: 'sneakers', per: { speed: 0.1 },  text: '이동 속도 +10%' },
   egg:      { name: '게코 알',     emoji: '🥚', icon: 'egg', per: { amount: 1 }, text: '무기 개수 +1', max: 2 },
+  chopsticks: { name: '젓가락',    emoji: '🥢', icon: 'chopsticks', per: { stunDmg: 0.25 }, text: '기절한 벌레에게 피해 +25%', max: 4 },
+  battery:  { name: '건전지',      emoji: '🔋', per: { area: 0.1 }, text: '효과 범위 +10%' },
 };
 
 // sprite: key in SPRITES (falls back to `fallback`, then to the emoji). r = hit radius. hp scales with the minute.
@@ -306,6 +322,13 @@ const ENEMIES = {
   bigSpider: { name: '대왕 카네 거미', sprite: 'caneSpider', emoji: '🕷️', scale: 2, tint: ['#2a1200', 0.3], hp: 2600, speed: 46, dmg: 11, xp: 60, r: 34, mass: 60, dash: true, dashMul: 2.4, boss: true },
   termiteQueen: { name: '흰개미 여왕', sprite: 'termiteQueen', emoji: '👑', scale: 2, hp: 11000, speed: 20, dmg: 16, xp: 0, r: 40, mass: 80, boss: true, final: true,
     summon: { type: 'termite', every: 2.6, n: 6 } },
+  // kitchen
+  fruitFly:  { name: '초파리', sprite: 'fruitFly', emoji: '🪰', size: 12, hp: 2, speed: 56, dmg: 2, xp: 1, r: 6, mass: 0.3, fly: true, wobble: 1.3, wobbleHz: 8 },
+  ensignWasp: { name: '깃대벌', sprite: 'ensignWasp', emoji: '🐝', size: 18, hp: 14, speed: 80, dmg: 4, xp: 2, r: 10, fly: true, wobble: 0.5, wobbleHz: 5, dash: true, dashMul: 2.6 },
+  bigWasp:   { name: '대왕 깃대벌', sprite: 'ensignWaspBig', fallback: 'ensignWasp', emoji: '🐝', scale: 1.3, hp: 2400, speed: 64, dmg: 10, xp: 60, r: 26, mass: 60, fly: true, dash: true, dashMul: 2.6, boss: true },
+  // trail: lays a single-file line of ants that walk exactly her path (gap = trail points between two ants)
+  antQueen:  { name: '여왕개미', sprite: 'antQueen', emoji: '👑', scale: 1.5, hp: 10000, speed: 24, dmg: 16, xp: 0, r: 38, mass: 80, boss: true, final: true,
+    wobble: 0.7, wobbleHz: 0.9, trail: { type: 'ant', every: 0.15, max: 120, gap: 4 } },
   kingRoach: { name: '바퀴벌레 대왕', sprite: 'flyroach', fallback: 'roach', emoji: '🪳', scale: 2, tint: ['#3a0a4a', 0.4], hp: 9000, speed: 58, dmg: 16, xp: 0, r: 30, mass: 80, fly: true, dash: true, boss: true, final: true },
 };
 
@@ -371,15 +394,53 @@ const LAUNDRY_EVENTS = [
   { at: 570, elite: 'caneSpider' },
   { at: RUN_SECONDS, boss: 'termiteQueen', say: '흰개미 여왕 등장!', sub: '잡으면 이긴다!' },
 ];
-// stages: waves, timed events, ground tile, floor clutter (decor), song. obstacles: laundry props block feet.
+const KITCHEN_WAVES = [
+  { n: 22,  every: 0.8,  mix: { ant: 3, fruitFly: 2 } },
+  { n: 34,  every: 0.7,  mix: { ant: 2, fruitFly: 3, roach: 1 } },
+  { n: 46,  every: 0.6,  mix: { fruitFly: 3, ensignWasp: 1, roach: 2 } },
+  { n: 60,  every: 0.55, mix: { ant: 3, roach: 2, ensignWasp: 1 } },
+  { n: 80,  every: 0.5,  mix: { centipede: 2, fruitFly: 3, ant: 2 } },
+  { n: 95,  every: 0.45, mix: { roach: 3, ensignWasp: 2, fruitFly: 2 } },
+  { n: 110, every: 0.4,  mix: { ant: 4, centipede: 2, ensignWasp: 2 } },
+  { n: 130, every: 0.35, mix: { fruitFly: 4, roach: 2, ensignWasp: 3 } },
+  { n: 150, every: 0.3,  mix: { ant: 3, centipede: 2, roach: 2, ensignWasp: 3 } },
+  { n: 170, every: 0.28, mix: { ant: 3, fruitFly: 3, roach: 2, centipede: 2, ensignWasp: 3 } },
+];
+// march = a single-file line of ants snaking across the screen
+const KITCHEN_EVENTS = [
+  { at: 40,  swarm: 'fruitFly', n: 30, say: '초파리 떼다!' },
+  { at: 100, march: 'ant', n: 50, say: '개미 행렬이다!' },
+  { at: 150, elite: 'flyroach', say: '부엌 바퀴벌레가 날았다!' },
+  { at: 200, ring: 'fruitFly', n: 32, say: '초파리한테 둘러싸였다!' },
+  { at: 240, elite: 'flyroach' },
+  { at: 270, march: 'ant', n: 80, say: '개미 행렬이 또!' },
+  { at: 300, boss: 'bigWasp', say: '대왕 깃대벌!', sub: '빠르고 날아다닌다… 질색' },
+  { at: 360, swarm: 'fruitFly', n: 45, say: '초파리 떼다!' },
+  { at: 390, elite: 'flyroach' },
+  { at: 420, ring: 'roach', n: 28, say: '싱크대 밑에서 바퀴벌레가!' },
+  { at: 450, elite: 'flyroach' },
+  { at: 480, march: 'ant', n: 120, say: '삼만 개미 행렬!!', sub: '그저께 미리 잡아 둘걸' },
+  { at: 510, elite: 'flyroach' },
+  { at: 540, ring: 'centipede', n: 30, say: '지네한테 둘러싸였다!', sub: '물통 어디 있지?' },
+  { at: 570, elite: 'flyroach' },
+  { at: RUN_SECONDS, boss: 'antQueen', say: '여왕개미 등장!', sub: '개미 행렬을 이끌고 온다. 여왕을 잡으면 이긴다!' },
+];
+// stages: waves, timed events, ground tile, floor clutter (decor, see DECOR), song. obstacles: the props that block feet there.
+// indoor: warm shadows. need: { survive: s } keeps the stage locked until some run on any stage lasts that long.
 // ready: false shows a locked card on the stage screen.
 const STAGES = {
   backyard: { name: '마노아 뒷마당', blurb: '비 갠 오후의 뒷마당. 바퀴벌레가 제일 많이 나온다.', minutes: RUN_SECONDS / 60, boss: 'kingRoach',
     ground: 'grass', decor: 'yard', song: 'battle', mascot: 'roach', waves: WAVES, events: EVENTS, ready: true,
     winText: '바퀴벌레 대왕까지 잡았다. 마노아는 오늘도 평화롭다.' },
   laundry:  { name: '우리 집 세탁실', blurb: '게코가 사는 곳. 세탁기 뒤에서 뭔가 기어 나온다… 가전제품은 지나갈 수 없다.', minutes: RUN_SECONDS / 60, boss: 'termiteQueen',
-    ground: 'tiles', decor: 'indoor', song: 'laundry', obstacles: true, mascot: 'gecko', waves: LAUNDRY_WAVES, events: LAUNDRY_EVENTS, ready: true,
+    ground: 'tiles', decor: 'laundry', indoor: true, song: 'laundry', obstacles: ['washer', 'dryer', 'basket', 'bottle'], mascot: 'gecko',
+    waves: LAUNDRY_WAVES, events: LAUNDRY_EVENTS, ready: true,
     winText: '흰개미 여왕까지 잡았다. 세탁실은 이제 게코 차지.' },
+  kitchen:  { name: '우리 집 부엌', blurb: '낡은 집 부엌. 초파리가 날고, 개미가 줄지어 오고, 깃대벌이 휙 지나간다. 밥솥과 쓰레기통은 지나갈 수 없다.',
+    minutes: RUN_SECONDS / 60, boss: 'antQueen', ground: 'wood', decor: 'kitchen', indoor: true, song: 'kitchen',
+    obstacles: ['riceCooker', 'trashCan', 'riceSack', 'kimchi'], mascot: 'ensignWasp', waves: KITCHEN_WAVES, events: KITCHEN_EVENTS, ready: true,
+    need: { survive: 300, text: '아무 스테이지에서 5분 버티면 열려요' },
+    winText: '여왕개미까지 잡았다. 삼만 개미 행렬은 이제 없다.' },
 };
 // props that block feet (flying bugs and bosses go over them), drawn at 2x so the room feels gecko-sized.
 // w: drawn width; box: footprint from the bottom centre. The picture is PX[key] (sprites/props/<key>.png via PROP_ART).
@@ -389,6 +450,16 @@ const OBSTACLES = {
   dryer:  { w: 66, box: [-32, -40, 32, 0], weight: 2 },
   basket: { w: 72, box: [-34, -26, 34, 0], weight: 3 },
   bottle: { w: 42, box: [-18, -18, 18, 0], weight: 2 },
+  riceCooker: { w: 52, box: [-24, -26, 24, 0], weight: 3 },
+  trashCan:   { w: 56, box: [-26, -28, 26, 0], weight: 2 },
+  riceSack:   { w: 54, box: [-25, -24, 25, 0], weight: 2 },
+  kimchi:     { w: 52, box: [-24, -20, 24, 0], weight: 3 },
+};
+// floor clutter per stage: about n per 160px chunk, picked by weight (keys of PX)
+const DECOR = {
+  yard:    { n: 3.2, items: { tuft: 30, rock: 20, flower: 16, hibiscus: 10, dirt: 14, puddle: 10 } },
+  laundry: { n: 2,   items: { lint: 45, sock: 20, drip: 20, puddle: 15 } },
+  kitchen: { n: 2.2, items: { crumbs: 35, rice: 30, sugar: 15, drip: 12, peel: 8 } },
 };
 const xpNeed = lv => 4 + (lv - 1) * 5;
 const DROPS = { heal: 1 / 140, magnet: 1 / 420, coin: 1 / 25 };
@@ -444,11 +515,16 @@ const SPRITES = {
   termite:   { sheet: 'sprites/termite.png',   cy: 5, faces: -1, lift: 8, auto: true },
   caneSpider: { sheet: 'sprites/caneSpider.png', cell: 96, base: 93, cy: 15, faces: -1, auto: true },
   termiteQueen: { sheet: 'sprites/termiteQueen.png', cell: 96, base: 93, cy: 15, faces: -1, auto: true },
+  // kitchen (Codex): fruit fly and ensign wasp at half size, the big wasp and the queen at full size
+  fruitFly:  { sheet: 'sprites/fruitFly.png',  cell: 32, base: 30, cy: 7, faces: -1, lift: 12, auto: true },
+  ensignWasp: { sheet: 'sprites/ensignWasp.png', cy: 10, faces: -1, lift: 12, auto: true },
+  ensignWaspBig: { sheet: 'sprites/ensignWaspBig.png', cell: 96, base: 93, cy: 20, faces: -1, lift: 12, auto: true },
+  antQueen:  { sheet: 'sprites/antQueen.png',  cell: 96, base: 93, cy: 26, faces: -1, auto: true },
 };
 const SPRITE_FPS = { idle: 6, walk: 12, attack: 14, hit: 14, fly: 14, run: 18 };
 // props that have a picture in sprites/props/<key>.png, replacing the code-drawn one or the emoji.
 // keys: gem1 gem2 gem3 (XP, small to big) spit slipper parasol heal magnet chest, laundry props washer dryer basket bottle
-const PROP_ART = ['heal', 'magnet', 'chest', 'coin', 'washer', 'dryer', 'basket', 'bottle'];
+const PROP_ART = ['heal', 'magnet', 'chest', 'coin', 'jug', 'washer', 'dryer', 'basket', 'bottle', 'riceCooker', 'trashCan', 'riceSack', 'kimchi'];
 
 /* =====================================================================
    HELPERS
@@ -600,6 +676,9 @@ function makePixelArt() {
   // laundry room: stand-in appliances until their pictures exist, and floor clutter
   PX.washer = applianceArt('#5fa8e0', true); PX.dryer = applianceArt('#3d4148', false);
   PX.basket = bakeEmoji('🧺', 30).n; PX.bottle = bakeEmoji('🧴', 22).n;
+  // kitchen stand-ins until sprites/props/ has them
+  PX.riceCooker = bakeEmoji('🍚', 24).n; PX.trashCan = bakeEmoji('🗑️', 26).n; PX.riceSack = bakeEmoji('🌾', 24).n; PX.kimchi = bakeEmoji('🥬', 22).n;
+  PX.jug = bakeEmoji('🫙', 14).n;
   PX.lint = blobArt(9, 6, '#b9b4ab', '#d8d4cc', '#9a958c', null);
   PX.drip = blobArt(7, 4, '#6fb3e8', '#a8d4f5', '#4a8fc8', null);
   PX.sock = pixmap(['.oo....', 'owwo...', 'orro...', 'orro...', 'orro...', 'orrroo.', 'orrrrro', '.oooooo'], { o: '#3a1a14', w: '#f4f4f4', r: '#e05a4a' });
@@ -615,8 +694,30 @@ function makePixelArt() {
     }
   }));
   PX.digits = dc;
+  // kitchen floor clutter and the barbecue smell icon
+  PX.crumbs = pixmap(['.b...', 'bdb.b', '.b.bd', '...b.'], { b: '#c8964e', d: '#8a5f2a' });
+  PX.rice = pixmap(['ww....', '....ww', '.ww...', '...ww.'], { w: '#fbf8ee' });
+  PX.sugar = blobArt(12, 6, '#f4f1ea', '#ffffff', '#d9d4c8', null);
+  PX.peel = pixmap(['..yy..', '.yyyy.', 'yy..yy', 'yd..dy', 'd....d'], { y: '#f3d24b', d: '#8a6a1c' });
+  PX.bbq = pixmap(['..oo....', '.obbo...', 'obhbbo..', 'obbbbo..', '.obbdo..', '..oodwo.', '....owwo', '.....oo.'],
+    { o: '#3d1d0c', b: '#b8682c', h: '#e09a52', d: '#8a4a1c', w: '#f4efe4' });
   TILES.grass = groundTile();
   TILES.tiles = laundryTile();
+  TILES.wood = woodTile();
+}
+// 64px kitchen floor: worn honey-coloured planks, staggered seams, a few knots
+function woodTile() {
+  const T = 64, c = cnv(T, T), g = c.getContext('2d'), rnd = mulberry32(57), tones = ['#b5844f', '#a97843', '#bd8d58', '#ae7d48'];
+  for (let row = 0; row < 8; row++) {
+    g.fillStyle = tones[row % 4]; g.fillRect(0, row * 8, T, 8);
+    g.fillStyle = '#7f5730'; g.fillRect(0, row * 8 + 7, T, 1);
+    const seam = (row * 23 + 11) % T;
+    g.fillRect(seam, row * 8, 1, 7);
+    g.fillStyle = 'rgba(255,235,200,.10)'; g.fillRect(0, row * 8, T, 1);
+  }
+  for (let i = 0; i < 160; i++) { g.fillStyle = rnd() < 0.6 ? 'rgba(90,55,20,.14)' : 'rgba(255,240,210,.12)'; g.fillRect(rnd() * T | 0, rnd() * T | 0, rnd() < 0.5 ? 2 : 1, 1); }
+  for (let i = 0; i < 3; i++) { const x = rnd() * 60 | 0, y = (rnd() * 8 | 0) * 8 + 3; g.fillStyle = '#8a5f34'; g.fillRect(x, y, 3, 2); g.fillStyle = '#6e4826'; g.fillRect(x + 1, y, 1, 1); }
+  return c;
 }
 // a white appliance from the front: control strip on top, round door
 function applianceArt(glass, clothes) {
@@ -697,6 +798,10 @@ const SONGS = {
     chords: 'Dm7 G7 Dm7 G7 Am7 Dm7 Em7 A7',
     mel: `D5 . F5 . A5 G5 F5 . | E5 . D5 . B4 - . . | D5 . F5 . A5 . C6 A5 | G5 - F5 E5 D5 - . .
           E5 . A5 . C6 B5 A5 G5 | F5 - E5 D5 A4 - . . | G5 . E5 . B5 . A5 G5 | C#5 . E5 . G5 . A5 .` },
+  kitchen: { bpm: 140, lead: 'p25', leadVol: 0.1, bass: 'oompah', acc: 'pick', drums: 'khs.khsh',
+    chords: 'F F Bb C7 F Dm Gm C7',
+    mel: `F5 . A5 . C6 - A5 F5 | G5 . A5 . F5 - . . | D6 . C6 . Bb5 - A5 G5 | A5 - G5 - E5 - C5 .
+          F5 . A5 . C6 - D6 C6 | A5 - F5 . D5 . F5 A5 | G5 . Bb5 . A5 . G5 . | E5 - G5 - F5 - . .` },
   boss: { bpm: 152, lead: 'square', leadVol: 0.08, bass: 'drive', acc: 'stab', drums: 'khkskhks', allHats: true,
     chords: 'Em C D B7 Em C D B7',
     mel: `E5 E5 . G5 . F#5 E5 D#5 | E5 - . C5 . E5 G5 . | F#5 F#5 . A5 . G5 F#5 E5 | D#5 - . F#5 . B5 - A5
@@ -798,6 +903,10 @@ const SFX = {
   click:  { gap: 0.05, vol: 3, play: (b, t) => { osc(b, 'p25', 880, 880, t, 0.04, 0.08); osc(b, 'p25', 1320, 1320, t + 0.035, 0.05, 0.07); } },
   hurt:   { gap: 0.25, vol: 2, play: (b, t) => { osc(b, 'square', 190, 70, t, 0.18, 0.22); hiss(b, t, 0.1, 0.18, 'lowpass', 900, 300); } },
   tail:   { gap: 1,    vol: 1.5,    play: (b, t) => { osc(b, 'square', 900, 1300, t, 0.05, 0.14); osc(b, 'sine', 1700, 280, t + 0.06, 0.55, 0.2); } },
+  zap:    { gap: 0.1,  vol: 2, play: (b, t) => { osc(b, 'square', 1800, 900, t, 0.09, 0.08, 0.3); hiss(b, t, 0.1, 0.25, 'highpass', 4000); osc(b, 'p12', 120, 120, t, 0.12, 0.08, 0.5); } },
+  foam:   { gap: 0.15, vol: 2, play: (b, t) => { hiss(b, t, 0.22, 0.3, 'bandpass', 2500, 1200, 1.5); for (let i = 0; i < 3; i++) osc(b, 'sine', 700 + i * 260, 1100 + i * 300, t + 0.05 + i * 0.05, 0.05, 0.08); } },
+  gulp:   { gap: 0.08, vol: 2.5, play: (b, t) => { osc(b, 'sine', 520, 160, t, 0.12, 0.22); osc(b, 'sine', 300, 600, t + 0.1, 0.06, 0.1); } },
+  sizzle: { gap: 0.25, vol: 1.5, play: (b, t) => { hiss(b, t, 0.5, 0.22, 'highpass', 5000); hiss(b, t + 0.05, 0.35, 0.12, 'bandpass', 3000, 3000, 3); } },
   coin:   { gap: 0.05, vol: 2.5, play: (b, t) => { osc(b, 'p25', hz(83), hz(83), t, 0.05, 0.1); osc(b, 'p25', hz(88), hz(88), t + 0.05, 0.14, 0.1); } },
   heal:   { gap: 0.2,  vol: 1.5,  play: (b, t) => arp(b, 'triangle', ['C6', 'E6', 'G6', 'C7'], t, 0.05, 0.12, 0.13) },
   magnet: { gap: 0.5,  vol: 2,  play: (b, t) => { osc(b, 'sine', 300, 2400, t, 0.35, 0.14); hiss(b, t, 0.35, 0.08, 'bandpass', 500, 5000, 2); } },
@@ -922,6 +1031,8 @@ function recalc() {
     speed: H.speed * (1 + 0.1 * lv('sneakers') + up('speed')),
     armor: H.armor + up('armor'),
     growth: 1 + up('growth'),
+    area: 1 + 0.1 * lv('battery'),
+    stunDmg: 0.3 + 0.25 * lv('chopsticks'),         // stunned bugs take this much extra
     gap: gapMods(S.gap || 0),
   };
   ST.coinMul = ST.gap.coin * (1 + up('greed'));
@@ -931,6 +1042,7 @@ function wstats(w) {
   for (let i = 0; i < w.lv - 1; i++) for (const [k, v] of Object.entries(d.lv[i])) if (k !== 'note') s[k] += v;
   if (w.evo) for (const [k, v] of Object.entries(d.evo.add)) s[k] = (s[k] || 0) + v;
   if (ST.amount) { if ('count' in s) s.count += ST.amount; else if ('dirs' in s) s.dirs += ST.amount; }
+  if (ST.area !== 1) for (const k of ['range', 'radius', 'band', 'size', 'chainR']) if (k in s) s[k] *= ST.area;
   s.dmg *= ST.might;
   s.cd = Math.max(0.2, s.cd * ST.cdMul);
   return s;
@@ -990,7 +1102,7 @@ function chunkObstacles(cx, cy) {
   let list = obCache.get(key);
   if (list) return list;
   list = [];
-  const r = mulberry32(hash2(cx * 7 + 3, cy * 11 + 5)), kinds = Object.keys(OBSTACLES);
+  const r = mulberry32(hash2(cx * 7 + 3, cy * 11 + 5)), kinds = STAGES[S.stage].obstacles;
   const total = kinds.reduce((t, k) => t + OBSTACLES[k].weight, 0);
   const add = (k, x, y) => {
     const o = OBSTACLES[k], ob = { k, x, y, x0: x + o.box[0], y0: y + o.box[1], x1: x + o.box[2], y1: y + o.box[3] };
@@ -1002,7 +1114,7 @@ function chunkObstacles(cx, cy) {
     let v = r() * total, k = kinds[0];
     for (const kk of kinds) if ((v -= OBSTACLES[kk].weight) < 0) { k = kk; break; }
     const x = cx * OB_CHUNK + 50 + r() * (OB_CHUNK - 100), y = cy * OB_CHUNK + 70 + r() * (OB_CHUNK - 100);
-    if (add(k, x, y) && k === 'washer' && r() < 0.5) add('dryer', x + 68, y);              // a washer and dryer side by side
+    if (add(k, x, y) && k === 'washer' && kinds.includes('dryer') && r() < 0.5) add('dryer', x + 68, y);   // a washer and dryer side by side
   }
   if (obCache.size > 600) obCache.clear();
   obCache.set(key, list);
@@ -1039,7 +1151,7 @@ function update(dt) {
   updateEnemies(dt);
   buildGrid();
   separate();
-  if (OBS.length) for (const e of S.en) if (!e.dead && blocked(ENEMIES[e.type])) unstick(e, footOf(e), Math.min(ENEMIES[e.type].r, 12) * 0.8);
+  if (OBS.length) for (const e of S.en) if (!e.dead && !e.lead && blocked(ENEMIES[e.type])) unstick(e, footOf(e), Math.min(ENEMIES[e.type].r, 12) * 0.8);
   for (const w of S.weapons) WB[w.id](w, wstats(w), dt);
   updateShots(dt);
   contact();
@@ -1156,6 +1268,13 @@ function runEvent(ev) {
       const along = rand(-50, 10), across = rand(-70, 70);
       spawn(ev.swarm, cx + (dx / l) * along - (dy / l) * across, cy + (dy / l) * along + (dx / l) * across, { sx: dx / l, sy: dy / l, sm: 1.3 });
     }
+  } else if (ev.march) {
+    // single file from one side, every ant on the same heading; the wobble phase steps along the line so it snakes
+    const side = Math.floor(Math.random() * 4), hw = BW / 2 + 30, hh = BH / 2 + 30;
+    const sx = [1, -1, 0, 0][side], sy = [0, 0, 1, -1][side], off = rand(-0.25, 0.25);
+    const x0 = p.x - sx * hw + (sy ? off * BW : 0), y0 = p.y - sy * hh + (sx ? off * BH : 0);
+    for (let i = 0, n = Math.round(ev.n * ST.gap.swarm); i < n && liveCount + i < MAX_ENEMIES; i++)
+      spawn(ev.march, x0 - sx * i * 9, y0 - sy * i * 9, { sx, sy, sm: 1.1, wob: 0.9, ph: -i * 0.42 });
   } else if (ev.ring) {
     const rx = BW * 0.62, ry = BH * 0.58, n = Math.round(ev.n * ST.gap.swarm);
     for (let i = 0; i < n; i++) {
@@ -1169,18 +1288,52 @@ function runEvent(ev) {
 }
 
 /* ---------- enemies ---------- */
+const leaders = new Map();
 function updateEnemies(dt) {
   const p = S.p, farX = BW * 0.9 + 120, farY = BH * 0.9 + 120, decay = Math.exp(-10 * dt);
   liveCount = 0;
+  leaders.clear();
+  for (const e of S.en) if (!e.dead && ENEMIES[e.type].trail) leaders.set(e.id, e);
   for (const e of S.en) {
     e.at += dt;
     if (e.dead) { e.fade -= dt; continue; }
     liveCount++;
     const d = ENEMIES[e.type], goal = S.decoy || p;
+    if (e.flash > 0) e.flash -= dt;
+    if (e.hcd > 0) e.hcd -= dt;
+    if (e.stun > 0) { e.stun -= dt; e.kx *= decay; e.ky *= decay; e.x += e.kx * dt; e.y += e.ky * dt; continue; }   // foam: frozen on the spot
+    if (e.lead) {
+      // an ant in the queen's line: walk to its slot on her path; when she's gone it becomes an ordinary ant
+      const q = leaders.get(e.lead);
+      if (!q) { e.lead = 0; }
+      else {
+        const tr = q.tr || [], pt = tr[Math.max(0, tr.length - 1 - (e.slot + 1) * ENEMIES[q.type].trail.gap)] || [q.x, q.y];
+        const tx = pt[0] - e.x, ty = pt[1] - e.y, l = Math.hypot(tx, ty);
+        if (l > 0.5) { const st = Math.min(l, (d.speed * 2.5 + l * 4) * dt); e.x += tx / l * st; e.y += ty / l * st; if (Math.abs(tx) > 0.3) e.face = tx > 0 ? 1 : -1; }
+        continue;
+      }
+    }
     const dx = goal.x - e.x, dy = goal.y - e.y, dist = Math.hypot(dx, dy) || 1;
     let mx = dx / dist, my = dy / dist, spd = d.speed * e.sm * ST.gap.speed;
     if (e.sx !== undefined) { mx = e.sx; my = e.sy; }
-    if (d.wobble) { const w = Math.sin(S.t * (d.wobbleHz || 6) + e.ph) * d.wobble; [mx, my] = [mx - my * w, my + mx * w]; }
+    const wob = e.wob ?? d.wobble;
+    if (wob) { const w = Math.sin(S.t * (d.wobbleHz || 6) + e.ph) * wob; [mx, my] = [mx - my * w, my + mx * w]; }
+    if (d.trail) {
+      // remember the path (a point every 3px) and lay the next ant at the end of the line. She arrives with the whole
+      // column already behind her: a gently curving path seeded from far away, filled with ants from the front back.
+      if (!e.tr) {
+        const n = d.trail.max * d.trail.gap + 10, bx = -mx, by = -my;
+        e.tr = [];
+        for (let i = n; i >= 0; i--) { const off = Math.sin(i / 45) * 34; e.tr.push([Math.round(e.x + bx * i * 3 - by * off), Math.round(e.y + by * i * 3 + bx * off)]); }
+      }
+      const tr = e.tr, lp = tr[tr.length - 1];
+      if (Math.abs(e.x - lp[0]) + Math.abs(e.y - lp[1]) >= 3) { tr.push([Math.round(e.x), Math.round(e.y)]); if (tr.length > d.trail.max * d.trail.gap + 20) tr.shift(); }
+      if ((e.trT = (e.trT ?? 1) - dt) <= 0 && (e.trN || 0) < d.trail.max && liveCount < MAX_ENEMIES) {
+        e.trT = d.trail.every;
+        const slot = e.trN = (e.trN || 0) + 1, pt = tr[Math.max(0, tr.length - 1 - (slot + 1) * d.trail.gap)];
+        spawn(d.trail.type, pt[0], pt[1], { lead: e.id, slot });
+      }
+    }
     if (d.summon && (e.sumT = (e.sumT ?? d.summon.every) - dt) <= 0) {
       e.sumT = d.summon.every;
       for (let i = 0; i < d.summon.n && liveCount < MAX_ENEMIES; i++) {
@@ -1198,10 +1351,10 @@ function updateEnemies(dt) {
     e.x += (mx * spd + e.kx) * dt; e.y += (my * spd + e.ky) * dt;
     e.kx *= decay; e.ky *= decay;
     if (Math.abs(mx) > 0.15) e.face = mx > 0 ? 1 : -1;
-    if (e.flash > 0) e.flash -= dt;
-    if (e.hcd > 0) e.hcd -= dt;
+    if (e.sx !== undefined && !e.seen && onScreen(e.x, e.y)) e.seen = true;
+    if (e.sx !== undefined && e.at > 40) e.gone = true;
     if (Math.abs(e.x - p.x) > farX || Math.abs(e.y - p.y) > farY) {
-      if (e.sx !== undefined) e.gone = true;            // swarms just leave
+      if (e.sx !== undefined) { if (e.seen) e.gone = true; }   // swarms just leave (a long march is still coming in)
       else if (!d.boss) { const q = spawnPoint(); e.x = q.x; e.y = q.y; e.kx = e.ky = 0; }   // stragglers come back around the edge
     }
   }
@@ -1210,10 +1363,10 @@ function updateEnemies(dt) {
 // soft push so the swarm spreads into a crowd instead of a single pile
 function separate() {
   for (const e of S.en) {
-    if (e.dead) continue;
+    if (e.dead || e.lead) continue;
     const de = ENEMIES[e.type], me = de.mass || 1;
     for (const o of near(e.x, e.y, de.r)) {
-      if (o.id <= e.id || o.dead) continue;
+      if (o.id <= e.id || o.dead || o.lead) continue;
       const dO = ENEMIES[o.type], min = (de.r + dO.r) * 0.8;
       let dx = o.x - e.x, dy = o.y - e.y;
       const d2 = dx * dx + dy * dy;
@@ -1229,7 +1382,7 @@ function separate() {
 function contact() {
   const p = S.p;
   for (const e of near(p.x, p.y, PLAYER_R).slice()) {
-    if (e.dead || e.hcd > 0) continue;
+    if (e.dead || e.hcd > 0 || e.stun > 0) continue;
     const d = ENEMIES[e.type], rr = d.r + PLAYER_R;
     if ((e.x - p.x) ** 2 + (e.y - p.y) ** 2 > rr * rr) continue;
     e.hcd = 0.8;
@@ -1239,7 +1392,7 @@ function contact() {
 }
 function damage(e, amount, src, nx = 0, ny = 0, knock = 0) {
   if (e.dead) return;
-  const d = ENEMIES[e.type], dmg = Math.max(1, Math.round(amount * rand(0.9, 1.1)));
+  const d = ENEMIES[e.type], dmg = Math.max(1, Math.round(amount * rand(0.9, 1.1) * (e.stun > 0 ? 1 + ST.stunDmg : 1)));
   e.hp -= dmg; e.flash = 0.1;
   sfx('hit');
   const w = hasWeapon(src);
@@ -1263,10 +1416,20 @@ function kill(e, src) {
   else if (d.elite || d.boss) dropCoins(e.x, e.y, d.boss ? COINS.boss : COINS.elite);
   if (src === 'sunscreen') { const w = hasWeapon('sunscreen'); if (w?.evo) heal(WEAPONS.sunscreen.evo.add.heal); }
   if (src === 'tongue') { const w = hasWeapon('tongue'); if (w) heal(wstats(w).heal); }
+  if (src === 'swatter') { const w = hasWeapon('swatter'); if (w && (d.r >= 13 || w.evo)) bbq(e.x, e.y, wstats(w)); }
+  if (e.type === 'ensignWasp' && !S.waspNote) { S.waspNote = true; banner('사실 익충이래…', '바퀴벌레 알을 먹고 산다. 그래도 무섭다'); }
   if (e.id === S.bossId) S.bossId = 0;
   if (d.final) endRun(true);
 }
 
+// damage done by an instant kill (jug, chopsticks) still counts on the results screen
+function credit(id, n) { const w = hasWeapon(id); if (w) w.dealt += Math.max(0, Math.round(n)); }
+// barbecue smell: a lingering cloud that singes bugs inside it
+function bbq(x, y, s) {
+  if (S.fx.filter(f => f.k === 'bbq').length >= 10) return;
+  S.fx.push({ k: 'bbq', x, y, t: 0, life: 2.4, r: 18 * ST.area, dmg: s.dmg * 0.3, tick: 0 });
+  sfx('sizzle');
+}
 // coins scatter a little; a big pile is a few heavier coins so the floor doesn't fill up
 function dropCoins(x, y, n) {
   const pieces = Math.min(n, 8);
@@ -1394,6 +1557,70 @@ const WB = {
     if (!p.moving) p.face = tg[0].x > p.x ? 1 : -1;
     playOnce('attack');
   },
+  swatter(w, s, dt) {
+    if ((w.cd -= dt) > 0) return;
+    const p = S.p, tg = nearest(1, s.range + 26)[0];
+    if (!tg) { w.cd = 0.15; return; }
+    w.cd = s.cd;
+    sfx('zap');
+    // swing: everything in a wide arc in front, then the current jumps on from bug to bug
+    const a = Math.atan2(tg.y - p.y, tg.x - p.x), cx = Math.cos(a), cy = Math.sin(a), hit = new Set(), zaps = [];
+    for (const e of near(p.x, p.y, s.range)) {
+      if (e.dead) continue;
+      const dx = e.x - p.x, dy = e.y - p.y, dist = Math.hypot(dx, dy), r = ENEMIES[e.type].r;
+      if (dist > s.range + r || (dist > 14 && dx * cx + dy * cy < dist * 0.35)) continue;
+      hit.add(e);
+    }
+    hit.add(tg);
+    let from = [...hit], left = s.chain;
+    for (const e of from) damage(e, s.dmg, 'swatter', cx, cy, s.knock);
+    while (left > 0 && from.length) {
+      const next = [];
+      for (const f of from) {
+        if (left <= 0) break;
+        let best = null, bd = s.chainR * s.chainR;
+        for (const o of near(f.x, f.y, s.chainR)) {
+          if (o.dead || hit.has(o)) continue;
+          const d2 = (o.x - f.x) ** 2 + (o.y - f.y) ** 2;
+          if (d2 < bd) { bd = d2; best = o; }
+        }
+        if (!best) continue;
+        hit.add(best); next.push(best); left--;
+        zaps.push([f.x, f.y, best.x, best.y]);
+      }
+      for (const e of next) damage(e, s.dmg * 0.8, 'swatter');
+      from = next;
+    }
+    S.fx.push({ k: 'swat', a, r: s.range, t: 0, life: 0.2 });
+    if (zaps.length) S.fx.push({ k: 'zap', segs: zaps, t: 0, life: 0.18, seed: Math.random() * 99 });
+    if (!p.moving) p.face = tg.x > p.x ? 1 : -1;
+    playOnce('attack');
+  },
+  footShampoo(w, s, dt) {
+    if ((w.cd -= dt) > 0) return;
+    w.cd = s.cd;
+    const p = S.p, tg = nearest(s.count + 2, 200);
+    sfx('foam');
+    for (let i = 0; i < s.count; i++) {
+      const e = tg[i], a = rand(0, 6.28);
+      const x = e ? e.x : p.x + Math.cos(a) * 60, y = e ? e.y : p.y + Math.sin(a) * 50;
+      S.fx.push({ k: 'foamShot', x0: p.x, y0: p.y - 10, x, y, t: -i * 0.1, life: 0.35, s: { r: s.radius, dur: s.dur, stun: s.stun, dmg: s.dmg, pick: !!s.pick } });
+    }
+    playOnce('attack');
+  },
+  waterJug(w, s, dt) {
+    if ((w.cd -= dt) > 0) return;
+    w.cd = s.cd;
+    const p = S.p, close = nearest(6, 170);
+    for (let i = 0; i < s.count; i++) {
+      const e = close.length ? pick(close) : null, a = Math.atan2(p.ay, p.ax) + rand(-0.6, 0.6);
+      const j = { k: 'jug', x: e ? e.x : p.x + Math.cos(a) * 70, y: e ? e.y : p.y + Math.sin(a) * 60, t: 0, life: s.dur, got: 0,
+        cap: s.cap, r: s.radius, pull: s.pull, dmg: s.dmg, heal: s.heal || 0, cd: 0 };
+      if (OBS.length) unstick(j, 0, 8);
+      S.fx.push(j);
+    }
+    sfx('throw');
+  },
   alpacaAttack(w, s, dt) {
     if ((w.cd -= dt) > 0) return;
     w.cd = s.cd;
@@ -1466,13 +1693,62 @@ function takeItem(it) {
   else if (it.k === 'chest') S.chests += it.big ? 3 : 1;
   else if (it.k === 'coin') { S.coins += it.v * ST.coinMul; sfx('coin'); }
 }
+// water jug: bugs nearby slide in; small ones (and every centipede) are trapped, big ones get a dunk and pop back out
+function updateJug(f, dt) {
+  const reach = f.r * 1.6;
+  for (const e of near(f.x, f.y, reach)) {
+    const d = ENEMIES[e.type];
+    if (e.dead || d.boss) continue;
+    const dx = f.x - e.x, dy = f.y - e.y, l = Math.hypot(dx, dy) || 1;
+    if (l > (e.type === 'centipede' ? reach : f.r)) continue;
+    const st = Math.min(l, f.pull * (e.type === 'centipede' ? 1.6 : 1) * dt);
+    e.x += dx / l * st; e.y += dy / l * st;
+    if (l > 8 + d.r * 0.4 || f.got >= f.cap) continue;
+    if (e.type === 'centipede' || e.hp <= f.dmg * ST.might) {
+      credit('waterJug', e.hp);
+      kill(e, 'waterJug'); f.got++;
+      sfx('gulp');
+      if (f.heal) heal(f.heal);
+    } else { damage(e, f.dmg, 'waterJug', -dx / l, -dy / l, 160); }
+  }
+  if (f.got >= f.cap && f.t < f.life - 0.3) { f.t = f.life - 0.3; f.full = true; }     // full: a last wobble, then gone
+}
 function addNum(x, y, n, red) {
   if (S.nums.length > 70) S.nums.shift();
   S.nums.push({ x: x + rand(-4, 4), y, n, red, t: 0 });
 }
+// stunned for a share of the time: elites shake it off sooner, bosses nearly at once
+const stunFor = (d, t) => t * (d.boss ? 0.2 : d.elite ? 0.6 : 1);
 function updateFx(dt) {
-  for (const f of S.fx) {
+  for (let i = 0; i < S.fx.length; i++) {
+    const f = S.fx[i];
     f.t += dt;
+    if (f.k === 'foamShot' && f.t >= f.life && !f.done) {
+      f.done = true;
+      S.fx.push({ k: 'foam', x: f.x, y: f.y, t: 0, life: f.s.dur, tick: 0, ...f.s });
+    } else if (f.k === 'foam' && (f.tick -= dt) <= 0) {
+      f.tick = 0.3;
+      let picks = 0;
+      for (const e of near(f.x, f.y, f.r)) {
+        const d = ENEMIES[e.type];
+        if (e.dead || (e.x - f.x) ** 2 + (e.y - f.y) ** 2 > (f.r + d.r * 0.5) ** 2) continue;
+        if (f.pick && e.stun > 0 && !d.boss && !d.elite && picks < 2) {   // 젓가락 신공: pinch an already-dizzy bug and throw it away
+          picks++;
+          credit('footShampoo', e.hp);
+          S.fx.push({ k: 'chop', x: e.x, y: e.y, t: 0, life: 0.5, type: e.type, face: e.face });
+          kill(e, 'footShampoo');
+          continue;
+        }
+        e.stun = Math.max(e.stun || 0, stunFor(d, f.stun));
+        damage(e, f.dmg, 'footShampoo');
+      }
+    } else if (f.k === 'bbq' && (f.tick -= dt) <= 0) {
+      f.tick = 0.4;
+      for (const e of near(f.x, f.y, f.r)) {
+        if (e.dead || (e.x - f.x) ** 2 + (e.y - f.y) ** 2 > (f.r + ENEMIES[e.type].r * 0.5) ** 2) continue;
+        damage(e, f.dmg, 'swatter');
+      }
+    } else if (f.k === 'jug') updateJug(f, dt);
     if (f.k === 'bomb' && !f.done && f.t >= f.delay) {
       f.done = true;
       sfx('boom');
@@ -1535,11 +1811,12 @@ function endRun(win) {
   S.phase = win ? 'win' : 'over';
   music(null);
   sfx(win ? 'victory' : 'gameover');
-  const before = gapOpen();
+  const before = gapOpen(), locked = Object.keys(STAGES).filter(id => !stageOpen(id));
   S.bonus = Math.round((Math.floor(S.t / 60) * COINS.minute + (win ? COINS.clear : 0)) * ST.coinMul);
   S.coins += S.bonus;
   saveRecord({ t: Math.floor(S.t), kills: S.kills, lvl: S.lvl, win, gap: S.gap || 0 });
-  S.opened = gapOpen() > before ? gapOpen() : 0;      // the results screen announces a newly opened 틈 level
+  S.opened = gapOpen() > before ? gapOpen() : 0;      // the results screen announces a newly opened 틈 level and stage
+  S.newStages = locked.filter(id => stageOpen(id));
   bankCoins();
   setTimeout(showResults, win ? 1200 : 900);
 }
@@ -1554,6 +1831,13 @@ function bankCoins() {
   m.coins += n; m.earned += n;
   store.set('mbs.meta', m);
 }
+// a stage with need: { survive } opens once any run on any stage lasted that long (or won)
+function bestSurvive() {
+  let t = 0;
+  for (const st of Object.values(store.get('mbs.records') || {})) for (const r of Object.values(st)) t = Math.max(t, r.win ? 1e6 : r.t);
+  return t;
+}
+const stageOpen = (id, best = bestSurvive()) => !STAGES[id].need || best >= STAGES[id].need.survive;
 // highest 틈 level you may pick: one above the highest level any stage was cleared at
 function gapOpen() {
   let g = 0;
@@ -1640,14 +1924,14 @@ function drawGround() {
   const TILE = TILES[STAGES[S ? S.stage : 'backyard'].ground], T = TILE.width;
   for (let y = -mod(camY, T); y < BH; y += T) for (let x = -mod(camX, T); x < BW; x += T) ctx.drawImage(TILE, x, y);
   // a few props per 160px chunk, placed by a hash so they stay put
-  const C = 160;
-  const indoor = STAGES[S ? S.stage : 'backyard'].decor === 'indoor';
+  const C = 160, set = DECOR[STAGES[S ? S.stage : 'backyard'].decor], keys = Object.keys(set.items);
+  const total = keys.reduce((t, k) => t + set.items[k], 0);
   for (let cx = Math.floor(camX / C) - 1; cx <= Math.floor((camX + BW) / C); cx++) for (let cy = Math.floor(camY / C) - 1; cy <= Math.floor((camY + BH) / C); cy++) {
-    const r = mulberry32(hash2(cx, cy)), n = Math.floor(r() * (indoor ? 2 : 3.2));
+    const r = mulberry32(hash2(cx, cy)), n = Math.floor(r() * set.n);
     for (let i = 0; i < n; i++) {
-      const v = r(), img = indoor ? (v < 0.45 ? PX.lint : v < 0.65 ? PX.sock : v < 0.85 ? PX.drip : PX.puddle)
-        : v < 0.3 ? PX.tuft : v < 0.5 ? PX.rock : v < 0.66 ? PX.flower : v < 0.76 ? PX.hibiscus : v < 0.9 ? PX.dirt : PX.puddle;
-      ctx.drawImage(img, Math.round(cx * C + r() * C - camX), Math.round(cy * C + r() * C - camY));
+      let v = r() * total, k = keys[0];
+      for (const kk of keys) if ((v -= set.items[kk]) < 0) { k = kk; break; }
+      ctx.drawImage(PX[k], Math.round(cx * C + r() * C - camX), Math.round(cy * C + r() * C - camY));
     }
   }
 }
@@ -1655,7 +1939,7 @@ function drawGround() {
 function render() {
   const p = S ? S.p : { x: demoT * 14, y: demoT * 6 };
   camX = Math.round(p.x) - (BW >> 1); camY = Math.round(p.y) - (BH >> 1);
-  shadowColor = S && STAGES[S.stage].decor === 'indoor' ? 'rgba(70,52,34,.26)' : 'rgba(14,32,12,.32)';
+  shadowColor = S && STAGES[S.stage].indoor ? 'rgba(70,52,34,.26)' : 'rgba(14,32,12,.32)';
   drawGround();
   if (!S) { if (els.menu.classList.contains('main')) drawParade(); return; }
 
@@ -1667,6 +1951,8 @@ function render() {
     ring(p.x, p.y, s.radius + pulse, s.radius + pulse, sun.evo ? '#ffe066' : '#fffbe6', 5, S.t * 0.8);
     ctx.globalAlpha = 1;
   }
+  // foam and barbecue smoke lie on the floor
+  for (const f of S.fx) if (f.k === 'foam') drawFoam(f);
   // pickups
   for (const g of S.gems) {
     const img = g.v >= 10 ? PX.gem3 : g.v >= 2 ? PX.gem2 : PX.gem1;
@@ -1685,9 +1971,11 @@ function render() {
   p._fy = p.y + (PA ? PA.cy : 18); drawList.push(p);
   for (const sh of S.shots) if (sh.k === 'alpaca' && !(sh.wait > 0)) { sh._fy = sh.y + 24; drawList.push(sh); }
   for (const o of OBS) if (onScreen(o.x, o.y - 50, -90)) { o._fy = o.y; drawList.push(o); }
+  for (const f of S.fx) if (f.k === 'jug') { f._fy = f.y + 6; drawList.push(f); }
   drawList.sort((a, b) => a._fy - b._fy);
   for (const u of drawList) {
     if (u.k in OBSTACLES) shadow(u.x, u.y - 2, Math.round(OBSTACLES[u.k].w * 0.9), 8);
+    else if (u.k === 'jug') shadow(u.x, u._fy, 16);
     else if (u === p) shadow(p.x, p._fy, 22);
     else if (u.k === 'alpaca') shadow(u.x, u._fy, 24);
     else if (!u.dead) { const d = ENEMIES[u.type]; shadow(u.x, u._fy, Math.round(d.r * 2 * (d.fly ? 0.7 : 1))); }
@@ -1696,6 +1984,7 @@ function render() {
     if (u === p) drawPlayer(PA);
     else if (u.k === 'alpaca') { const A = ART.alpaca; if (A) drawArt(A, A.seq.walk ? 'walk' : 'idle', u.at, u.x, u._fy, u.vx < 0, false, 1, 1, SPRITE_FPS.run); }
     else if (u.k in OBSTACLES) { const img = PX[u.k], w = img.width * PROP_SCALE, h = img.height * PROP_SCALE; ctx.drawImage(img, sx(u.x) - (w >> 1), sy(u.y) - h, w, h); }
+    else if (u.k === 'jug') drawJug(u);
     else drawEnemy(u);
   }
 
@@ -1763,12 +2052,40 @@ function drawEnemy(e) {
   const flip = e.face !== A.faces;
   let y = e._fy, alpha = 1;
   if (d.fly) y -= (A.lift || 8) * sc + Math.sin(S.t * 7 + e.ph) * 2;
-  else if (!e.dead && !d.crawl) y -= Math.abs(Math.sin(e.at * 8 + e.ph)) * 1.2;
+  else if (!e.dead && !d.crawl && !(e.stun > 0)) y -= Math.abs(Math.sin(e.at * 8 + e.ph)) * 1.2;
   const x = e.ai === 1 ? e.x + Math.sin(S.t * 70) * 1.5 : e.x;   // wind-up shiver before a dash
   if (e.dead) alpha = clamp(e.fade / 0.35, 0, 1);
   const an = e.dead && A.seq.hit ? 'hit' : 'idle';
   const stretch = d.crawl && !e.dead ? 1 + Math.sin(e.at * 4 + e.ph) * 0.05 : 1;    // a snail inches along
   drawArt(A, an, e.at, x, y, flip, e.flash > 0 && !e.dead, sc, alpha, d.fly ? SPRITE_FPS.fly : 0, e.dead, stretch);
+  if (e.stun > 0 && !e.dead) {
+    const top = y - (A.cy * 2 + 4) * sc;
+    for (let i = 0; i < 3; i++) { const a = S.t * 6 + i * 2.09; ctx.fillStyle = i ? '#fff3a8' : '#ffffff'; ctx.fillRect(sx(x + Math.cos(a) * (6 + d.r * 0.3)), sy(top + Math.sin(a) * 2), 2, 2); }
+  }
+}
+// foot shampoo foam: a cluster of outlined bubbles that swell in, jiggle, and pop away at the end
+function drawFoam(f) {
+  const k = f.t / f.life, grow = k < 0.12 ? k / 0.12 : 1, fade = k > 0.8 ? (1 - k) / 0.2 : 1;
+  ctx.globalAlpha = 0.28 * fade; disc(f.x, f.y, f.r * grow, '#dff3ee'); ctx.globalAlpha = 0.95 * fade;
+  const n = 9 + Math.round(f.r / 6);
+  for (let i = 0; i < n; i++) {
+    const h = (i * 2654435761 >>> 0) / 4294967296, a = h * 6.28 + i, d = f.r * grow * (0.15 + 0.75 * ((i * 0.618) % 1));
+    const x = f.x + Math.cos(a) * d, y = f.y + Math.sin(a) * d * 0.7 + Math.sin(S.t * 4 + i) * 0.8, r = (2.5 + (i % 4) * 1.3) * grow;
+    disc(x, y, r + 1, '#8fb9b0'); disc(x, y, r, '#ffffff');
+    ctx.fillStyle = '#d4ece6'; ctx.fillRect(sx(x + r * 0.3), sy(y + r * 0.3), 1, 1);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(sx(x - r * 0.4), sy(y - r * 0.5), 1, 1);
+  }
+  ctx.globalAlpha = 1;
+}
+// the water jug on the floor; it wobbles as bugs go in
+function drawJug(f) {
+  const img = PX.jug, k = f.t / f.life, sc = 1.5, w = Math.round(img.width * sc), h = Math.round(img.height * sc);
+  const pop = f.t < 0.15 ? f.t / 0.15 : k > 0.92 ? (1 - k) / 0.08 : 1;
+  ctx.save(); ctx.translate(sx(f.x), sy(f.y + 6)); ctx.rotate(Math.sin(S.t * 18) * 0.06 * Math.min(1, f.got / 2));
+  ctx.globalAlpha = clamp(pop, 0, 1);
+  ctx.drawImage(img, -w / 2, -h, w, h * clamp(pop, 0.3, 1));
+  ctx.restore(); ctx.globalAlpha = 1;
+  if (f.t < 1.2) ring(f.x, f.y, f.r, f.r * 0.6, 'rgba(124,198,236,.7)', 6, S.t);
 }
 function drawFx(f) {
   const k = f.t / f.life;
@@ -1806,6 +2123,57 @@ function drawFx(f) {
       const x = f.x - f.face * i * 3, y = f.y + Math.sin(f.t * 18 + i * 0.9) * (1 + i * 0.4);
       disc(x, y, 3.2 - i * 0.35, '#1b3a10'); disc(x, y, 2.2 - i * 0.3, i % 2 ? '#9be04a' : '#7ccf3a');
     }
+    ctx.globalAlpha = 1;
+  } else if (f.k === 'swat') {
+    // the racket's yellow frame sweeping through the arc
+    const p = S.p, a = f.a + (k - 0.5) * 1.6, r = f.r * 0.8, x = p.x + Math.cos(a) * r, y = p.y - 6 + Math.sin(a) * r * 0.85;
+    ctx.globalAlpha = 1 - k * 0.6;
+    ring(x, y, 7, 8, '#2a2410', 1); ring(x, y, 6, 7, '#ffd84a', 1);
+    ctx.fillStyle = '#9fd8ff'; for (let i = -4; i <= 4; i += 2) ctx.fillRect(sx(x + i), sy(y) - 5, 1, 10);
+    ctx.globalAlpha = 1;
+  } else if (f.k === 'zap') {
+    // jagged blue-white bolts between the bugs the current jumped to
+    const rnd = mulberry32((f.seed * 1000 | 0) + Math.floor(f.t * 30));
+    ctx.globalAlpha = 1 - k * 0.5;
+    for (const [x0, y0, x1, y1] of f.segs) {
+      let px = x0, py = y0;
+      for (let i = 1; i <= 5; i++) {
+        const t = i / 5, nx = x0 + (x1 - x0) * t + (i < 5 ? (rnd() - 0.5) * 8 : 0), ny = y0 + (y1 - y0) * t + (i < 5 ? (rnd() - 0.5) * 8 : 0);
+        const n = Math.max(1, Math.round(Math.hypot(nx - px, ny - py)));
+        for (let j = 0; j <= n; j++) {
+          const qx = px + (nx - px) * j / n, qy = py + (ny - py) * j / n;
+          ctx.fillStyle = '#4aa8ff'; ctx.fillRect(sx(qx) - 1, sy(qy) - 1, 3, 3);
+          ctx.fillStyle = '#f2fbff'; ctx.fillRect(sx(qx), sy(qy), 1, 1);
+        }
+        px = nx; py = ny;
+      }
+    }
+    ctx.globalAlpha = 1;
+  } else if (f.k === 'foamShot') {
+    if (f.t < 0) return;
+    const t = Math.min(1, f.t / f.life), x = f.x0 + (f.x - f.x0) * t, y = f.y0 + (f.y - f.y0) * t - Math.sin(t * Math.PI) * 26;
+    disc(x, y, 3.5, '#6f9a90'); disc(x, y, 2.5, '#ffffff');
+  } else if (f.k === 'bbq') {
+    // pale smoke puffs drifting up, wavy smell lines, and a drumstick for the barbecue smell
+    const out = k > 0.85 ? (1 - k) / 0.15 : 1;
+    for (let i = 0; i < 6; i++) {
+      const t = (k * 1.5 + i / 6) % 1, a = i * 1.7 + f.x;
+      ctx.globalAlpha = (1 - t) * 0.7 * out;
+      disc(f.x + Math.cos(a) * f.r * 0.6 + Math.sin(S.t * 2 + i) * 2, f.y - t * 26, 3 + t * 5, i % 2 ? '#e9e2d6' : '#cfc5b7');
+    }
+    ctx.globalAlpha = 0.85 * out; ctx.fillStyle = '#fff6e6';
+    for (let j = -1; j <= 1; j++) for (let i = 0; i < 12; i++) ctx.fillRect(sx(f.x + j * 7 + Math.sin(i * 0.8 + S.t * 6 + j) * 2), sy(f.y - 14 - i - k * 10), 1, 1);
+    ctx.globalAlpha = k < 0.6 ? 1 : 1 - (k - 0.6) / 0.4;
+    const b = PX.bbq; ctx.drawImage(b, sx(f.x) - b.width, sy(f.y - 30 - k * 14), b.width * 2, b.height * 2);
+    ctx.globalAlpha = 1;
+  } else if (f.k === 'chop') {
+    // two steel chopsticks pinch the bug and lift it off screen
+    const A = artFor(ENEMIES[f.type]), up = k * k * 60, x = f.x, y = f.y - up;
+    ctx.globalAlpha = 1 - k;
+    drawArt(A, 'idle', 0, x, y + A.cy, f.face !== A.faces, false, ENEMIES[f.type].scale || 1, 1 - k);
+    ctx.globalAlpha = 1 - k;
+    ctx.fillStyle = '#c9d2da';
+    for (let i = 0; i < 26; i++) { ctx.fillRect(sx(x - 3 + i * 0.25), sy(y - 4 - i), 1, 1); ctx.fillRect(sx(x + 3 + i * 0.45), sy(y - 4 - i), 1, 1); }
     ctx.globalAlpha = 1;
   } else if (f.k === 'revive') {
     ctx.globalAlpha = 1 - k;
@@ -1938,6 +2306,7 @@ function showResults() {
   openModal(`<h2>${win ? '퇴치 성공!' : '쓰러졌다…'}${S.gap ? ` <small>틈 ${S.gap}</small>` : ''}</h2><p class="sub">${win ? STAGES[S.stage].winText : `${HEROES[S.hero].name}, 다음엔 꼭 버티자.`}</p>
     <div class="stats"><div><b>${fmtTime(S.t)}</b>버틴 시간</div><div><b>${S.lvl}</b>레벨</div><div><b>${S.kills}</b>잡은 벌레</div></div>
     <p class="coin-line"><span class="coin-chip">${COIN}+${Math.floor(S.coins)}</span> ${S.bonus ? `(버틴 보너스 ${S.bonus} 포함) ` : ''}지갑에 ${wallet.toLocaleString()}개. 메인 화면 상점에서 써요.</p>
+    ${(S.newStages || []).map(id => `<p class="coin-line"><span class="tag new">새 스테이지</span> ${STAGES[id].name}${iga(STAGES[id].name)} 열렸어요!</p>`).join('')}
     ${S.opened ? `<p class="coin-line"><span class="tag new">틈 ${S.opened}</span> 더 어려운 틈 단계가 열렸어요. 스테이지 고르는 화면에서 바꿔요.</p>` : ''}
     <p class="sub">오른쪽 숫자는 무기마다 준 피해예요.</p>
     ${itemsList(true)}
@@ -1953,6 +2322,7 @@ function openMenu(html, cls = '') {
 function remember() { store.set('mbs.last', { hero: heroSel, stage: stageSel, gap: gapSel }); }
 // 로 / 으로 after a Korean word (ㄹ and no final consonant take 로)
 function ro(word) { const c = word.charCodeAt(word.length - 1) - 0xAC00, j = c >= 0 && c < 11172 ? c % 28 : 0; return j === 0 || j === 8 ? '로' : '으로'; }
+function iga(word) { const c = word.charCodeAt(word.length - 1) - 0xAC00; return c >= 0 && c < 11172 && c % 28 ? '이' : '가'; }
 function bestText(r) { return r ? (r.win ? (r.gap ? `클리어 · 틈 ${r.gap}` : '클리어') : fmtTime(r.t)) : '—'; }
 function showMain() {
   S = null; ST = null;
@@ -1977,14 +2347,19 @@ function showHeroes() {
     <div class="row"><button class="btn ghost" type="button" data-act="toMain">뒤로</button><button class="btn" type="button" data-act="toStages">다음</button></div></div>`);
 }
 function showStages() {
-  const rec = store.get('mbs.records') || {};
+  const rec = store.get('mbs.records') || {}, best = bestSurvive();
+  if (!stageOpen(stageSel, best)) stageSel = 'backyard';
   openMenu(`<div class="panel"><h2>어디서 싸울까?</h2><p class="sub">${HEROES[heroSel].name}${ro(HEROES[heroSel].name)} 나가요.</p>
-    <div class="stages">${Object.entries(STAGES).map(([id, st]) => `<button class="stage" type="button" data-act="stage" data-id="${id}"
-        aria-pressed="${id === stageSel}" ${st.ready ? '' : 'disabled'} aria-label="${st.name}">
-      <canvas width="96" height="64" data-stage="${id}"></canvas>
-      <span><b>${st.name}</b><small>${st.blurb}</small>
-      <span class="meta">${st.ready ? `${st.minutes}분 · 보스 ${ENEMIES[st.boss].name} · 최고 ${bestText((rec[id] || {})[heroSel])}` : '준비 중'}</span>
-      ${st.ready && !Object.keys(rec[id] || {}).length ? '<span class="tag new">NEW</span>' : ''}</span></button>`).join('')}</div>
+    <div class="stages">${Object.entries(STAGES).map(([id, st]) => {
+      const open = st.ready && stageOpen(id, best);
+      const meta = !st.ready ? '준비 중' : !open ? `🔒 ${st.need.text} (지금 최고 ${fmtTime(Math.min(best, 3599))})`
+        : `${st.minutes}분 · 보스 ${ENEMIES[st.boss].name} · 최고 ${bestText((rec[id] || {})[heroSel])}`;
+      return `<button class="stage" type="button" data-act="stage" data-id="${id}" aria-pressed="${id === stageSel}" ${open ? '' : 'disabled'} aria-label="${st.name}">
+      <canvas width="96" height="64" data-stage="${id}" ${open ? '' : 'data-locked="1"'}></canvas>
+      <span><b>${st.name}</b><small>${open ? st.blurb : '???'}</small>
+      <span class="meta">${meta}</span>
+      ${open && !Object.keys(rec[id] || {}).length ? '<span class="tag new">NEW</span>' : ''}</span></button>`;
+    }).join('')}</div>
     ${gapHTML()}
     <div class="row"><button class="btn ghost" type="button" data-act="toHeroes">뒤로</button><button class="btn" type="button" data-act="start">출발!</button></div></div>`);
 }
@@ -2082,13 +2457,14 @@ function drawPreviews() {
     const A = st.mascot in HEROES ? heroArt(st.mascot) : artFor(ENEMIES[st.mascot]);
     const an = A.seq.walk ? 'walk' : 'idle', seq = A.seq[an], i = Math.floor(demoT * SPRITE_FPS[an]) % seq.length, C = A.cell;
     g.drawImage(A.n, seq[i] * C, A.row[an] * C, C, C, 48 - C / 2, 60 - A.base, C, C);
-    if (!st.ready) { g.fillStyle = 'rgba(11,16,19,.55)'; g.fillRect(0, 0, 96, 64); }
+    if (c.dataset.locked) { g.fillStyle = 'rgba(11,16,19,.72)'; g.fillRect(0, 0, 96, 64); }
   }
 }
 function startRun(hero, stage, gap = Math.min(gapSel, gapOpen())) {
   heroSel = hero; stageSel = stage; remember();
   els.menu.hidden = true;
   S = newRun(hero, stage, gap);
+  obCache.clear();                    // obstacle layouts are per stage
   addWeapon(HEROES[hero].weapon);
   recalc();
   S.p.hp = ST.maxHp;
@@ -2268,7 +2644,7 @@ async function boot(data) {
   migrateRecords();
   const last = store.get('mbs.last') || {};
   if (HEROES[last.hero]) heroSel = last.hero;
-  if (STAGES[last.stage]?.ready) stageSel = last.stage;
+  if (STAGES[last.stage]?.ready && stageOpen(last.stage)) stageSel = last.stage;
   gapSel = clamp(last.gap | 0, 0, gapOpen());
   bindInput();
   makePixelArt();
@@ -2293,6 +2669,7 @@ window.__mbs = {
   audio: { AUDIO, MUS, SONGS, SFX, MIX, playStep, compileSong, pulseWave },
   start(hero, stage = 'backyard', gap = 0) { startRun(hero, stage, gap); },
   freeze(t) { demoT = t; DEBUG.still = true; },
+  draw() { render(); renderHud(); if (!els.menu.hidden) drawPreviews(); },      // one frame by hand (rAF stops while the pane is hidden)
   sim(sec, steer) {
     const end = S.t + sec, t0 = performance.now();
     AUDIO.quiet = true;

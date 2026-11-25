@@ -1,0 +1,34 @@
+Make three pixel-art pictures with your image generation tool, one generated image per file, and save them. Do not write code for the art itself and do not touch anything outside this folder.
+
+Style for all three: match the attached reference exactly. It shows sprites from the same game (cockroach, centipede, mosquito, gecko), each a 64x64-pixel sprite enlarged 8x: 16-bit retro game sprites, cute chibi monsters with big round cartoon eyes, clean 1-art-pixel near-black outline, 3-4 shades per colour, no anti-aliasing, no blur, no gradients. Fully transparent background (if impossible, one flat pure magenta #FF00FF). No text, no labels, no grid lines, no shadows, no border.
+
+Picture 1: ./out/kitchen/bugs_sheet.png - a sprite sheet of three bugs from a kitchen in an old house in Hawaii. Three rows, one creature per row, four frames per row showing a looping movement, read left to right. Every frame faces LEFT, shows the full body and has the same size within its row. Leave at least 8 art pixels of empty space between frames and between rows so nothing touches. Every art pixel is an exact square block of 4x4 image pixels.
+- Row 1, fruit fly: a tiny cute fruit fly with a tan-yellow body, a dark striped abdomen, huge bright red eyes and two clear wings, buzzing in place with the wings flapping; about 16 art pixels wide and 14 tall.
+- Row 2, ensign wasp: a small shiny black wasp with long thin reddish-brown legs, long wiggling antennae, clear wings, and a tiny flag-shaped abdomen held high up on a thin stalk above its back like a little flag, flying fast with the flag bobbing; about 30 art pixels long and 24 tall.
+- Row 3, queen ant: a huge shiny dark red-brown queen ant with a small gold crown, big cartoon eyes, two clear wings folded on her back, a big round abdomen and six legs, marching with the legs moving; about 60 art pixels long and 36 tall.
+
+Picture 2: ./out/kitchen/props.png - four separate kitchen objects in one row with lots of empty space between them, seen from the front and slightly above (the top surface is visible), bottom edge flat on the floor. Every art pixel is an exact square block of 8x8 image pixels.
+- a cute round white and pink electric rice cooker with a small control panel and a wisp of steam from the lid; about 30 art pixels wide and 30 tall
+- a stainless steel kitchen trash can with a foot pedal and a lid; about 26 art pixels wide and 40 tall
+- a big white woven rice sack, tied at the top, with a red stripe and a drawing of a rice grain (no letters); about 34 art pixels wide and 30 tall
+- a clear plastic kimchi container with a blue lid, full of red kimchi; about 30 art pixels wide and 20 tall
+
+Picture 3: ./out/kitchen/pickups.png - two separate small game pickups in one row with lots of empty space between them, each with a clean 1-art-pixel near-black outline. Every art pixel is an exact square block of 12x12 image pixels.
+- a shiny gold coin with a small plumeria flower stamped on it, seen face on; about 11 art pixels across
+- a big clear plastic water jug with a blue cap and a handle, a little water sloshing inside, standing upright; about 14 art pixels wide and 20 tall
+
+When done, reply with only the three file paths.
+
+----- second session (icons) -----
+
+Make four pixel-art pictures with your image generation tool, one generated image per file, and save them. Do not write code for the art itself and do not touch anything outside this folder.
+
+Style: match the attached card pictures (cards.png) from the same game exactly: 16-bit retro pixel art, chunky readable shapes, clean near-black outlines, 3-4 shades per colour, no anti-aliasing, no blur, no text, no letters, no border or card frame drawn inside the picture. Bugs are cute chibi monsters with big round cartoon eyes.
+
+Each picture is a full-frame scene exactly 64 art pixels wide and 48 art pixels tall (landscape 4:3), the subject filling most of the frame, background painted edge to edge. Every art pixel is an exact square block of 16x16 image pixels (a 1024x768 image; if that size is impossible, make a 1536x1024 image with art pixels of 24x24 and the same 64x48 grid).
+1. ./out/kitchen/swatter.png - a Korean electric fly swatter shaped like a small tennis racket with a yellow frame and a blue handle, zapping a big cockroach with bright blue electric sparks, a little grey puff of smoke rising from the singed cockroach, warm orange background
+2. ./out/kitchen/footShampoo.png - a white pump bottle of foot shampoo with a mint-green label (no letters) squirting a cloud of white foam bubbles onto a cockroach that lies on its back, dizzy with swirly eyes and little stars, warm orange background
+3. ./out/kitchen/chopsticks.png - a pair of shiny steel Korean chopsticks held by a hand, pinching a dizzy cockroach with swirly eyes by its middle and lifting it up, soft blue background
+4. ./out/kitchen/waterJug.png - a big clear plastic water jug with a blue cap lying on its side, a surprised red centipede trapped inside the water with bubbles around it, soft blue background
+
+When done, reply with only the four file paths.

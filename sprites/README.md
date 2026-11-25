@@ -15,9 +15,12 @@ PixelLab and Codex output, one sheet per unit, unique frames only. Play order, c
 | `gecko.png` | 64 | idle 4 / attack 4 / hit 3 / walk 6 | Codex; rows counted from the sheet (`auto: true`) |
 | `silverfish.png` `moth.png` `termite.png` | 64 | idle 4 | Codex, sampled at half size (see below) |
 | `caneSpider.png` `termiteQueen.png` | 96 | idle 4 | Codex at full size; the 5:00 boss is the spider at 2x, the queen is drawn at 2x |
+| `fruitFly.png` | 32 | idle 4 | Codex, sampled at half size |
+| `ensignWasp.png` | 64 | idle 4 | Codex, half size (깃대벌: Codex read "flag" literally and gave it a little flag) |
+| `ensignWaspBig.png` `antQueen.png` | 96 | idle 4 | Codex at full size: the 5:00 boss 대왕 깃대벌 (drawn at 1.3x) and the final boss 여왕개미 (1.5x) |
 | `mist.png` | 64x32 | | card game spray cloud, drawn rotated toward the target |
-| `icons/<id>.png` | 64x48 | | the card game's card art, reused as weapon / passive icons; `tongue`, `egg`, `musubi`, `sneakers` are Codex |
-| `props/<key>.png` | ~16 | | Codex pickups: `heal` (pineapple), `magnet`, `chest`, `coin` (also the coin glyph in menus); laundry obstacles `washer`, `dryer`, `basket`, `bottle` (drawn at 2x); listed in `PROP_ART` |
+| `icons/<id>.png` | 64x48 | | the card game's card art, reused as weapon / passive icons; `tongue`, `egg`, `musubi`, `sneakers`, `swatter`, `footShampoo`, `chopsticks`, `waterJug` are Codex |
+| `props/<key>.png` | ~16 | | Codex pickups: `heal` (pineapple), `magnet`, `chest`, `coin` (also the coin glyph in menus); laundry obstacles `washer`, `dryer`, `basket`, `bottle`, kitchen obstacles `riceCooker`, `trashCan`, `riceSack`, `kimchi` (drawn at 2x); `jug` (the water-jug trap, drawn at 1.5x); listed in `PROP_ART` |
 
 For the card game sheets (base prompts, how the rows were made) see `sprites/README.md` in `~/Documents/manoa-bug-squad`.
 
@@ -44,6 +47,7 @@ Procedure, prompt rules and templates: `art/CODEX.md`. Originals and the exact p
 
 - **laundry bugs** (`art/codex/laundry/`): one sheet, five rows of four frames, facing left. Codex drew them 1.7-2x bigger than asked (silverfish 69 px), so `silverfish`, `moth`, `termite` were converted with `--pitch 8` (half size, some detail lost) and `caneSpider`, `termiteQueen` at full size with `--cell 96 --base 93`; rows cut into one sheet each with ffmpeg.
 - **laundry props**: washer, dryer, basket, bottle from one picture, `--each`.
+- **kitchen** (`art/codex/kitchen/`, two Codex sessions): a bug sheet (fruit fly, ensign wasp, queen ant; drawn ~2x too big, so the fly and wasp were sampled at `--pitch 9.26` and the big wasp and queen kept at full size in 96px cells), four props (`--each`, sampled at 1.5x pitch except the trash can), the coin and the water jug (`--each --pitch 40.18`), and four card icons (`--canvas 64x48`).
 
 ## Still placeholders (next art to make)
 
