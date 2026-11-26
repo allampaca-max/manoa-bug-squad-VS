@@ -133,6 +133,14 @@ button{font:inherit;color:inherit}
 .stage .meta{display:block;margin-top:4px;font:600 11px/1.3 var(--f-pixel);color:var(--surf)}
 .items canvas{width:36px;height:36px;image-rendering:crisp-edges;image-rendering:pixelated}
 .credits{margin:14px 0 0;color:var(--sand-dim);font-size:12.5px;line-height:1.5}
+.save-code{padding:10px 12px;border-radius:10px;border:2px dashed var(--line);background:var(--night);color:var(--plumeria);font:700 17px/1.5 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.02em;overflow-wrap:anywhere;-webkit-user-select:all;user-select:all}
+.field{display:block;margin:16px 0 6px;color:var(--sand);font-size:15px}
+.code-in{width:100%;min-height:46px;padding:8px 12px;border-radius:10px;border:2px solid var(--line);background:var(--ink);color:var(--sand);font:700 16px/1.2 ui-monospace,Menlo,Consolas,monospace;text-transform:uppercase}
+.code-in:focus{outline:none;border-color:var(--plumeria)}
+.code-in::placeholder{color:var(--sand-dim);text-transform:none}
+.code-msg{margin:8px 0 0;min-height:1.4em;color:var(--sand);font-size:14px;line-height:1.45}
+.code-msg:empty{min-height:0;margin:0}
+.code-msg.bad{color:var(--hibiscus)}
 .heroes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0 8px}
 .hero{display:grid;justify-items:center;align-content:start;gap:3px;padding:10px 8px 12px;border-radius:12px;border:2px solid var(--line);background:var(--night);text-align:center;cursor:pointer}
 .hero[aria-pressed="true"]{border-color:var(--plumeria);box-shadow:inset 0 0 0 2px var(--plumeria)}
@@ -1939,6 +1947,82 @@ function migrateRecords() {
   store.set('mbs.records', { backyard: old });
 }
 
+// ---------- save code: wallet, upgrades, best runs and totals as one short text, to carry progress to another phone or
+// browser without a server (Settings). Crockford base32: no I L O U, any case, dashes / spaces / text around it ignored.
+// Bits: version 3 · coins · upgrade levels (fixed widths) · totals · per stage × hero: has-record, win, 틈, seconds.
+// A record's kills and level are left out to keep the code short. The lists below are frozen: add a new stage, hero
+// or upgrade at the END of its list (each list is stored with its length, so old codes keep working).
+const SAVE_UP = [['hp', 3], ['might', 3], ['armor', 2], ['regen', 2], ['speed', 2], ['magnet', 2], ['cdr', 2], ['growth', 2],
+  ['greed', 2], ['revive', 1], ['reroll', 2], ['skip', 2], ['banish', 2]];
+const SAVE_STAGES = ['backyard', 'laundry', 'kitchen'], SAVE_HEROES = ['girl', 'alpaca', 'gecko'];
+const B32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ', SAVE_CHECK = 15;
+// a fixed bit stream XORed over the payload so an empty save doesn't read 0000…
+function saveMask(n) { const m = []; let x = 0x6d627321; for (let i = 0; i < n; i++) { x = (Math.imul(x, 1103515245) + 12345) >>> 0; m.push(x >>> 31); } return m; }
+function saveSum(bits) { let h = 0x811c9dc5; for (const b of bits) h = Math.imul(h ^ (b + 7), 16777619) >>> 0; return (h ^ (h >>> 16)) & ((1 << SAVE_CHECK) - 1); }
+function saveCode() {
+  const w = [], put = (v, n) => { for (let i = n - 1; i >= 0; i--) w.push(Math.floor(v / 2 ** i) % 2); };
+  const num = v => { v = Math.max(0, Math.floor(v || 0)); do { const c = v % 16; v = Math.floor(v / 16); put(c, 4); put(v ? 1 : 0, 1); } while (v); };
+  const m = loadMeta(), rec = store.get('mbs.records') || {}, tot = store.get('mbs.stats') || {};
+  put(1, 3);
+  num(m.coins);
+  put(SAVE_UP.length, 5);
+  for (const [id, n] of SAVE_UP) put(Math.min(m.up[id] || 0, 2 ** n - 1), n);
+  num(tot.runs); num(tot.kills); num(tot.wins); num(tot.secs);
+  put(SAVE_STAGES.length, 4); put(SAVE_HEROES.length, 4);
+  for (const st of SAVE_STAGES) for (const h of SAVE_HEROES) {
+    const r = rec[st]?.[h];
+    put(r ? 1 : 0, 1);
+    if (r) { put(r.win ? 1 : 0, 1); put(Math.min(r.gap || 0, 7), 3); put(Math.min(Math.floor(r.t), 1023), 10); }
+  }
+  while (w.length % 5) w.push(0);
+  const mask = saveMask(w.length), sum = saveSum(w), all = w.map((b, i) => b ^ mask[i]);
+  for (let i = SAVE_CHECK - 1; i >= 0; i--) all.push((sum >> i) & 1);   // checksum of the plain payload, unmasked
+  let s = '';
+  for (let i = 0; i < all.length; i += 5) s += B32[all[i] * 16 + all[i + 1] * 8 + all[i + 2] * 4 + all[i + 3] * 2 + all[i + 4]];
+  return 'MBS-' + s.match(/.{1,4}/g).join('-');
+}
+// returns { meta, records, stats } or null when the text isn't a valid code
+function readSaveCode(text) {
+  const hit = String(text || '').toUpperCase().match(/MBS[\s-]*([0-9A-Z][0-9A-Z\s-]*)/);
+  const raw = (hit ? hit[1] : String(text || '').toUpperCase()).replace(/[\s-]/g, '').replace(/O/g, '0').replace(/[IL]/g, '1');
+  if (raw.length < 8 || /[^0-9A-Z]/.test(raw)) return null;
+  const all = [];
+  for (const ch of raw) { const v = B32.indexOf(ch); if (v < 0) return null; for (let i = 4; i >= 0; i--) all.push((v >> i) & 1); }
+  const n = all.length - SAVE_CHECK, mask = saveMask(n), bits = all.slice(0, n).map((b, i) => b ^ mask[i]);
+  let sum = 0; for (const b of all.slice(n)) sum = sum * 2 + b;
+  if (saveSum(bits) !== sum) return null;
+  let at = 0;
+  const get = k => { if (at + k > n) throw 0; let v = 0; for (let i = 0; i < k; i++) v = v * 2 + bits[at++]; return v; };
+  const num = () => { let v = 0, p = 1, more; do { v += get(4) * p; p *= 16; more = get(1); } while (more && p < 2 ** 40); return v; };
+  try {
+    if (get(3) !== 1) return null;
+    const meta = { coins: num(), up: {}, earned: 0 };
+    const nUp = get(5);
+    for (let i = 0; i < nUp; i++) {
+      const [id, k] = SAVE_UP[i] || [null, 3], lv = get(k);
+      if (id && UPGRADES[id] && lv) meta.up[id] = Math.min(lv, UPGRADES[id].max);
+    }
+    const stats = { runs: num(), kills: num(), wins: num(), secs: num() };
+    const nSt = get(4), nH = get(4), records = {};
+    for (let i = 0; i < nSt; i++) for (let j = 0; j < nH; j++) {
+      if (!get(1)) continue;
+      const r = { win: !!get(1), gap: get(3), t: get(10) }, st = SAVE_STAGES[i], h = SAVE_HEROES[j];
+      if (st && h) (records[st] || (records[st] = {}))[h] = r;
+    }
+    let spent = 0;
+    for (const [id, lv] of Object.entries(meta.up)) for (let i = 0; i < lv; i++) spent += upPrice(id, i);
+    meta.earned = meta.coins + spent;
+    return { meta, records, stats };
+  } catch { return null; }
+}
+function applySave(d) {
+  store.set('mbs.meta', d.meta); store.set('mbs.records', d.records); store.set('mbs.stats', d.stats);
+  try { localStorage.removeItem('mbs.best'); } catch { /* blocked */ }
+  gapSel = Math.min(gapSel, gapOpen());
+  if (!stageOpen(stageSel)) stageSel = 'backyard';
+  remember();
+}
+
 /* =====================================================================
    RENDER
    ===================================================================== */
@@ -2463,7 +2547,7 @@ function showRecords() {
   const stages = Object.entries(STAGES).filter(([, st]) => st.ready).map(([id, st]) => `<h3>${st.name}</h3><ul class="items">${Object.entries(HEROES).map(([h, hd]) => {
     const r = (rec[id] || {})[h];
     return `<li><canvas width="64" height="64" data-preview="${h}" data-still="1"></canvas><span class="n"><b>${hd.name}</b>${r?.win ? ' <span class="tag gold">클리어</span>' : ''}
-      <small>${r ? `${fmtTime(r.t)} 버팀 · 벌레 ${r.kills} · Lv ${r.lvl}${r.gap ? ` · 틈 ${r.gap}` : ''}` : '아직 기록이 없어요'}</small></span><span class="v">${bestText(r)}</span></li>`;
+      <small>${r ? `${fmtTime(r.t)} 버팀${r.kills != null ? ` · 벌레 ${r.kills}` : ''}${r.lvl ? ` · Lv ${r.lvl}` : ''}${r.gap ? ` · 틈 ${r.gap}` : ''}` : '아직 기록이 없어요'}</small></span><span class="v">${bestText(r)}</span></li>`;
   }).join('')}</ul>`).join('');
   openMenu(`<div class="panel"><h2>기록</h2>
     <div class="stats"><div><b>${tot.runs}</b>판</div><div><b>${tot.kills.toLocaleString()}</b>잡은 벌레</div><div><b>${tot.wins}</b>클리어</div></div>
@@ -2522,14 +2606,63 @@ function gapHTML() {
     </div>${lock}</div>`;
 }
 
-let wipeArmed = false;
+let wipeArmed = false, loadArmed = null;
 function showSettings() {
-  wipeArmed = false;
+  wipeArmed = false; loadArmed = null;
   openMenu(`<div class="panel"><h2>설정</h2><p class="sub">소리는 이 기기에만 저장돼요. 아이폰은 무음 모드면 소리가 안 나요.</p>
     ${soundToggleHTML()}
+    <h3>세이브 코드</h3>
+    <p class="sub">동전·강화·기록은 이 기기의 이 브라우저에만 저장돼요. 아래 코드를 다른 폰이나 브라우저에서 불러오면 그대로 이어져요. 카톡으로 보내 두면 백업도 돼요. (아이폰은 사파리에서 「홈 화면에 추가」로 깔아 두면 안 지워져요.)</p>
+    <div class="save-code" id="saveCode">${saveCode()}</div>
+    <div class="row"><button class="btn ghost" type="button" data-act="copyCode" id="copyBtn">코드 복사</button>${navigator.share ? '<button class="btn ghost" type="button" data-act="shareCode">보내기</button>' : ''}</div>
+    <label class="field" for="codeIn">받은 코드 불러오기</label>
+    <input id="codeIn" class="code-in" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="MBS-…">
+    <p class="code-msg" id="codeMsg" aria-live="polite"></p>
+    <div class="row"><button class="btn ghost" type="button" data-act="loadCode" id="loadBtn">불러오기</button></div>
+    <h3>처음부터</h3>
     <div class="row"><button class="btn ghost" type="button" data-act="wipe" id="wipeBtn">기록·동전 지우기</button></div>
     <p class="credits">캐릭터와 카드 그림은 카드 게임 「마노아 벌레 퇴치단」에서 왔고, 새 그림은 PixelLab과 Codex로 그렸어요. 소리는 전부 코드로 만든 칩튠이에요.</p>
     <div class="row"><button class="btn" type="button" data-act="toMain">뒤로</button></div></div>`);
+}
+function copyCode() {
+  const box = $('saveCode'), btn = $('copyBtn'), code = box.textContent;
+  const done = ok => {
+    btn.textContent = ok ? '복사했어요!' : '코드를 길게 눌러 복사해 주세요';
+    if (!ok) getSelection()?.selectAllChildren(box);
+    setTimeout(() => { if (btn.isConnected) btn.textContent = '코드 복사'; }, 1800);
+  };
+  // the artifact frame may block the clipboard API: fall back to selecting the text and execCommand
+  const legacy = () => { try { getSelection().selectAllChildren(box); return document.execCommand('copy'); } catch { return false; } };
+  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(code).then(() => done(true), () => done(legacy()));
+  else done(legacy());
+}
+// first tap reads the code and says what it holds, the second overwrites this device's progress with it
+function loadCode() {
+  const text = $('codeIn').value, msg = $('codeMsg'), btn = $('loadBtn');
+  const d = readSaveCode(text);
+  if (!d) {
+    loadArmed = null; btn.textContent = '불러오기'; btn.classList.remove('warn');
+    msg.className = 'code-msg bad';
+    msg.textContent = text.trim() ? '코드가 맞지 않아요. 빠지거나 바뀐 글자가 없는지 봐 주세요.' : '받은 코드를 위 칸에 붙여 넣어 주세요.';
+    return;
+  }
+  const key = JSON.stringify(d);
+  if (loadArmed !== key) {
+    if (readSaveCode(saveCode()) && JSON.stringify(readSaveCode(saveCode())) === key) {
+      msg.className = 'code-msg'; msg.textContent = '이 기기와 똑같은 진행이에요. 불러올 게 없어요.'; return;
+    }
+    loadArmed = key;
+    const lv = Object.values(d.meta.up).reduce((a, b) => a + b, 0);
+    const recs = Object.values(d.records).reduce((a, st) => a + Object.keys(st).length, 0);
+    const wins = Object.values(d.records).reduce((a, st) => a + Object.values(st).filter(r => r.win).length, 0);
+    msg.className = 'code-msg';
+    msg.innerHTML = `${COIN}${d.meta.coins.toLocaleString()} · 강화 ${lv}칸 · 기록 ${recs}개${wins ? ` (클리어 ${wins})` : ''} · ${d.stats.runs}판<br>이 기기의 지금 진행은 지워지고 이걸로 바뀌어요.`;
+    btn.textContent = '한 번 더 누르면 불러와요'; btn.classList.add('warn');
+    return;
+  }
+  applySave(d);
+  showSettings();
+  banner('불러왔어요!', '이어서 하면 돼요');
 }
 function heroInfo(id) {
   const h = HEROES[id];
@@ -2610,7 +2743,9 @@ function act(name, data) {
       try { localStorage.removeItem('mbs.best'); } catch { /* blocked */ }
       showSettings(); banner('기록을 지웠어요');
     }
-  }
+  } else if (name === 'copyCode') copyCode();
+  else if (name === 'shareCode') navigator.share?.({ title: '마노아 벌레 서바이버 세이브 코드', text: `마노아 벌레 서바이버 세이브 코드\n${saveCode()}` }).catch(() => {});
+  else if (name === 'loadCode') loadCode();
   else if (name === 'pick') {
     const c = choices[+data.i];
     if (banishing) {
@@ -2683,8 +2818,13 @@ function bindInput() {
     const b = e.target.closest('[data-act]');
     if (b && !b.disabled) act(b.dataset.act, b.dataset);
   });
+  els.menu.addEventListener('input', e => {        // editing the code after the first tap asks again
+    if (e.target.id !== 'codeIn') return;
+    loadArmed = null; $('loadBtn').textContent = '불러오기'; $('loadBtn').classList.remove('warn'); $('codeMsg').textContent = '';
+  });
   els.pauseBtn.addEventListener('click', showPause);
   addEventListener('keydown', e => {
+    if (e.target.closest?.('input, textarea')) return;      // typing a save code
     if (e.code === 'Escape' || e.code === 'KeyP') {
       if (S?.phase === 'play') showPause(); else if (S?.phase === 'paused') act('resume');
       return;
@@ -2761,6 +2901,7 @@ window.__mbs = {
   DEBUG, get S() { return S; },
   give(id) { applyChoice({ kind: WEAPONS[id] ? 'weapon' : 'passive', id }); },
   chest() { S.chests++; },
+  saveCode, readSaveCode, applySave,
   audio: { AUDIO, MUS, SONGS, SFX, MIX, playStep, compileSong, pulseWave },
   start(hero, stage = 'backyard', gap = 0) { startRun(hero, stage, gap); },
   freeze(t) { demoT = t; DEBUG.still = true; },
