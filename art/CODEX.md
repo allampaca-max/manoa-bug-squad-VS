@@ -65,7 +65,7 @@ Save as ./out/<id>_sheet.png. When done, reply with only the file path.
 - `sprites/gecko.png`: idle 4 / attack 4 / hit 3 / walk 6 (`art/codex/gecko_sheet.*`)
 - Icons and pickups made in the same session: see `sprites/README.md`
 - Laundry bugs (silverfish, moth, termite, cane spider, termite queen) and laundry props (washer, dryer, basket, bottle): `art/codex/laundry/`
-- 옆집 아저씨 sheet (idle 3 / swipe 4 / startled 2 / walk 6): `art/codex/uncle/`. v1 came out too skinny (~20x57 art pixels); v2 redrew it from v1 (attached as the first image, "keep face, hair, glasses, clothes, but broader shoulders, thicker arms and legs, a hint of a belly") and landed at ~28x56.
+- 옆집 아저씨 sheet (idle 3 / swipe 4 / startled 2 / walk 6): `art/codex/uncle/`. v1 came out too skinny (~20x57 art pixels); v2 redrew it from v1 (attached as the first image, "keep face, hair, glasses, clothes, but broader shoulders, thicker arms and legs, a hint of a belly") and landed at ~28x56. The owner then asked for no belly and a more boyish look (he is mid-thirties): v3 redrew it from v2 with "flat stomach, rounder youthful face, bright grin"; without "keep the same short neat hair" Codex gave him a big curly mop.
 - Kitchen bugs (fruit fly, ensign wasp, queen ant), props (rice cooker, trash can, rice sack, kimchi box), coin, water jug, and icons for the swatter, foot shampoo, chopsticks and water jug: `art/codex/kitchen/` (two sessions run side by side)
 
 Size drift: Codex often draws figures bigger than the art-pixel size asked for. Check the frame sizes `pixelize.py` prints; `--pitch` at twice the detected value halves a sheet (loses some 1px detail), or keep it full size in a bigger cell (`--cell 96 --base 93`).

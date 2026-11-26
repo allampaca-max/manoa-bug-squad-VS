@@ -18,7 +18,7 @@ PixelLab and Codex output, one sheet per unit, unique frames only. Play order, c
 | `fruitFly.png` | 32 | idle 4 | Codex, sampled at half size |
 | `ensignWasp.png` | 64 | idle 4 | Codex, half size (깃대벌: Codex read "flag" literally and gave it a little flag) |
 | `ensignWaspBig.png` `antQueen.png` | 96 | idle 4 | Codex at full size: the 5:00 boss 대왕 깃대벌 (drawn at 1.3x) and the final boss 여왕개미 (1.5x) |
-| `uncle.png` | 96 | idle 3 / swipe 4 / startled 2 / walk 6 | Codex: 옆집 아저씨 (the rescue cameo), drawn at 1.15x so he stands taller than the girl; v2 is the sturdier redraw (v1 kept as `art/codex/uncle/uncle_v1_sheet.png`) |
+| `uncle.png` | 96 | idle 3 / swipe 4 / startled 2 / walk 6 | Codex: 옆집 아저씨 (the rescue cameo), drawn at 1.15x so he stands taller than the girl; v3: sturdy, flat stomach, boyish face (earlier v1 skinny / v2 with a belly kept in `art/codex/uncle/`) |
 | `mist.png` | 64x32 | | card game spray cloud, drawn rotated toward the target |
 | `icons/<id>.png` | 64x48 | | the card game's card art, reused as weapon / passive icons; `tongue`, `egg`, `musubi`, `sneakers`, `swatter`, `footShampoo`, `chopsticks`, `waterJug` are Codex |
 | `props/<key>.png` | ~16 | | Codex pickups: `heal` (pineapple), `magnet`, `chest`, `coin` (also the coin glyph in menus); laundry obstacles `washer`, `dryer`, `basket`, `bottle`, kitchen obstacles `riceCooker`, `trashCan`, `riceSack`, `kimchi` (drawn at 2x); `jug` (the water-jug trap, drawn at 1.5x); listed in `PROP_ART` |

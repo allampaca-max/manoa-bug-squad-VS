@@ -1,18 +1,21 @@
-# v2 (bulkier). Attached: -i ref/uncle_v1.png (= uncle_v1_sheet.png) -i ref/style.png. Converted: pixelize.py uncle_sheet.png sprites/uncle.png --cell 96 --base 93
+# v3 (younger, no belly). Attached: -i ref/uncle_v2.png (= uncle_v2_sheet.png) -i ref/style.png. A first try without the hair line came out with a big curly mop. Converted: pixelize.py uncle_sheet.png sprites/uncle.png --cell 96 --base 93
 Make one pixel-art sprite sheet with your image generation tool and save it to a file. Do not write code for the art itself and do not touch anything outside this folder.
 
-Character: the friendly next-door neighbour from the first attached image: a tall Korean man in his forties, short black hair, rectangular black-framed glasses, a calm cheerful face, plain white crew-neck T-shirt, khaki knee-length shorts, grey slippers. In his right hand he always holds a folded white kitchen paper towel.
-Keep his face, hair, glasses, clothes and colours exactly like the first attached image, but give him a sturdier, bulkier build: he is too skinny there. Make his shoulders and chest clearly broader (about 1.4 times as wide), his arms and legs thicker, a solid dad-like torso with a hint of a soft belly under the T-shirt. Still friendly and cute, not fat and not a bodybuilder. He stays clearly taller than the girl.
+Character: the friendly next-door neighbour from the first attached image: a tall Korean man in his mid-thirties, rectangular black-framed glasses, plain white crew-neck T-shirt, khaki knee-length shorts, grey slippers. In his right hand he always holds a folded white kitchen paper towel.
+Keep his sturdy build from the first image: broad shoulders, thick arms and legs. But change two things:
+1. No belly at all. Flat stomach, the T-shirt falls straight down from the chest. Sturdy and fit, like a guy who plays weekend basketball, not chubby and not a bodybuilder.
+2. Make him look younger and more boyish: a rounder, youthful face with a smaller jaw, slightly bigger eyes behind the glasses, a bright easy grin, the same short, neat black hair as the first image (do NOT make it curly, big or messy). He should read as a cheerful young guy, not a middle-aged uncle.
+Same clothes, colours, poses and paper towel as the first image. He stays clearly taller than the girl.
 The second attached image shows other sprites from the same game (the girl on the left) for style and scale.
 
-Size: in every standing frame the whole man is about 30 art pixels wide and 60 art pixels tall. Clean 1-art-pixel near-black outline, 3-4 shades per colour, no anti-aliasing, no blur, no gradients.
+Size: in every standing frame the whole man is about 28 art pixels wide and 58 art pixels tall. Clean 1-art-pixel near-black outline, 3-4 shades per colour, no anti-aliasing, no blur, no gradients.
 
 Layout: 4 rows of frames, read left to right, the same poses as the first attached image. Every frame faces RIGHT, shows the full body from head to slippers, and is the same size. Leave at least 8 art pixels of empty space between frames and rows. Feet of all frames in a row sit on the same line.
 - Row 1, idle, 3 frames: standing relaxed, paper towel in hand, a small breathing bob and one blink.
-- Row 2, swipe, 4 frames: bends forward and swipes the paper towel low across the floor in front of him in a quick sweeping motion, then lifts it up with a satisfied look (no bug drawn).
+- Row 2, swipe, 4 frames: bends forward and swipes the paper towel low across the floor in front of him in a quick sweeping motion, then lifts it up with a satisfied grin (no bug drawn).
 - Row 3, startled, 2 frames: leans back in surprise with his free hand raised, glasses slightly askew.
-- Row 4, walk, 6 frames: brisk walk cycle to the right, legs stepping alternately, towel hand swinging.
+- Row 4, walk, 6 frames: brisk, bouncy walk cycle to the right, legs stepping alternately, towel hand swinging.
 
-Render: every art pixel is an exact square block of 4x4 image pixels. Landscape image. Fully transparent background (if impossible, one flat pure magenta #FF00FF). No text, no labels, no grid lines, no shadows, no border.
+Render: every art pixel is an exact square block of 4x4 image pixels. Landscape image. Fully transparent background (if impossible, one flat pure magenta #FF00FF). No coloured halo or fringe around the outline. No text, no labels, no grid lines, no shadows, no border.
 
-Save as ./out/uncle2/uncle_sheet.png. When done, reply with only the file path.
+Save as ./out/uncle4/uncle_sheet.png. When done, reply with only the file path.
